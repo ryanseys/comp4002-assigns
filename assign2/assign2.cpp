@@ -10,8 +10,9 @@
 #include <GL/glut.h>
 #endif
 
-#include <cmath>
-
+/**
+ * Rendering the window.
+ */
 void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPushMatrix();
@@ -28,6 +29,11 @@ void display() {
   glutSwapBuffers();
 }
 
+/**
+ * When the window reshapes to a new size
+ * @param w the window new width
+ * @param h the window new height
+ */
 void reshape(GLint w, GLint h) {
   glViewport(0, 0, w, h);
 
@@ -41,6 +47,9 @@ void reshape(GLint w, GLint h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+/**
+ * Main.
+ */
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
