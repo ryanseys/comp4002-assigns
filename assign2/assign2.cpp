@@ -1,17 +1,10 @@
 /**
-* Assignment 1 - COMP 4002
-*
-* Includes:
-* Part II: Task 3 and Task 4
-* Part III: Colouring bonus - recursive triangle is coloured.
-* Part IV: Displacement parameter “dispX”
-*
-* Single and recursive triangles - with shaders
+* Assignment 2 - COMP 4002
 *
 * Ryan Seys - 100817604
 *
-* Compile on Mac with:
-* $ g++ assign1part2.cpp -o assignpart2 -framework OpenGL -framework GLUT && ./assignpart2
+* Compile on Mac with the Makefile:
+* $ make
 */
 #include <sstream>
 #include <fstream>
@@ -299,18 +292,6 @@ int main(int argc, char *argv[]) {
 
   glGenBuffers(1, &VBOs[0]); // Generate 1 buffer
   glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-
-  // glutInitWindowPosition(700, 100);
-  // // glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
-  // windows[1] = glutCreateWindow("Recursive Triangle Shader");
-  // glutReshapeFunc(resizeWin);
-  // glutDisplayFunc(renderWinRecursive);
-  // // glutPassiveMotionFunc(mouseMoved);
-
-  // // Vertex buffer object (VBO)
-  // initShaders(&programIDs[1], &vertexShaders[1], &fragmentShaders[1]);
-  // glGenBuffers(1, &VBOs[1]); // Generate 1 buffer
-  // glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
 
   // Get information about OpenGL
   printOpenGLInfo();
