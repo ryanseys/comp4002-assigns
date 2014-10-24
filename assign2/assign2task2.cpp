@@ -19,7 +19,8 @@ GLdouble objX = 0.0;
 GLdouble objY = 0.0;
 GLdouble objZ = 0.0;
 
-GLdouble rotateDelta = 1.0; // degrees
+GLdouble rotateDelta1 = 0.1; // degrees per frame
+GLdouble rotateDelta2 = 0.2; // degrees per frame
 GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
@@ -32,13 +33,18 @@ void drawCube(GLdouble width, GLdouble height, GLdouble depth) {
   glPopMatrix();
 }
 
-void drawSphere(GLdouble x, GLdouble y, GLdouble z, GLdouble radius, GLdouble rotate) {
+GLdouble colors[2][3] = {
+  {0.0, 1.0, 0.0}, // sphere 1 color = green
+  {1.0, 0.0, 0.0} // sphere 2 color = red
+};
+
+void drawSphere(GLdouble x, GLdouble y, GLdouble z, GLdouble radius, GLdouble rotate, GLdouble * color) {
   glPushMatrix();
-  //translates the current matrix to (100,10,100)
+  //translates the current matrix to (x, y, z)
   glTranslatef(x, y, z);
-  glColor3f(1.0, 1.0, 1.0);
-  glRotatef(-90, 1.0, 0.0, 0.0); // rotate 90 deg so poles face up
-  glRotatef(rotate, 0.0, 0.0, 1.0); // rotate 90 deg so poles face up
+  glColor3f(color[0], color[1], color[2]);
+  glRotatef(-90, 1.0, 0.0, 0.0); // rotate 90 deg about x to bring (0,0,1) to (0, 1, 0)
+  glRotatef(rotate, 0.0, 0.0, 1.0); // rotate around z some degree amount
   // draw the sphere
   glutWireSphere(radius, 20, 20);
   glPopMatrix();
@@ -93,8 +99,8 @@ void display() {
   glTranslatef(objX, objY, objZ);
 
   drawCube(2.5, 1.0, 1.0);
-  drawSphere(-0.7,1.0,0.0, 0.5, sphere1Rotate);
-  drawSphere(0.7,1.0,0.0, 0.5, sphere2Rotate);
+  drawSphere(-0.7,1.0,0.0, 0.5, sphere1Rotate, colors[0]);
+  drawSphere(0.7,1.0,0.0, 0.5, sphere2Rotate, colors[1]);
 
   glPopMatrix();
   // end object
@@ -121,13 +127,14 @@ void reshape(GLint w, GLint h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+/**
+ * Every time the timer ticks
+ */
 void renderTick(int value) {
-  printf("Hello\n");
-  sphere1Rotate = fmod(sphere1Rotate + rotateDelta, 360);
-  sphere2Rotate = fmod(sphere2Rotate - rotateDelta, 360);
-  printf("%f\n", sphere1Rotate);
+  sphere1Rotate = fmod(sphere1Rotate + rotateDelta1, 360);
+  sphere2Rotate = fmod(sphere2Rotate - rotateDelta2, 360);
   glutPostRedisplay();
-  glutTimerFunc(timerMs, renderTick, 1);
+  glutTimerFunc(timerMs, renderTick, 1); // restart the timer
 }
 
 /**
@@ -148,7 +155,7 @@ int main(int argc, char** argv) {
   glEnable(GL_DEPTH_TEST);
   // glEnable(GL_CULL_FACE);
   // glCullFace(GL_BACK);
-  glutTimerFunc(timerMs, renderTick, 1);
+  glutTimerFunc(1, renderTick, 1);
   glutMainLoop();
   return 0;
 }
