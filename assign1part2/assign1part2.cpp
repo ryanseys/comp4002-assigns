@@ -18,9 +18,11 @@
 #include <vector>
 #if defined(__APPLE__)
 #include <GL/freeglut.h>
+#define GLEW_INIT // glewInit(); // no glew init on Mac
 #else
 #include <glew.h>
 #include <GL\freeglut.h>
+#define GLEW_INIT glewInit();
 #endif
 
 // each window has one of these
@@ -293,7 +295,7 @@ int main(int argc, char *argv[]) {
   glutReshapeFunc(resizeWin);
   glutDisplayFunc(renderWin);
 
-  glewInit();
+  GLEW_INIT
 
   initShaders(&programIDs[0], &vertexShaders[0], &fragmentShaders[0]);
 
