@@ -9,6 +9,9 @@
 #else
 #include <GL/glut.h>
 #endif
+#include "ryan_sphere.h"
+
+SolidSphere sphere(100.0, 24, 24);
 
 /**
  * Rendering the window.
@@ -17,12 +20,7 @@ void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPushMatrix();
 
-  //translates the current matrix to (100,10,100)
-  glTranslatef(100, 10, 100);
-  glColor3f(1.0, 0.0, 1.0);
-  glRotatef(-90.0, 1.0, 0.0, 0.0);
-  // draw the sphere
-  glutWireSphere(100.0, 50, 50);
+  sphere.draw(100, 10, 100, 0);
 
   glPopMatrix();
   glFlush();

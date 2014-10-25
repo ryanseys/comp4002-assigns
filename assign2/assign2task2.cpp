@@ -11,8 +11,6 @@
 #endif
 #include <cmath>
 #include <stdio.h>
-#include <stdlib.h>
-#include <vector>
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
 
@@ -30,41 +28,6 @@ GLint timerMs = 20;
 SolidSphere sphere1(0.5, 24, 24);
 SolidSphere sphere2(0.5, 24, 24);
 SolidCube cube(2.5, 1.0, 1.0);
-
-/**
- * Draw a cube.
- * @param width  [description]
- * @param height [description]
- * @param depth  [description]
- */
-void drawCube(GLdouble width, GLdouble height, GLdouble depth) {
-  glPushMatrix();
-  glColor3f(0.0, 1.0, 1.0);
-  glScalef(width, height, depth);
-  glutWireCube(1.0);
-  glPopMatrix();
-}
-
-/**
- * Draw a sphere.
- * @param x      [description]
- * @param y      [description]
- * @param z      [description]
- * @param radius [description]
- * @param rotate [description]
- * @param color  [description]
- */
-void drawSphere(GLdouble x, GLdouble y, GLdouble z, GLdouble radius, GLdouble rotate, GLdouble * color) {
-  glPushMatrix();
-  //translates the current matrix to (x, y, z)
-  glTranslatef(x, y, z);
-  glColor3f(color[0], color[1], color[2]);
-  glRotatef(-90, 1.0, 0.0, 0.0); // rotate 90 deg about x to bring (0,0,1) to (0, 1, 0)
-  glRotatef(rotate, 0.0, 0.0, 1.0); // rotate around z some degree amount
-  // draw the sphere
-  glutWireSphere(radius, 20, 20);
-  glPopMatrix();
-}
 
 /**
  * Draw a grid.

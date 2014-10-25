@@ -1,5 +1,8 @@
 #ifndef RYAN_SPHERE
 #define RYAN_SPHERE
+#include <stdlib.h>
+#include <vector>
+#include <cmath>
 
 /**
  * This sphere class was derived from: http://tinyurl.com/onmhley
