@@ -110,7 +110,7 @@ void setupDraw(GLuint programID, GLuint vbo, std::vector<Vertex> vertices) {
     sizeof(struct Vertex) * vertices.size(),
     vertices.data(),
     GL_STATIC_DRAW
-    );
+  );
 
   // use shaders
   glUseProgram(programID);

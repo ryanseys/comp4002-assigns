@@ -9,10 +9,23 @@
 #else
 #include <GL/glut.h>
 #endif
-
+#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sstream>
+#include <fstream>
+#include <vector>
+
+GLuint vbo;
+GLuint programID;
+GLuint vertexShader;
+GLuint fragmentShader;
+
+int logLength;
+GLchar * logMsg;
+GLint link_status = GL_FALSE;
+GLint compile_status = GL_FALSE;
 
 GLdouble delta = 0.1;
 GLdouble objX = 0.0;
@@ -24,6 +37,160 @@ GLdouble rotateDelta2 = 0.2; // degrees per frame
 GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
+
+/**
+ * This sphere class was borrowed from: http://tinyurl.com/onmhley
+ *
+ * It was modified by Ryan Seys to add colors to the spheres.
+ */
+class SolidSphere {
+protected:
+    std::vector<GLfloat> vertices;
+    std::vector<GLfloat> normals;
+    std::vector<GLfloat> texcoords;
+    std::vector<GLushort> indices;
+    std::vector<GLfloat> colors; // added colors
+
+public:
+    SolidSphere(float radius, unsigned int rings, unsigned int sectors) {
+        float const R = 1./(float)(rings-1);
+        float const S = 1./(float)(sectors-1);
+        int r, s;
+
+        vertices.resize(rings * sectors * 3);
+        normals.resize(rings * sectors * 3);
+        texcoords.resize(rings * sectors * 2);
+        colors.resize(rings * sectors * 3);
+        std::vector<GLfloat>::iterator v = vertices.begin();
+        std::vector<GLfloat>::iterator n = normals.begin();
+        std::vector<GLfloat>::iterator t = texcoords.begin();
+        std::vector<GLfloat>::iterator c = colors.begin();
+
+        for(r = 0; r < rings; r++) for(s = 0; s < sectors; s++) {
+                float const y = sin( -M_PI_2 + M_PI * r * R );
+                float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
+                float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+
+                *t++ = s*S;
+                *t++ = r*R;
+
+                *v++ = x * radius;
+                *v++ = y * radius;
+                *v++ = z * radius;
+
+                *n++ = x;
+                *n++ = y;
+                *n++ = z;
+
+                // add colors
+                *c++ = 1.0;
+                *c++ = 1.0;
+                *c++ = 1.0;
+        }
+
+        indices.resize(rings * sectors * 4);
+        std::vector<GLushort>::iterator i = indices.begin();
+        for(r = 0; r < rings-1; r++) for(s = 0; s < sectors-1; s++) {
+                *i++ = r * sectors + s;
+                *i++ = r * sectors + (s+1);
+                *i++ = (r+1) * sectors + (s+1);
+                *i++ = (r+1) * sectors + s;
+        }
+    }
+
+    void draw(GLfloat x, GLfloat y, GLfloat z, GLfloat rotate) {
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glTranslatef(x, y, z);
+        glRotatef(rotate, 0.0, 1.0, 0.0);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+
+        glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
+        glNormalPointer(GL_FLOAT, 0, &normals[0]);
+        glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
+        glColorPointer(3, GL_UNSIGNED_BYTE, 0, &colors[0]);
+
+        glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
+        glPopMatrix();
+    }
+};
+
+SolidSphere sphere1(0.5, 24, 24);
+SolidSphere sphere2(0.5, 24, 24);
+
+void checkShaderForErrors(GLuint shaderID) {
+  // check shader for errors
+  glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compile_status);
+  glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
+
+  logMsg = new GLchar[logLength + 1];
+
+  glGetShaderInfoLog(shaderID, logLength, NULL, logMsg);
+
+  if (compile_status != GL_TRUE) {
+    fprintf(stderr, "Error in shader(%i): %s\n", shaderID, logMsg);
+    std::exit(EXIT_FAILURE);
+  }
+}
+
+void checkLinkForErrors(GLuint programID) {
+  glGetProgramiv(programID, GL_LINK_STATUS, &link_status);
+  glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &logLength);
+
+  logMsg = new GLchar[logLength + 1];
+
+  glGetProgramInfoLog(programID, logLength, NULL, logMsg);
+
+  if (link_status != GL_TRUE) {
+    fprintf(stderr, "Error in linking program: %s\n", logMsg);
+    std::exit(EXIT_FAILURE);
+  }
+}
+
+std::string read_file(std::string filename) {
+  std::ifstream t(filename);
+  std::stringstream buffer;
+  buffer << t.rdbuf();
+  return buffer.str();
+}
+
+void initShaders() {
+  // create shaders
+  vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+  // Read the shader code from file
+  std::string vertSource = read_file("sphere.vert");
+  std::string fragSource = read_file("sphere.frag");
+
+  // store as const * char
+  const char * vertSourceStr = vertSource.c_str();
+  const char * fragSourceStr = fragSource.c_str();
+
+  // attach source code to shaders
+  glShaderSource(vertexShader, 1, &vertSourceStr, NULL);
+  glShaderSource(fragmentShader, 1, &fragSourceStr, NULL);
+
+  // compile shaders and check for errors
+  glCompileShader(vertexShader);
+  checkShaderForErrors(vertexShader);
+
+  glCompileShader(fragmentShader);
+  checkShaderForErrors(fragmentShader);
+
+  // create program
+  programID = glCreateProgram();
+  glAttachShader(programID, fragmentShader);
+  glAttachShader(programID, vertexShader);
+
+  // link and check for errors
+  glLinkProgram(programID);
+  checkLinkForErrors(programID);
+}
 
 void drawCube(GLdouble width, GLdouble height, GLdouble depth) {
   glPushMatrix();
@@ -99,12 +266,14 @@ void display() {
   glTranslatef(objX, objY, objZ);
 
   drawCube(2.5, 1.0, 1.0);
-  drawSphere(-0.7,1.0,0.0, 0.5, sphere1Rotate, colors[0]);
-  drawSphere(0.7,1.0,0.0, 0.5, sphere2Rotate, colors[1]);
+  // drawSphere(-0.7,1.0,0.0, 0.5, sphere1Rotate, colors[0]);
+  // drawSphere(0.7,1.0,0.0, 0.5, sphere2Rotate, colors[1]);
+
+  sphere1.draw(-0.7, 1.0, 0.0, sphere1Rotate);
+  sphere2.draw(0.7, 1.0, 0.0, sphere2Rotate);
 
   glPopMatrix();
-  // end object
-
+  glUseProgram(0);
   glFlush();
   glutSwapBuffers();
 }
@@ -137,6 +306,7 @@ void renderTick(int value) {
   glutTimerFunc(timerMs, renderTick, 1); // restart the timer
 }
 
+
 /**
  * Main.
  */
@@ -148,14 +318,18 @@ int main(int argc, char** argv) {
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
+
+
   // Look from point (200, 200, 200) at point (100, 10, 100)
   // with the up vector (0, 1, 0)
   gluLookAt(2,2,2, 0,0,0, 0,1,0);
+
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
-  // glEnable(GL_CULL_FACE);
-  // glCullFace(GL_BACK);
   glutTimerFunc(1, renderTick, 1);
+
   glutMainLoop();
+
+  glDeleteProgram(programID);
   return 0;
 }
