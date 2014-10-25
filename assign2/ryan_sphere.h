@@ -2,9 +2,10 @@
 #define RYAN_SPHERE
 
 /**
- * This sphere class was borrowed from: http://tinyurl.com/onmhley
+ * This sphere class was derived from: http://tinyurl.com/onmhley
  *
  * It was modified by Ryan Seys to add colors to the spheres.
+ * Also added
  */
 class SolidSphere {
 protected:
@@ -46,10 +47,10 @@ public:
       *n++ = y;
       *n++ = z;
 
-      // add colors
-      *c++ = sin( -M_PI_2 + M_PI * r * R );
-      *c++ = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-      *c++ = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+      // add epic colors!
+      *c++ = x;
+      *c++ = y;
+      *c++ = z;
     }
 
     indices.resize(rings * sectors * 4);
