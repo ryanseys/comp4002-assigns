@@ -12,20 +12,7 @@
 #include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <sstream>
-#include <fstream>
 #include <vector>
-
-GLuint vbo;
-GLuint programID;
-GLuint vertexShader;
-GLuint fragmentShader;
-
-int logLength;
-GLchar * logMsg;
-GLint link_status = GL_FALSE;
-GLint compile_status = GL_FALSE;
 
 GLdouble delta = 0.1;
 GLdouble objX = 0.0;
@@ -166,79 +153,14 @@ public:
 
 SolidSphere sphere1(0.5, 24, 24);
 SolidSphere sphere2(0.5, 24, 24);
-
 SolidCube cube(2.5, 1.0, 1.0);
 
-void checkShaderForErrors(GLuint shaderID) {
-  // check shader for errors
-  glGetShaderiv(shaderID, GL_COMPILE_STATUS, &compile_status);
-  glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
-
-  logMsg = new GLchar[logLength + 1];
-
-  glGetShaderInfoLog(shaderID, logLength, NULL, logMsg);
-
-  if (compile_status != GL_TRUE) {
-    fprintf(stderr, "Error in shader(%i): %s\n", shaderID, logMsg);
-    std::exit(EXIT_FAILURE);
-  }
-}
-
-void checkLinkForErrors(GLuint programID) {
-  glGetProgramiv(programID, GL_LINK_STATUS, &link_status);
-  glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &logLength);
-
-  logMsg = new GLchar[logLength + 1];
-
-  glGetProgramInfoLog(programID, logLength, NULL, logMsg);
-
-  if (link_status != GL_TRUE) {
-    fprintf(stderr, "Error in linking program: %s\n", logMsg);
-    std::exit(EXIT_FAILURE);
-  }
-}
-
-std::string read_file(std::string filename) {
-  std::ifstream t(filename);
-  std::stringstream buffer;
-  buffer << t.rdbuf();
-  return buffer.str();
-}
-
-void initShaders() {
-  // create shaders
-  vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-  // Read the shader code from file
-  std::string vertSource = read_file("sphere.vert");
-  std::string fragSource = read_file("sphere.frag");
-
-  // store as const * char
-  const char * vertSourceStr = vertSource.c_str();
-  const char * fragSourceStr = fragSource.c_str();
-
-  // attach source code to shaders
-  glShaderSource(vertexShader, 1, &vertSourceStr, NULL);
-  glShaderSource(fragmentShader, 1, &fragSourceStr, NULL);
-
-  // compile shaders and check for errors
-  glCompileShader(vertexShader);
-  checkShaderForErrors(vertexShader);
-
-  glCompileShader(fragmentShader);
-  checkShaderForErrors(fragmentShader);
-
-  // create program
-  programID = glCreateProgram();
-  glAttachShader(programID, fragmentShader);
-  glAttachShader(programID, vertexShader);
-
-  // link and check for errors
-  glLinkProgram(programID);
-  checkLinkForErrors(programID);
-}
-
+/**
+ * Draw a cube.
+ * @param width  [description]
+ * @param height [description]
+ * @param depth  [description]
+ */
 void drawCube(GLdouble width, GLdouble height, GLdouble depth) {
   glPushMatrix();
   glColor3f(0.0, 1.0, 1.0);
@@ -247,11 +169,15 @@ void drawCube(GLdouble width, GLdouble height, GLdouble depth) {
   glPopMatrix();
 }
 
-GLdouble colors[2][3] = {
-  {0.0, 1.0, 0.0}, // sphere 1 color = green
-  {1.0, 0.0, 0.0} // sphere 2 color = red
-};
-
+/**
+ * Draw a sphere.
+ * @param x      [description]
+ * @param y      [description]
+ * @param z      [description]
+ * @param radius [description]
+ * @param rotate [description]
+ * @param color  [description]
+ */
 void drawSphere(GLdouble x, GLdouble y, GLdouble z, GLdouble radius, GLdouble rotate, GLdouble * color) {
   glPushMatrix();
   //translates the current matrix to (x, y, z)
@@ -264,6 +190,9 @@ void drawSphere(GLdouble x, GLdouble y, GLdouble z, GLdouble radius, GLdouble ro
   glPopMatrix();
 }
 
+/**
+ * Draw a grid.
+ */
 void drawGrid() {
   glColor3f(0.5, 0.5, 0.5);
   glBegin(GL_LINES);
@@ -274,6 +203,9 @@ void drawGrid() {
   glEnd();
 }
 
+/**
+ * When a regular (not special) key is pressed.
+ */
 void keyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
     case 'i': {
@@ -354,7 +286,6 @@ void renderTick(int value) {
   glutTimerFunc(timerMs, renderTick, 1); // restart the timer
 }
 
-
 /**
  * Main.
  */
@@ -375,9 +306,6 @@ int main(int argc, char** argv) {
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
   glutTimerFunc(1, renderTick, 1);
-
   glutMainLoop();
-
-  glDeleteProgram(programID);
   return 0;
 }
