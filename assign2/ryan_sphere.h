@@ -17,9 +17,10 @@ protected:
     std::vector<GLfloat> texcoords;
     std::vector<GLushort> indices;
     std::vector<GLfloat> colors; // added colors
-
+    GLfloat radius;
 public:
   SolidSphere(float radius, unsigned int rings, unsigned int sectors) {
+    radius = radius;
     float const R = 1./(float)(rings-1);
     float const S = 1./(float)(sectors-1);
     int r, s;
@@ -69,6 +70,7 @@ public:
   void draw(GLfloat x, GLfloat y, GLfloat z, GLfloat rotate) {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
+    // glScalef(radius, radius, radius);
     glTranslatef(x, y, z);
     glRotatef(rotate, 0.0, 1.0, 0.0);
 

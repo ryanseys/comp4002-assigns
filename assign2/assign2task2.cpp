@@ -16,10 +16,15 @@
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
 
+GLdouble initX = 100.0;
+GLdouble initY = 10.0;
+GLdouble initZ = 100.0;
+
 GLdouble delta = 0.1;
+// translate entire scene to (100,10,100)
 GLdouble objX = 0.0;
 GLdouble objY = 0.0;
-GLdouble objZ = 0.0;
+GLdouble objZ = -1.1;
 
 GLdouble rotateDelta1 = 0.1; // degrees per frame
 GLdouble rotateDelta2 = 0.2; // degrees per frame
@@ -77,16 +82,21 @@ void keyboardFunc(unsigned char key, int x, int y) {
 void display() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // draw some grid lines
+  // draw some grid lines and regular sphere from task 1
+  glPushMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glTranslatef(initX, initY, initZ);
+
   drawGrid();
 
-  sphere0.draw(0.0, 0.0, 1.0, 0.0);
+  sphere0.draw(0.0, 0.0, 0.0, 0.0);
+  glPopMatrix();
 
+  // object
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
-  // translate object as defined by the
-  glTranslatef(objX, objY, objZ);
+  glTranslatef(initX + objX, initY + objY, initZ + objZ);
 
   cube.draw(-0.5, -0.5, -0.5);
   sphere1.draw(-0.7, 1.0, 0.0, sphere1Rotate);
@@ -111,7 +121,7 @@ void reshape(GLint w, GLint h) {
   glLoadIdentity();
 
   /** Fovy, aspect, zNear, zFar */
-  gluPerspective(60.0, (GLfloat)w/(GLfloat)h, 1.0, 400.0);
+  gluPerspective(60.0, (GLfloat)w/(GLfloat)h, 1.0, 1000.0);
   // reset the current matrix mode to GL_MODELVIEW to be used in display
   glMatrixMode(GL_MODELVIEW);
 }
@@ -138,9 +148,9 @@ int main(int argc, char** argv) {
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
 
-  // Look from point (200, 200, 200) at point (100, 10, 100)
+  // Look from point (102, 12, 102) at point (100, 10, 100)
   // with the up vector (0, 1, 0)
-  gluLookAt(2,2,2, 0,0,0, 0,1,0);
+  gluLookAt(102,12,102, initX,initY,initZ, 0,1,0);
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
