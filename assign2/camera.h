@@ -1,23 +1,23 @@
 //=============================================================================
-// camera.h 
+// camera.h
 //
 //Author: Doron Nussbaum (C) 2014 All Rights Reserved.
 //-----------------------------------------------------
 //
-// Purpose: 
+// Purpose:
 //--------------
 // a. demonstarte the usage of a camera
 //
 //
 // Description:
 //--------------
-// A simple application that demonstrates how to crete and use a camera 
+// A simple application that demonstrates how to crete and use a camera
 //
 //
 // License
 //--------------
 //
-// Code can be used for instructional and educational purposes and for assignments in the gaming courses at 
+// Code can be used for instructional and educational purposes and for assignments in the gaming courses at
 // the School of Compuer Science at Carleton University.
 // Usage of code for other purposes is not allowed without a given permission by the author.
 //
@@ -57,14 +57,9 @@ public:
 private:
 	int updateOrientation(Vector3f rotVector, float angleRad); // update the camera's orientation in space
 
-	
+
 
 public:
-	Matrix4f rotMat;
-	Vector3f position;
-	Vector3f upVector;
-	Vector3f lookAtVector;
-	Matrix4f * getViewMatrix(D3DXMATRIX * viewMatrix);
-	float speed;
+
 	// change the speed of the camera motion
 };

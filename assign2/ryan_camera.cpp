@@ -203,7 +203,6 @@ void camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVecto
   this->upVector = upVector;
   this->upVector.noralize();
   this->lookAtVector.normalze();
-
 }
 
 /**
