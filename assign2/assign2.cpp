@@ -1,7 +1,8 @@
 /**
  * COMP 4002 - Assignment 2
- * Task 1: Render a sphere at (100,10,100) using perspective projection.
- * Task 2: Render a heirarchical object (2 spheres + rectangle) next to sphere.
+ *
+ * Task 1: Render a sphere at (100, 10, 100) using perspective projection.
+ * Task 2: Render a hierarchical object beside the sphere from Task 1.
  * Task 3: Create a camera class with yaw, pitch and roll.
  *
  * Author: Ryan Seys - 100817604
