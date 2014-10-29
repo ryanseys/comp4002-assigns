@@ -1,6 +1,8 @@
 /**
  * COMP 4002 - Assignment 2
  * Task 1: Render a sphere at (100,10,100) using perspective projection.
+ * Task 2: Render a heirarchical object (2 spheres + rectangle) next to sphere.
+ * Task 3: Create a camera class with yaw, pitch and roll.
  *
  * Author: Ryan Seys - 100817604
  */
@@ -25,6 +27,7 @@ GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
 
+SolidSphere sphere0(0.5, 24, 24);
 SolidSphere sphere1(0.5, 24, 24);
 SolidSphere sphere2(0.5, 24, 24);
 SolidCube cube(2.5, 1.0, 1.0);
@@ -77,6 +80,8 @@ void display() {
   // draw some grid lines
   drawGrid();
 
+  sphere0.draw(0.0, 0.0, 1.0, 0.0);
+
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
@@ -84,10 +89,6 @@ void display() {
   glTranslatef(objX, objY, objZ);
 
   cube.draw(-0.5, -0.5, -0.5);
-  // drawCube(2.5, 1.0, 1.0);
-  // drawSphere(-0.7,1.0,0.0, 0.5, sphere1Rotate, colors[0]);
-  // drawSphere(0.7,1.0,0.0, 0.5, sphere2Rotate, colors[1]);
-
   sphere1.draw(-0.7, 1.0, 0.0, sphere1Rotate);
   sphere2.draw(0.7, 1.0, 0.0, sphere2Rotate);
 
