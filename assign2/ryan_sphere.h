@@ -70,7 +70,6 @@ public:
   void draw(GLfloat x, GLfloat y, GLfloat z, GLfloat rotate) {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    // glScalef(radius, radius, radius);
     glTranslatef(x, y, z);
     glRotatef(rotate, 0.0, 1.0, 0.0);
 
