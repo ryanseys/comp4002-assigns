@@ -137,6 +137,32 @@ void renderTick(int value) {
   glutTimerFunc(timerMs, renderTick, 1); // restart the timer
 }
 
+void pressSpecialKey(int key, int xx, int yy) {
+  switch (key) {
+    case GLUT_KEY_UP: {
+      printf("up\n");
+
+      break;
+    }
+    case GLUT_KEY_DOWN: {
+      printf("down\n");
+
+      break;
+    }
+    case GLUT_KEY_RIGHT: {
+      printf("right\n");
+
+      break;
+    }
+    case GLUT_KEY_LEFT: {
+      printf("left\n");
+
+      break;
+    }
+  }
+  glutPostRedisplay();
+}
+
 /**
  * Main.
  */
@@ -148,6 +174,7 @@ int main(int argc, char** argv) {
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
+  glutSpecialFunc(pressSpecialKey);
 
   // Look from point (102, 12, 102) at point (100, 10, 100)
   // with the up vector (0, 1, 0)
