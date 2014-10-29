@@ -7,8 +7,8 @@
 /**
  * This sphere class was derived from: http://tinyurl.com/onmhley
  *
- * It was modified by Ryan Seys to add colors to the spheres.
- * Also added
+ * It was modified by Ryan Seys to add colors to the spheres and
+ * rotation transformation.
  */
 class SolidSphere {
 protected:
