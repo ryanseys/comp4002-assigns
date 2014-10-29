@@ -145,59 +145,33 @@ struct Vector3f {
 };
 
 /*
-inline Vector3f operator+(const Vector3f& l, const Vector3f& r)
-{
-    Vector3f Ret(l.x + r.x,
-                 l.y + r.y,
-                 l.z + r.z);
 
-    return Ret;
+inline Vector3f operator+(const Vector3f& l, const Vector3f& r) {
+  Vector3f Ret(l.x + r.x, l.y + r.y, l.z + r.z);
+  return Ret;
 }
-*/
-/*
-inline Vector3f operator-(const Vector3f& l, const Vector3f& r)
-{
-    Vector3f Ret(l.x - r.x,
-                 l.y - r.y,
-                 l.z - r.z);
 
-    return Ret;
+inline Vector3f operator-(const Vector3f& l, const Vector3f& r) {
+  Vector3f Ret(l.x - r.x, l.y - r.y, l.z - r.z);
+  return Ret;
 }
-*/
 
-/*
-inline Vector3f operator*(const Vector3f& l, float f)
-{
-    Vector3f Ret(l.x * f,
-                 l.y * f,
-                 l.z * f);
-
-    return Ret;
+inline Vector3f operator*(const Vector3f& l, float f) {
+  Vector3f Ret(l.x * f, l.y * f, l.z * f);
+  return Ret;
 }
-*/
 
-/*
-inline Vector3f operator*(float f, const Vector3f& l)
-{
-    Vector3f Ret(l.x * f,
-                 l.y * f,
-                 l.z * f);
-
-    return Ret;
+inline Vector3f operator*(float f, const Vector3f& l) {
+  Vector3f Ret(l.x * f, l.y * f, l.z * f);
+  return Ret;
 }
-*/
 
-/*
-inline Vector3f operator/(const Vector3f& l, float f)
-{
-    Vector3f Ret(l.x / f,
-                 l.y / f,
-                 l.z / f);
-
-    return Ret;
+inline Vector3f operator/(const Vector3f& l, float f) {
+  Vector3f Ret(l.x / f, l.y / f, l.z / f);
+  return Ret;
 }
-*/
 
+*/
 
 inline float dot(const Vector3f& u, const Vector3f& v) {
   return(u.x * v.x + u.y*v.y + u.z*v.z);
