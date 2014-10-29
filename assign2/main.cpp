@@ -65,25 +65,24 @@ void Init_Geometry()
 
 }
 
-
 /*************************************************************************************/
 // create VBO objects
 
 void InitVBO()
 {
 	int rc = 0;
-    //Create the vertex handle and copy the data to the GPU memory
-    glGenBuffers(1, &vertex_handle);
+  //Create the vertex handle and copy the data to the GPU memory
+  glGenBuffers(1, &vertex_handle);
 	rc = glGetError();
 	if (rc != GL_NO_ERROR) {
 		printf("error in attach shaders \n");
 	}
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
 
-    //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
-    glGenBuffers(1, &triangle_handle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
+  //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
+  glGenBuffers(1, &triangle_handle);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numInd, ind, GL_STATIC_DRAW);
 }
 
@@ -91,10 +90,13 @@ void display()
 {
 }
 
-/**************************************************************************************/
-// main
 
-
+/**
+ * Main function
+ * @param  argc [description]
+ * @param  argv [description]
+ * @return      [description]
+ */
 int main(int argc, char** argv)
 {
 	int rc;
@@ -121,7 +123,7 @@ int main(int argc, char** argv)
 }
 
 
-/**************************************************************************************/
+/****************************************************************************/
 /* this function creates a sphere.  The sphere is genreated using two arrays.  The vertex data array which
 contains the vertex data (geometry) and an index array which contains the topology of the triangles.  The trainagles
 are stored in the index array as a triangle list.
