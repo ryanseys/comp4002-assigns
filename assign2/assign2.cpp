@@ -30,7 +30,8 @@ GLdouble objZ = -1.1;
 
 Camera cam;
 
-const GLfloat PITCH_AMT = 1.0; // 1 degree up and down
+const GLfloat PITCH_AMT = 1.0; // degrees up and down
+const GLfloat YAW_AMT = 1.0; // degrees right and left
 
 Vector3f camInitPoint(102.0, 12.0, 102.0);
 Vector3f camLookAtPoint(100.0, 10.0, 100.0);
@@ -159,13 +160,13 @@ void pressSpecialKey(int key, int xx, int yy) {
       break;
     }
     case GLUT_KEY_RIGHT: {
-      printf("right\n");
-
+      cam.yaw(YAW_AMT);
+      cam.refresh();
       break;
     }
     case GLUT_KEY_LEFT: {
-      printf("left\n");
-
+      cam.yaw(-YAW_AMT);
+      cam.refresh();
       break;
     }
   }

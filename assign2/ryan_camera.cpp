@@ -57,19 +57,10 @@ int Camera::roll(float angleDeg) {
  */
 int Camera::pitch(float angleDeg) {
   GLfloat angle = DegreeToRadians(angleDeg);
-  printf("%f\n", angle);
-  // Rotate lookAtVector around the right vector
-  // This is where we actually change pitch
+  // Rotate lookAtVector around the up vector
   lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
-  lookAtVector.print();
+
   upVector = rightVector.cross(lookAtVector);
-  upVector.print();
-  // Vector3f rotVector(0.0,0.0,0.0);
-
-  // get rotation axis
-
-  // TODO: ADD CODE
-  //
 
   return 0;
 }
@@ -81,9 +72,9 @@ int Camera::pitch(float angleDeg) {
  * @return          1 - if failed 0 - if successful
  */
 int Camera::yaw(float angleDeg) {
-  Vector3f rotVector(0.0, 0.0, 0.0);
-
-  // TODO: ADD CODE
+  GLfloat angle = DegreeToRadians(angleDeg);
+  lookAtVector = (lookAtVector * cos(angle) + rightVector * sin(angle)).normalize();
+  rightVector = lookAtVector.cross(upVector);
 
   return 0;
 }
