@@ -161,15 +161,15 @@ int Camera::changeAbsPosition(Vector3f *v) {
 
 /**
  * Changes the camera's position along the LootAt vector
- * Move the camera forward by the numUnits along the looAtVector.
+ * Move the camera forward by the numUnits along the lookAtVector.
  *
  * @param  numUnits [description]
  * @return          The new position.
  */
 Vector3f Camera::moveForward(float numUnits) {
-  // TODO: Add Code
-
-  return (position);
+  position = position + (lookAtVector * numUnits);
+  // TODO
+  return position;
 }
 
 /**

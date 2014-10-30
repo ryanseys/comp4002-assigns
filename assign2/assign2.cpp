@@ -32,6 +32,7 @@ Camera cam;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
+const GLfloat FORWARD_AMT = 0.2;
 
 Vector3f camInitPoint(102.0, 12.0, 102.0);
 Vector3f camLookAtPoint(100.0, 10.0, 100.0);
@@ -95,6 +96,18 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Yes, this is backward (i.e. PITCH_AMT vs. -PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
       cam.roll(PITCH_AMT);
+      cam.refresh();
+      break;
+    }
+    case 'w': {
+      // Move camera forward along lookAtVector
+      cam.moveForward(FORWARD_AMT);
+      cam.refresh();
+      break;
+    }
+    case 's': {
+      // Move camera backward along lookAtVector
+      cam.moveForward(-FORWARD_AMT);
       cam.refresh();
       break;
     }
