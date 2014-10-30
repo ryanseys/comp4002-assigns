@@ -48,7 +48,7 @@ public:
     glTranslatef(x, y, z);
 
     // start arm 5
-    arm5->rotate(arm5YawAngle += 1.0);
+    arm5->rotate(arm5YawAngle);
     arm5->draw(0.0, 4.0, 0.0);
 
     // start arm 4
@@ -62,7 +62,7 @@ public:
     // start arm 3
     glPushMatrix();
     // apply arm 3 yaw
-    arm3->rotate(arm3YawAngle += 1.0);
+    arm3->rotate(arm3YawAngle);
     arm3->draw(0.0, 2.0, 0.0);
 
     glPushMatrix();
@@ -70,7 +70,7 @@ public:
     arm2->draw(0.25, 0.75, 0.25, 0.0);
     glPushMatrix(); // apply arm 1 yaw
 
-    arm1->rotate(arm1YawAngle += 1.0);
+    arm1->rotate(arm1YawAngle);
     arm1->draw(0.0, 0.0, 0.0);
 
     glPopMatrix(); // arm 1 done
@@ -82,8 +82,21 @@ public:
     glPopMatrix(); // arm done
   }
 
-  void drawPart(GLint partNum) {
-    printf("Drawing part %d\n", partNum);
+  void rotatePart(GLint partNum, GLfloat degrees) {
+    switch(partNum) {
+      case 5: {
+        arm5YawAngle += degrees;
+        break;
+      }
+      case 3: {
+        arm3YawAngle += degrees;
+        break;
+      }
+      case 1: {
+        arm1YawAngle += degrees;
+        break;
+      }
+    }
   }
 };
 

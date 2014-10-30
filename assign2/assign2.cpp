@@ -35,6 +35,7 @@ GLdouble armY = 0.0;
 GLdouble armZ = 1.1;
 
 GLint robotPartSelected = -1; // nothing initially selected
+GLfloat ROBOT_ROTATE_DEG = 1.0;
 
 Camera cam;
 
@@ -80,6 +81,7 @@ void drawGrid() {
 void keyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
     case '1': {
+
       robotPartSelected = 1;
       break;
     }
@@ -141,6 +143,16 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Move camera backward along lookAtVector
       cam.moveForward(-FORWARD_AMT);
       cam.refresh();
+      break;
+    }
+    case 'z': {
+      // Rotate robot part +1 degree
+      robotarm.rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
+      break;
+    }
+    case 'x': {
+      // Rotate robot part -1 degree
+      robotarm.rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
       break;
     }
     default: return;
