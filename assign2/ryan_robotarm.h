@@ -6,11 +6,13 @@
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
 /**
- * This sphere class was derived from: http://tinyurl.com/onmhley
- *
- * It was modified by Ryan Seys to add colors to the spheres and
- * rotation transformation.
+ * This robot arm class developed by Ryan Seys.
  */
+
+GLfloat CUBE_WIDTH = 0.5;
+GLfloat CUBE_HEIGHT = 0.5;
+GLfloat CUBE_DEPTH = 0.5;
+GLfloat SPHERE_RADIUS = 0.25;
 class RobotArm {
 protected:
   GLfloat arm5YawAngle;
@@ -23,13 +25,14 @@ protected:
   SolidCube * arm3;
   SolidSphere * arm4;
   SolidCube * arm5;
+
 public:
   RobotArm()
-    : arm1(new SolidCube(0.5, 0.5, 0.5)),
-      arm2(new SolidSphere(0.25, 24, 24)),
-      arm3(new SolidCube(0.5, 0.5, 0.5)),
-      arm4(new SolidSphere(0.25, 24, 24)),
-      arm5(new SolidCube(0.5, 0.5, 0.5)) {
+    : arm1(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)),
+      arm2(new SolidSphere(SPHERE_RADIUS, 24, 24)),
+      arm3(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)),
+      arm4(new SolidSphere(SPHERE_RADIUS, 24, 24)),
+      arm5(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)) {
     arm5YawAngle = 0.0;
     arm3YawAngle = 0.0;
     arm1YawAngle = 0.0;
@@ -44,14 +47,14 @@ public:
 
     // start arm 5
     glPushMatrix(); // apply arm 5 yaw
-    // TODO: translate 0.5 first here
-    glTranslatef(0.25, 0.0, 0.25); // half of the cube width and height
+    glTranslatef(CUBE_WIDTH/2, 0.0, CUBE_DEPTH/2); // half of the cube width and height
     glRotatef(arm5YawAngle += 1.0, 0.0, 1.0, 0.0);
-    glTranslatef(-0.25, 0.0, -0.25); // inverse transformation
+    glTranslatef(-(CUBE_WIDTH/2), 0.0, -(CUBE_DEPTH/2)); // inverse transformation
     arm5->draw(0.0, 4.0, 0.0);
 
     // start arm 4
     glPushMatrix();
+    // TODO: apply arm 4 pitch
     // glTranslatef(0.0, -1.75, 0.0);
     // glRotatef(arm4PitchAngle += 1.0, 0.0, 0.0, 0.0);
     // glTranslatef(0.0, 1.75, 0.0);
@@ -59,24 +62,26 @@ public:
 
     // start arm 3
     glPushMatrix();
-    // // apply arm 3 yaw
-    // glTranslatef(0.25, 0.0, 0.25); // half of the cube width and height
-    // glRotatef(arm3YawAngle += 1.0, 0.0, 1.0, 0.0);
-    // glTranslatef(-0.25, 0.0, -0.25); // inverse transformation
+    // apply arm 3 yaw
+    glTranslatef(CUBE_WIDTH/2, 0.0, CUBE_DEPTH/2); // half of the cube width and height
+    glRotatef(arm3YawAngle += 1.0, 0.0, 1.0, 0.0);
+    glTranslatef(-(CUBE_WIDTH/2), 0.0, -(CUBE_DEPTH/2)); // inverse transformation
     arm3->draw(0.0, 2.0, 0.0);
 
-    glPushMatrix(); // apply arm 2 pitch
-
+    glPushMatrix();
+    // TODO: apply arm 2 pitch
     arm2->draw(0.25, 0.75, 0.25, 0.0);
     glPushMatrix(); // apply arm 1 yaw
-    // glRotatef(arm1YawAngle += 1.0, 0.0, 1.0, 0.0);
+
+    glTranslatef(CUBE_WIDTH/2, 0.0, CUBE_DEPTH/2); // half of the cube width and height
+    glRotatef(arm1YawAngle += 1.0, 0.0, 1.0, 0.0);
+    glTranslatef(-(CUBE_WIDTH/2), 0.0, -(CUBE_DEPTH/2)); // inverse transformation
     arm1->draw(0.0, 0.0, 0.0);
 
     glPopMatrix(); // arm 1 done
     glPopMatrix(); // arm 2 done
     glPopMatrix(); // arm 3 done
     glPopMatrix(); // arm 4 done
-
     glPopMatrix(); // arm 5 done
 
     glPopMatrix(); // arm done
