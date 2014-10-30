@@ -14,6 +14,7 @@ public:
   Vector3f position;
   Vector3f upVector;
   Vector3f lookAtVector;
+  Vector3f rightVector;
   Matrix4f getViewMatrix();
   float speed;
 

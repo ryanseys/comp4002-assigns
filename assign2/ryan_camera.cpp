@@ -57,16 +57,19 @@ int Camera::roll(float angleDeg) {
  */
 int Camera::pitch(float angleDeg) {
   GLfloat angle = DegreeToRadians(angleDeg);
+  printf("%f\n", angle);
   // Rotate lookAtVector around the right vector
   // This is where we actually change pitch
   lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
-
-  // upVector = CrossProduct(rightVector, lookAtVector);
+  lookAtVector.print();
+  upVector = rightVector.cross(lookAtVector);
+  upVector.print();
   // Vector3f rotVector(0.0,0.0,0.0);
 
   // get rotation axis
 
   // TODO: ADD CODE
+  //
 
   return 0;
 }
@@ -219,12 +222,15 @@ void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVecto
   this->position = position;
   this->lookAtVector = lookAtPoint - position;
   this->upVector = upVector;
+  this->rightVector = lookAtVector.cross(upVector);
   this->upVector.normalize();
   this->lookAtVector.normalize();
+  this->rightVector.normalize();
 }
 
 void Camera::refresh(void) {
   Vector3f lookPoint = this->getLookAtPoint();
+  glLoadIdentity();
   gluLookAt(
     position.x,
     position.y,

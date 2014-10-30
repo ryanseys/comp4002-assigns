@@ -30,6 +30,8 @@ GLdouble objZ = -1.1;
 
 Camera cam;
 
+const GLfloat PITCH_AMT = 1.0; // 1 degree up and down
+
 Vector3f camInitPoint(102.0, 12.0, 102.0);
 Vector3f camLookAtPoint(100.0, 10.0, 100.0);
 Vector3f camUp(0.0, 1.0, 0.0);
@@ -147,13 +149,13 @@ void renderTick(int value) {
 void pressSpecialKey(int key, int xx, int yy) {
   switch (key) {
     case GLUT_KEY_UP: {
-      printf("up\n");
-
+      cam.pitch(PITCH_AMT);
+      cam.refresh();
       break;
     }
     case GLUT_KEY_DOWN: {
-      printf("down\n");
-
+      cam.pitch(-PITCH_AMT);
+      cam.refresh();
       break;
     }
     case GLUT_KEY_RIGHT: {

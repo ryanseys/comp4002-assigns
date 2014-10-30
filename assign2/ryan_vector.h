@@ -137,11 +137,17 @@ struct Vector3f {
     return *this;
   }
 
-  // prints the vector
-  // friend std::ostream& operator << (std::ostream& os, const Vector3f& v) {
-  //   os <<"("<<v.x <<", "<<  v.y <<", "<< v.z<<")";
-  //   return(os);
-  // }
+  void print(void) {
+    printf("(%f, %f, %f)\n", this->x, this->y, this->z);
+  }
+
+  Vector3f cross(Vector3f v) {
+    Vector3f vv;
+    vv.x = ((this->y*v.z)-(v.y*this->z));
+    vv.y = -1*((this->x*v.z)-(v.x*this->z));
+    vv.z = ((this->x*v.y)-(v.x*this->y));
+    return vv;
+  }
 
 };
 
@@ -188,13 +194,7 @@ inline Vector3f operator/(const Vector3f& l, float f) {
 //   return(u/len);
 // }
 
-// Vector3f cross(const Vector3f& u,  const Vector3f& v) {
-//   Vector3f vv;
-//   vv.x =u.y*v.z-v.y*u.z;
-//   vv.y=-1*(u.x*v.z-v.x*u.z);
-//   vv.z =u.x*v.y-v.x*u.y;
-//   return(Vector3f(u.y*v.z-v.y*u.z, -1*(u.x*v.z-v.x*u.z), u.x*v.y-v.x*u.y));
-// }
+
 
 // float cross_value_value(const Vector3f& u,  const Vector3f& v) {
 //   return(u.y*v.z-v.y*u.z + -1*(u.x*v.z-v.x*u.z) + u.x*v.y-v.x*u.y);
