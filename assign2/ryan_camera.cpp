@@ -19,9 +19,9 @@
  * Camera constructor
  */
 Camera::Camera(void) {
-  Vector3f position(50.0,150.0,50.0);
-  Vector3f lookAtVector(100.0,0.0,100.0);
-  Vector3f upVector(0.0,1.0,0.0);
+  Vector3f position(0.0, 0.0, 0.0);
+  Vector3f lookAtVector(0.0, 0.0, 0.0);
+  Vector3f upVector(0.0, 0.0, 0.0);
   speed = 0;
 }
 
@@ -56,7 +56,13 @@ int Camera::roll(float angleDeg) {
  * @return          1 - if failed 0 - if successful
  */
 int Camera::pitch(float angleDeg) {
-  Vector3f rotVector(0.0,0.0,0.0);
+  GLfloat angle = DegreeToRadians(angleDeg);
+  // Rotate lookAtVector around the right vector
+  // This is where we actually change pitch
+  lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
+
+  // upVector = CrossProduct(rightVector, lookAtVector);
+  // Vector3f rotVector(0.0,0.0,0.0);
 
   // get rotation axis
 
@@ -72,7 +78,7 @@ int Camera::pitch(float angleDeg) {
  * @return          1 - if failed 0 - if successful
  */
 int Camera::yaw(float angleDeg) {
-  Vector3f rotVector(0.0,0.0,0.0);
+  Vector3f rotVector(0.0, 0.0, 0.0);
 
   // TODO: ADD CODE
 
@@ -178,7 +184,9 @@ int Camera::updateOrientation(Vector3f rotVector, float angleRad) {
 
   // TODO: Add Code
 
-  Vector3f xaxis(0.0,0.0,0.0);
+  // Vector3f xaxis(0.0,0.0,0.0);
+
+  // upVector = CrossProduct(rightVector, lookAtVector);
 
   // create rotation matrix around a vector
   // rotate the camera (up vector and/or looAtVector)
@@ -213,14 +221,17 @@ void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVecto
   this->upVector = upVector;
   this->upVector.normalize();
   this->lookAtVector.normalize();
+}
 
+void Camera::refresh(void) {
+  Vector3f lookPoint = this->getLookAtPoint();
   gluLookAt(
     position.x,
     position.y,
     position.z,
-    lookAtPoint.x,
-    lookAtPoint.y,
-    lookAtPoint.z,
+    lookPoint.x,
+    lookPoint.y,
+    lookPoint.z,
     upVector.x,
     upVector.y,
     upVector.z

@@ -35,6 +35,7 @@ public:
   float getSpeed(void);
   Camera(GLfloat w, GLfloat h, GLfloat d);
   void setCamera(Vector3f, Vector3f, Vector3f);
+  void refresh(void);
 };
 
 #endif

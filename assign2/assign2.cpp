@@ -184,6 +184,7 @@ int main(int argc, char** argv) {
   glutSpecialFunc(pressSpecialKey);
 
   cam.setCamera(camInitPoint, camLookAtPoint, camUp);
+  cam.refresh();
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);

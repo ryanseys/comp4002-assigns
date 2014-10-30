@@ -131,9 +131,10 @@ struct Vector3f {
   }
 
   // normalizes the vector
-  void normalize() {
+  Vector3f& normalize() {
     float length = this->length();
     *this /= length;
+    return *this;
   }
 
   // prints the vector
