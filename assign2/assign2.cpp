@@ -28,6 +28,10 @@ GLdouble objX = 0.0;
 GLdouble objY = 0.0;
 GLdouble objZ = -1.1;
 
+GLdouble armX = -1.0;
+GLdouble armY = 0.0;
+GLdouble armZ = 1.1;
+
 Camera cam;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
@@ -48,6 +52,13 @@ SolidSphere sphere0(0.5, 24, 24);
 SolidSphere sphere1(0.5, 24, 24);
 SolidSphere sphere2(0.5, 24, 24);
 SolidCube cube(2.5, 1.0, 1.0);
+
+// Robot arm
+SolidCube arm1(0.5, 0.5, 0.5);
+SolidSphere arm2(0.25, 24, 24);
+SolidCube arm3(0.5, 0.5, 0.5);
+SolidSphere arm4(0.25, 24, 24);
+SolidCube arm5(0.5, 0.5, 0.5);
 
 /**
  * Draw a grid.
@@ -124,7 +135,7 @@ void display() {
 
   // draw some grid lines and regular sphere from task 1
   glPushMatrix();
-  glMatrixMode(GL_MODELVIEW);
+  // glMatrixMode(GL_MODELVIEW);
   glTranslatef(initX, initY, initZ);
 
   drawGrid();
@@ -133,16 +144,24 @@ void display() {
   glPopMatrix();
 
   // object
-  glMatrixMode(GL_MODELVIEW);
+  // glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-
   glTranslatef(initX + objX, initY + objY, initZ + objZ);
-
   cube.draw(-0.5, -0.5, -0.5);
   sphere1.draw(-0.7, 1.0, 0.0, sphere1Rotate);
   sphere2.draw(0.7, 1.0, 0.0, sphere2Rotate);
-
   glPopMatrix();
+
+  // Robot arm
+  glPushMatrix();
+  glTranslatef(initX + armX, initY + armY, initZ + armZ);
+  arm1.draw(0.0, 0.0, 0.0);
+  arm2.draw(0.25, 0.75, 0.25, 0.0);
+  arm3.draw(0.0, 2.0, 0.0);
+  arm4.draw(0.25, 1.75, 0.25, 0.0);
+  arm5.draw(0.0, 4.0, 0.0);
+  glPopMatrix();
+
   glUseProgram(0);
   glFlush();
   glutSwapBuffers();
