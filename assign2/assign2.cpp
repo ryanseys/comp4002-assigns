@@ -16,6 +16,8 @@
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
 #include "ryan_camera.h"
+#include "ryan_matrix.h"
+#include "ryan_robotarm.h"
 #include <stdio.h>
 
 GLdouble initX = 100.0;
@@ -56,11 +58,8 @@ SolidSphere sphere2(0.5, 24, 24);
 SolidCube cube(2.5, 1.0, 1.0);
 
 // Robot arm
-SolidCube arm1(0.5, 0.5, 0.5);
-SolidSphere arm2(0.25, 24, 24);
-SolidCube arm3(0.5, 0.5, 0.5);
-SolidSphere arm4(0.25, 24, 24);
-SolidCube arm5(0.5, 0.5, 0.5);
+//
+RobotArm robotarm;
 
 /**
  * Draw a grid.
@@ -169,37 +168,14 @@ void display() {
   // glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glTranslatef(initX + objX, initY + objY, initZ + objZ);
+
   cube.draw(-0.5, -0.5, -0.5);
   sphere1.draw(-0.7, 1.0, 0.0, sphere1Rotate);
   sphere2.draw(0.7, 1.0, 0.0, sphere2Rotate);
   glPopMatrix();
 
-  // Robot arm
-  glPushMatrix(); // arm start
-  glTranslatef(initX + armX, initY + armY, initZ + armZ);
-
-  glPushMatrix(); // apply arm 5 yaw
-  arm5.draw(0.0, 0.0, 0.0);
-
-  glPushMatrix(); // apply arm 4 pitch
-  arm4.draw(0.25, 0.75, 0.25, 0.0);
-
-  glPushMatrix(); // apply arm 3 yaw
-  arm3.draw(0.0, 2.0, 0.0);
-
-  glPushMatrix(); // apply arm 2 pitch
-
-  arm2.draw(0.25, 1.75, 0.25, 0.0);
-  glPushMatrix(); // apply arm 1 yaw
-
-  arm1.draw(0.0, 4.0, 0.0);
-  glPopMatrix(); // arm 1 done
-  glPopMatrix(); // arm 2 done
-  glPopMatrix(); // arm 3 done
-  glPopMatrix(); // arm 4 done
-  glPopMatrix(); // arm 5 done
-
-  glPopMatrix(); // arm done
+  // Start Robot arm
+  robotarm.draw(initX + armX, initY + armY, initZ + armZ);
 
   glUseProgram(0);
   glFlush();
