@@ -25,10 +25,8 @@ public:
   Vector4f vm[4];
 
   Matrix4f() {
-  int i;
-
-  reset(0.0);
-    for (i = 0; i < 4; i++) m[i]= (float *) &vm[i]; // can be removed
+    int i;
+    reset(0.0);
   }
 
   Matrix4f(Vector4f v0, Vector4f v1, Vector4f v2, Vector4f v3) {
