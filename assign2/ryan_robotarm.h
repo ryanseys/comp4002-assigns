@@ -13,6 +13,9 @@ GLfloat CUBE_WIDTH = 0.5;
 GLfloat CUBE_HEIGHT = 0.5;
 GLfloat CUBE_DEPTH = 0.5;
 GLfloat SPHERE_RADIUS = 0.25;
+GLfloat SPHERE_SLICES = 24;
+GLfloat SPHERE_STACKS = 24;
+
 class RobotArm {
 protected:
   GLfloat arm5YawAngle;
@@ -27,18 +30,17 @@ protected:
   SolidCube * arm5;
 
 public:
-  RobotArm()
-    : arm1(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)),
-      arm2(new SolidSphere(SPHERE_RADIUS, 24, 24)),
-      arm3(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)),
-      arm4(new SolidSphere(SPHERE_RADIUS, 24, 24)),
-      arm5(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)) {
+  RobotArm():
+    arm1(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)),
+    arm2(new SolidSphere(SPHERE_RADIUS, SPHERE_SLICES, SPHERE_STACKS)),
+    arm3(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)),
+    arm4(new SolidSphere(SPHERE_RADIUS, SPHERE_SLICES, SPHERE_STACKS)),
+    arm5(new SolidCube(CUBE_WIDTH, CUBE_HEIGHT, CUBE_DEPTH)) {
     arm5YawAngle = 0.0;
     arm3YawAngle = 0.0;
     arm1YawAngle = 0.0;
     arm2PitchAngle = 0.0;
     arm4PitchAngle = 0.0;
-
   }
 
   void draw(GLfloat x, GLfloat y, GLfloat z) {
