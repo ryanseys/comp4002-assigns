@@ -79,7 +79,7 @@ public:
    */
   static Matrix4f scale(float scaleX, float scaleY, float scaleZ) {
     Matrix4f m1;
-    identity();
+    m1 = identity();
     m1.vm[0].x = scaleX;
     m1.vm[1].y = scaleY;
     m1.vm[2].z = scaleZ;
