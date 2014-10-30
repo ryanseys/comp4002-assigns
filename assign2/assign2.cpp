@@ -13,10 +13,10 @@
 #include <GL/glut.h>
 #endif
 #include <cmath>
-#include <stdio.h>
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
 #include "ryan_camera.h"
+#include <stdio.h>
 
 GLdouble initX = 100.0;
 GLdouble initY = 10.0;
@@ -31,6 +31,8 @@ GLdouble objZ = -1.1;
 GLdouble armX = -1.0;
 GLdouble armY = 0.0;
 GLdouble armZ = 1.1;
+
+GLint robotPartSelected = -1; // nothing initially selected
 
 Camera cam;
 
@@ -78,6 +80,26 @@ void drawGrid() {
  */
 void keyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
+    case '1': {
+      robotPartSelected = 1;
+      break;
+    }
+    case '2': {
+      robotPartSelected = 2;
+      break;
+    }
+    case '3': {
+      robotPartSelected = 3;
+      break;
+    }
+    case '4': {
+      robotPartSelected = 4;
+      break;
+    }
+    case '5': {
+      robotPartSelected = 5;
+      break;
+    }
     case 'i': {
       objX -= delta;
       break;
@@ -228,7 +250,7 @@ int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
-  glutCreateWindow("COMP 4002 - Assignment 2 - Ryan");
+  glutCreateWindow("COMP 4002 - Assignment 2 - Ryan Seys");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
