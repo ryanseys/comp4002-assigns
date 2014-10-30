@@ -175,14 +175,31 @@ void display() {
   glPopMatrix();
 
   // Robot arm
-  glPushMatrix();
+  glPushMatrix(); // arm start
   glTranslatef(initX + armX, initY + armY, initZ + armZ);
-  arm1.draw(0.0, 0.0, 0.0);
-  arm2.draw(0.25, 0.75, 0.25, 0.0);
+
+  glPushMatrix(); // apply arm 5 yaw
+  arm5.draw(0.0, 0.0, 0.0);
+
+  glPushMatrix(); // apply arm 4 pitch
+  arm4.draw(0.25, 0.75, 0.25, 0.0);
+
+  glPushMatrix(); // apply arm 3 yaw
   arm3.draw(0.0, 2.0, 0.0);
-  arm4.draw(0.25, 1.75, 0.25, 0.0);
-  arm5.draw(0.0, 4.0, 0.0);
-  glPopMatrix();
+
+  glPushMatrix(); // apply arm 2 pitch
+
+  arm2.draw(0.25, 1.75, 0.25, 0.0);
+  glPushMatrix(); // apply arm 1 yaw
+
+  arm1.draw(0.0, 4.0, 0.0);
+  glPopMatrix(); // arm 1 done
+  glPopMatrix(); // arm 2 done
+  glPopMatrix(); // arm 3 done
+  glPopMatrix(); // arm 4 done
+  glPopMatrix(); // arm 5 done
+
+  glPopMatrix(); // arm done
 
   glUseProgram(0);
   glFlush();
