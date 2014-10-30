@@ -48,10 +48,7 @@ public:
     glTranslatef(x, y, z);
 
     // start arm 5
-    glPushMatrix(); // apply arm 5 yaw
-    glTranslatef(CUBE_WIDTH/2, 0.0, CUBE_DEPTH/2); // half of the cube width and height
-    glRotatef(arm5YawAngle += 1.0, 0.0, 1.0, 0.0);
-    glTranslatef(-(CUBE_WIDTH/2), 0.0, -(CUBE_DEPTH/2)); // inverse transformation
+    arm5->rotate(arm5YawAngle += 1.0);
     arm5->draw(0.0, 4.0, 0.0);
 
     // start arm 4
@@ -65,9 +62,7 @@ public:
     // start arm 3
     glPushMatrix();
     // apply arm 3 yaw
-    glTranslatef(CUBE_WIDTH/2, 0.0, CUBE_DEPTH/2); // half of the cube width and height
-    glRotatef(arm3YawAngle += 1.0, 0.0, 1.0, 0.0);
-    glTranslatef(-(CUBE_WIDTH/2), 0.0, -(CUBE_DEPTH/2)); // inverse transformation
+    arm3->rotate(arm3YawAngle += 1.0);
     arm3->draw(0.0, 2.0, 0.0);
 
     glPushMatrix();
@@ -75,9 +70,7 @@ public:
     arm2->draw(0.25, 0.75, 0.25, 0.0);
     glPushMatrix(); // apply arm 1 yaw
 
-    glTranslatef(CUBE_WIDTH/2, 0.0, CUBE_DEPTH/2); // half of the cube width and height
-    glRotatef(arm1YawAngle += 1.0, 0.0, 1.0, 0.0);
-    glTranslatef(-(CUBE_WIDTH/2), 0.0, -(CUBE_DEPTH/2)); // inverse transformation
+    arm1->rotate(arm1YawAngle += 1.0);
     arm1->draw(0.0, 0.0, 0.0);
 
     glPopMatrix(); // arm 1 done

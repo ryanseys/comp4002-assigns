@@ -29,6 +29,16 @@ public:
     depth = d;
   }
 
+  /**
+   * Rotate cube around the y-axis
+   * @param degrees Number of degrees to rotate
+   */
+  void rotate(GLfloat degrees) {
+    glTranslatef(width/2, 0.0, depth/2); // half of the cube width and height
+    glRotatef(degrees, 0.0, 1.0, 0.0);
+    glTranslatef(-(width/2), 0.0, -(depth/2)); // inverse transformation
+  }
+
   void draw(GLfloat x, GLfloat y, GLfloat z) {
     glPushMatrix();
     glScalef(width, height, depth);
