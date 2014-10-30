@@ -86,22 +86,34 @@ public:
     return m1;
   }
 
-  // set the matrix as a pitch rotation matrix
-  // if degree is true (!=0) then angle is given in degrees
-  // otherwise angle is given in radians
+  /**
+   * Set the matrix as a pitch rotation matrix
+   * if degree is true (!=0) then angle is given in degrees
+   * otherwise angle is given in radians.
+   *
+   * @param  angle  angle provided
+   * @param  degree if true, angle provided is degrees
+   * @return        The rotation matrix.
+   */
   static Matrix4f rotateX(float angle, int degree) {
     Matrix4f m1;
     if (degree) angle = DegreeToRadians(angle);
     m1 = identity();
-    m1.vm[1].y = m1.vm[2].z=cos(angle);
+    m1.vm[1].y = m1.vm[2].z = cos(angle);
     m1.vm[1].z = -sin(angle);
     m1.vm[2].y = -m1.vm[1].z;
     return(m1);
   }
 
-  // set the matrix as a yaw rotation matrix
-  // if degree is true (!=0) then angle is given in degrees
-  // otherwise angle is given in radians
+  /**
+   * Set the matrix as a yaw rotation matrix
+   * if degree is true (!=0) then angle is given in degrees
+   * otherwise angle is given in radians.
+   *
+   * @param  angle  angle provided
+   * @param  degree if true, angle provided is degrees
+   * @return        The rotation matrix.
+   */
   static Matrix4f rotateY(float angle, int degree) {
     Matrix4f m1;
     if (degree) angle = DegreeToRadians(angle);
@@ -112,9 +124,15 @@ public:
     return(m1);
   }
 
-  // set the matrix as a roll rotation matrix
-  // if degree is true (!=0) then angle is given in degrees
-  // otherwise angle is given in radians
+  /**
+   * Set the matrix as a roll rotation matrix
+   * if degree is true (!=0) then angle is given in degrees
+   * otherwise angle is given in radians.
+   *
+   * @param  angle  angle provided
+   * @param  degree if true, angle provided is degrees
+   * @return        The rotation matrix.
+   */
   static Matrix4f rotateZ(float angle, int degree) {
     Matrix4f m1;
     if (degree) angle = DegreeToRadians(angle);
@@ -138,9 +156,16 @@ public:
     return(m1);
   }
 
-  // set the matrix as a rotation around a vector where only a rotation vector is given
-  // if degree is true (!=0) then all angles are given in degrees
-  // otherwise angle is given in radians
+  /**
+   * Set the matrix as a rotation around a vector where only a rotation vector
+   * is given if degree is true (!=0) then all angles are given in degrees
+   * otherwise angle is given in radians.
+   *
+   * @param  Vector3f [description]
+   * @param  angle    [description]
+   * @param  degree   [description]
+   * @return          [description]
+   */
   static Matrix4f rotateVector(Vector3f, float angle, int degree) {
     Matrix4f m1;
     m1 = identity();
@@ -150,9 +175,16 @@ public:
     return(m1);
   }
 
-  // set the matrix as a rotation around a vector where only a rotation vector is given
-  // if degree is true (!=0) then all angles are given in degrees
-  // otherwise angle is given in radians
+  /**
+   * set the matrix as a rotation around a vector where only a rotation vector
+   * is given if degree is true (!=0) then all angles are given in degrees
+   * otherwise angle is given in radians.
+   *
+   * @param  u      [description]
+   * @param  angle  [description]
+   * @param  degree [description]
+   * @return        [description]
+   */
   static Matrix4f rotateVector(Vector4f u, float angle, int degree) {
     Matrix4f m1;
     Vector3f v = Vector3f(u.x, u.y, u.z);
