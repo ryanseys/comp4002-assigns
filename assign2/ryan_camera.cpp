@@ -6,19 +6,29 @@
 
 #include "stdlib.h"
 #include "stdio.h"
+
+#ifdef __APPLE_CC__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 #include "ryan_camera.h"
 
 /**
  * Camera constructor
  */
-camera::camera(void): position(50.0,150.0,50.0), lookAtVector(100.0,0.0,100.0), upVector(0.0,1.0,0.0), speed(0) {
-  // construct the camera
+Camera::Camera(void) {
+  Vector3f position(50.0,150.0,50.0);
+  Vector3f lookAtVector(100.0,0.0,100.0);
+  Vector3f upVector(0.0,1.0,0.0);
+  speed = 0;
 }
 
 /**
  * camera destructor
  */
-camera::~camera(void) {
+Camera::~Camera(void) {
   // destruct the camera
 }
 
@@ -28,7 +38,7 @@ camera::~camera(void) {
  * @param  angleDeg degrees to transform
  * @return          1 - if failed 0 - if successful
  */
-int camera::roll(float angleDeg) {
+int Camera::roll(float angleDeg) {
   Vector3f rotVector(0.0,0.0,0.0);
 
   // Example code
@@ -45,7 +55,7 @@ int camera::roll(float angleDeg) {
  * @param  angleDeg degrees to transform
  * @return          1 - if failed 0 - if successful
  */
-int camera::pitch(float angleDeg) {
+int Camera::pitch(float angleDeg) {
   Vector3f rotVector(0.0,0.0,0.0);
 
   // get rotation axis
@@ -61,7 +71,7 @@ int camera::pitch(float angleDeg) {
  * @param  angleDeg degrees to transform
  * @return          1 - if failed 0 - if successful
  */
-int camera::yaw(float angleDeg) {
+int Camera::yaw(float angleDeg) {
   Vector3f rotVector(0.0,0.0,0.0);
 
   // TODO: ADD CODE
@@ -74,7 +84,7 @@ int camera::yaw(float angleDeg) {
  *
  * @return  Camera current position.
  */
-Vector3f camera::getPosition(void) {
+Vector3f Camera::getPosition(void) {
   return (position);
 }
 
@@ -83,7 +93,7 @@ Vector3f camera::getPosition(void) {
  *
  * @return camera lookAt point
  */
-Vector3f camera::getLookAtPoint(void) {
+Vector3f Camera::getLookAtPoint(void) {
   return (position + lookAtVector);
 }
 
@@ -92,7 +102,7 @@ Vector3f camera::getLookAtPoint(void) {
  *
  * @return  Camera upVector.
  */
-Vector3f camera::getUpVector(void) {
+Vector3f Camera::getUpVector(void) {
   return (upVector);
 }
 
@@ -103,7 +113,7 @@ Vector3f camera::getUpVector(void) {
  * @param  dz [description]
  * @return    0 - success
  */
-int camera::changePoitionDelta(float dx, float dy, float dz) {
+int Camera::changePositionDelta(float dx, float dy, float dz) {
   position.x += dx;
   position.y += dy;
   position.z += dz;
@@ -116,7 +126,7 @@ int camera::changePoitionDelta(float dx, float dy, float dz) {
  * @param  dv [description]
  * @return    0 - success
  */
-int camera::changePositionDelta(Vector3f *dv) {
+int Camera::changePositionDelta(Vector3f *dv) {
   // TODO
   return 0;
 }
@@ -129,7 +139,7 @@ int camera::changePositionDelta(Vector3f *dv) {
  * @param  z [description]
  * @return   0 - success.
  */
-int camera::changeAbsPoition(float x, float y, float z) {
+int Camera::changeAbsPosition(float x, float y, float z) {
   // TODO
   return 0;
 }
@@ -139,7 +149,7 @@ int camera::changeAbsPoition(float x, float y, float z) {
  * @param  v [description]
  * @return   0 - success
  */
-int camera::changeAbsPosition(D3DXVECTOR3 *v) {
+int Camera::changeAbsPosition(Vector3f *v) {
   // TODO
   return 0;
 }
@@ -151,7 +161,7 @@ int camera::changeAbsPosition(D3DXVECTOR3 *v) {
  * @param  numUnits [description]
  * @return          The new position.
  */
-Vector3f camera::moveForward(float numUnits) {
+Vector3f Camera::moveForward(float numUnits) {
   // TODO: Add Code
 
   return (position);
@@ -164,7 +174,7 @@ Vector3f camera::moveForward(float numUnits) {
  * @param  angleRad  [description]
  * @return           [description]
  */
-int camera::updateOrientation(D3DXVECTOR3 rotVector, float angleRad) {
+int Camera::updateOrientation(Vector3f rotVector, float angleRad) {
 
   // TODO: Add Code
 
@@ -183,7 +193,7 @@ int camera::updateOrientation(D3DXVECTOR3 rotVector, float angleRad) {
  *
  * @return The transformation matrix
  */
-Matrix4f * camera::getViewMatrix() {
+Matrix4f Camera::getViewMatrix() {
   Matrix4f m1;
 
   // TODO: Add Code
@@ -197,13 +207,29 @@ Matrix4f * camera::getViewMatrix() {
  * @param lookAtPoint [description]
  * @param upVector    [description]
  */
-void camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVector) {
+void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVector) {
   this->position = position;
   this->lookAtVector = lookAtPoint - position;
   this->upVector = upVector;
-  this->upVector.noralize();
-  this->lookAtVector.normalze();
+  this->upVector.normalize();
+  this->lookAtVector.normalize();
+
+  gluLookAt(
+    position.x,
+    position.y,
+    position.z,
+    lookAtPoint.x,
+    lookAtPoint.y,
+    lookAtPoint.z,
+    upVector.x,
+    upVector.y,
+    upVector.z
+  );
 }
+
+// void Camera::refresh() {
+
+// }
 
 /**
  * Change the speed of the camera motion.
@@ -211,11 +237,11 @@ void camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVecto
  * @param  speed Speed of the camera
  * @return       0 - success
  */
-int camera::updateSpeed(float speed) {
+int Camera::updateSpeed(float speed) {
   this->speed += speed;
   return 0;
 }
 
-float camera::getSpeed(void) {
+float Camera::getSpeed(void) {
   return(speed);
 }

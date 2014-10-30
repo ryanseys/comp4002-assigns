@@ -137,10 +137,10 @@ struct Vector3f {
   }
 
   // prints the vector
-  friend std::ostream& operator << (std::ostream& os, const Vector3f& v) {
-    os <<"("<<v.x <<", "<<  v.y <<", "<< v.z<<")";
-    return(os);
-  }
+  // friend std::ostream& operator << (std::ostream& os, const Vector3f& v) {
+  //   os <<"("<<v.x <<", "<<  v.y <<", "<< v.z<<")";
+  //   return(os);
+  // }
 
 };
 
@@ -173,31 +173,31 @@ inline Vector3f operator/(const Vector3f& l, float f) {
 
 */
 
-inline float dot(const Vector3f& u, const Vector3f& v) {
-  return(u.x * v.x + u.y*v.y + u.z*v.z);
-}
+// inline float dot(const Vector3f& u, const Vector3f& v) {
+//   return(u.x * v.x + u.y*v.y + u.z*v.z);
+// }
 
-inline float length(const Vector3f& u) {
-  return(sqrt(dot(u,u)));
-  ;
-}
+// inline float length(const Vector3f& u) {
+//   return(sqrt(dot(u,u)));
+//   ;
+// }
 
-Vector3f normalize(const Vector3f& u) {
-  float len = length(u);
-  return(u/len);
-}
+// Vector3f normalize(const Vector3f& u) {
+//   float len = length(u);
+//   return(u/len);
+// }
 
-Vector3f cross(const Vector3f& u,  const Vector3f& v) {
-  Vector3f vv;
-  vv.x =u.y*v.z-v.y*u.z;
-  vv.y=-1*(u.x*v.z-v.x*u.z);
-  vv.z =u.x*v.y-v.x*u.y;
-  return(Vector3f(u.y*v.z-v.y*u.z, -1*(u.x*v.z-v.x*u.z), u.x*v.y-v.x*u.y));
-}
+// Vector3f cross(const Vector3f& u,  const Vector3f& v) {
+//   Vector3f vv;
+//   vv.x =u.y*v.z-v.y*u.z;
+//   vv.y=-1*(u.x*v.z-v.x*u.z);
+//   vv.z =u.x*v.y-v.x*u.y;
+//   return(Vector3f(u.y*v.z-v.y*u.z, -1*(u.x*v.z-v.x*u.z), u.x*v.y-v.x*u.y));
+// }
 
-float cross_value_value(const Vector3f& u,  const Vector3f& v) {
-  return(u.y*v.z-v.y*u.z + -1*(u.x*v.z-v.x*u.z) + u.x*v.y-v.x*u.y);
-}
+// float cross_value_value(const Vector3f& u,  const Vector3f& v) {
+//   return(u.y*v.z-v.y*u.z + -1*(u.x*v.z-v.x*u.z) + u.x*v.y-v.x*u.y);
+// }
 
 struct Vector4f {
   float x;
@@ -207,11 +207,14 @@ struct Vector4f {
 
   // constructors
   Vector4f() {
-
+    x = 0;
+    y = 0;
+    z = 0;
+    w = 0;
   }
 
   Vector4f(float f) {
-    x= y= z= w=f;
+    x = y = z = w = f;
   }
 
   Vector4f(float x, float y, float z, float w) {
@@ -317,36 +320,36 @@ struct Vector4f {
   }
 
   // prints the vector
-  friend std::ostream& operator << (std::ostream& os, const Vector4f& v) {
-    os <<"("<<v.x <<", "<<  v.y <<", "<< v.z <<", "<< v.w <<")";
-    return(os);
-  }
+  // friend std::ostream& operator << (std::ostream& os, const Vector4f& v) {
+  //   os <<"("<<v.x <<", "<<  v.y <<", "<< v.z <<", "<< v.w <<")";
+  //   return(os);
+  // }
 };
 
 inline float dot(const Vector4f& u, const Vector4f& v) {
   return(u.x * v.x + u.y*v.y + u.z*v.z + u.w*v.w);
 }
 
-inline float length(const Vector4f& u) {
-  return(sqrt(dot(u,u)));
-}
+// inline float length(const Vector4f& u) {
+//   return(sqrt(dot(u,u)));
+// }
 
-Vector4f normalize(const Vector4f& u) {
-  float len = length(u);
-  return(u/len);
-}
+// Vector4f normalize(const Vector4f& u) {
+//   float len = length(u);
+//   return(u/len);
+// }
 
-Vector3f cross(const Vector4f& u,  const Vector4f& v) {
-  Vector3f vv;
-  vv.x =u.y*v.z-v.y*u.z;
-  vv.y=-1*(u.x*v.z-v.x*u.z);
-  vv.z =u.x*v.y-v.x*u.y;
-  return(Vector3f(u.y*v.z-v.y*u.z, -1*(u.x*v.z-v.x*u.z), u.x*v.y-v.x*u.y));
-}
+// Vector3f cross(const Vector4f& u,  const Vector4f& v) {
+//   Vector3f vv;
+//   vv.x =u.y*v.z-v.y*u.z;
+//   vv.y=-1*(u.x*v.z-v.x*u.z);
+//   vv.z =u.x*v.y-v.x*u.y;
+//   return(Vector3f(u.y*v.z-v.y*u.z, -1*(u.x*v.z-v.x*u.z), u.x*v.y-v.x*u.y));
+// }
 
-float cross_value_value(const Vector4f& u,  const Vector4f& v) {
-  return(u.y*v.z-v.y*u.z + -1*(u.x*v.z-v.x*u.z) + u.x*v.y-v.x*u.y);
-}
+// float cross_value_value(const Vector4f& u,  const Vector4f& v) {
+//   return(u.y*v.z-v.y*u.z + -1*(u.x*v.z-v.x*u.z) + u.x*v.y-v.x*u.y);
+// }
 
 struct PersProjInfo {
   float FOV;

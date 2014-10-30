@@ -201,13 +201,13 @@ public:
   }
 
   // print the matrix (prints the vectors)
-  friend std::ostream& operator << (std::ostream& os, const Matrix4f& m1) {
-    int i;
-    for (i = 0; i <=3; i++) {
-      os <<m1.vm[i] << std::endl;
-    }
-    return(os);
-  }
+  // friend std::ostream& operator << (std::ostream& os, const Matrix4f& m1) {
+  //   int i;
+  //   for (i = 0; i <=3; i++) {
+  //     os <<m1.vm[i] << std::endl;
+  //   }
+  //   return(os);
+  // }
 
   /**
    * Resets all the values of the matrix to "value".

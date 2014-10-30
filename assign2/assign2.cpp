@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
+#include "ryan_camera.h"
 
 GLdouble initX = 100.0;
 GLdouble initY = 10.0;
@@ -26,6 +27,12 @@ GLdouble delta = 0.1;
 GLdouble objX = 0.0;
 GLdouble objY = 0.0;
 GLdouble objZ = -1.1;
+
+Camera cam;
+
+Vector3f camInitPoint(102.0, 12.0, 102.0);
+Vector3f camLookAtPoint(100.0, 10.0, 100.0);
+Vector3f camUp(0.0, 1.0, 0.0);
 
 GLdouble rotateDelta1 = 0.1; // degrees per frame
 GLdouble rotateDelta2 = 0.2; // degrees per frame
@@ -170,15 +177,13 @@ int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
-  glutCreateWindow("Task 2: Hierarchical Object");
+  glutCreateWindow("COMP 4002 - Assignment 2");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
   glutSpecialFunc(pressSpecialKey);
 
-  // Look from point (102, 12, 102) at point (100, 10, 100)
-  // with the up vector (0, 1, 0)
-  gluLookAt(102,12,102, initX,initY,initZ, 0,1,0);
+  cam.setCamera(camInitPoint, camLookAtPoint, camUp);
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
