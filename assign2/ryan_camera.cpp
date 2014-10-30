@@ -39,27 +39,32 @@ Camera::~Camera(void) {
  * @return          1 - if failed 0 - if successful
  */
 int Camera::roll(float angleDeg) {
-  Vector3f rotVector(0.0,0.0,0.0);
+  // DO NOT DELETE -> use to create updateOrientation method + hints from PDF
+  // Vector3f rotVector(0.0,0.0,0.0);
+  // // Example code
+  // // get rotation axis
+  // rotVector = lookAtVector;
+  // updateOrientation(rotVector, angleDeg);
 
-  // Example code
-  // get rotation axis
-  rotVector = lookAtVector;
+  GLfloat angle = DegreeToRadians(angleDeg);
+  upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
+  rightVector = lookAtVector.cross(upVector);
 
-  updateOrientation(rotVector, angleDeg);
   return 0;
 }
 
 /**
  * Change the orientation of the camera (pitch transformation)
  *
+ * Rotate lookAtVector around the upVector
+ *
  * @param  angleDeg degrees to transform
  * @return          1 - if failed 0 - if successful
  */
 int Camera::pitch(float angleDeg) {
   GLfloat angle = DegreeToRadians(angleDeg);
-  // Rotate lookAtVector around the up vector
+  // calculate the angle between lookAtVector and upVector
   lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
-
   upVector = rightVector.cross(lookAtVector);
 
   return 0;
@@ -85,7 +90,7 @@ int Camera::yaw(float angleDeg) {
  * @return  Camera current position.
  */
 Vector3f Camera::getPosition(void) {
-  return (position);
+  return position;
 }
 
 /**
@@ -103,7 +108,7 @@ Vector3f Camera::getLookAtPoint(void) {
  * @return  Camera upVector.
  */
 Vector3f Camera::getUpVector(void) {
-  return (upVector);
+  return upVector;
 }
 
 /**

@@ -82,6 +82,22 @@ void keyboardFunc(unsigned char key, int x, int y) {
       objX += delta;
       break;
     }
+    case 'a': {
+      // Roll camera counter-clockwise
+      // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
+      // description but it makes more sense when using the keyboard controls.
+      cam.roll(-PITCH_AMT);
+      cam.refresh();
+      break;
+    }
+    case 'd': {
+      // Roll camera counter-clockwise
+      // Yes, this is backward (i.e. PITCH_AMT vs. -PITCH_AMT to the assignment
+      // description but it makes more sense when using the keyboard controls.
+      cam.roll(PITCH_AMT);
+      cam.refresh();
+      break;
+    }
     default: return;
   }
   glutPostRedisplay();
@@ -180,7 +196,7 @@ int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
-  glutCreateWindow("COMP 4002 - Assignment 2");
+  glutCreateWindow("COMP 4002 - Assignment 2 - Ryan");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
