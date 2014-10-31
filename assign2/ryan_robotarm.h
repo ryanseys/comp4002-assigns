@@ -1,3 +1,8 @@
+/**
+ * This robot arm class is developed by Ryan Seys.
+ * It represents a hierarchical robot arm consisting of 5 parts.
+ */
+
 #ifndef RYAN_ROBOTARM
 #define RYAN_ROBOTARM
 #include <stdlib.h>
@@ -6,9 +11,6 @@
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
 #include "ryan_vector.h"
-/**
- * This robot arm class developed by Ryan Seys.
- */
 
 GLfloat CUBE_WIDTH = 0.5;
 GLfloat CUBE_HEIGHT = 0.5;
@@ -64,12 +66,15 @@ public:
     arm3->rotate(arm3YawAngle);
     arm3->draw(0.0, 2.0, 0.0);
 
+    // start arm 2
     glPushMatrix();
     // apply pitch around x-axis
     arm2->pitch(Vector3f(0.25, 0.75, 0.25), Vector3f(1.0, 0.0, 0.0), arm2PitchAngle);
     arm2->draw(0.25, 0.75, 0.25, 0.0);
-    glPushMatrix(); // apply arm 1 yaw
 
+    // start arm 1
+    glPushMatrix();
+    // apply arm 1 yaw
     arm1->rotate(arm1YawAngle);
     arm1->draw(0.0, 0.0, 0.0);
 
