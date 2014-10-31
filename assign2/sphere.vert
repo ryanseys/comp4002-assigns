@@ -14,5 +14,5 @@ void main()
 
   gl_Position = modelViewProjMat * vertex_position;
   fragment_position = vec3(gl_Position);
-  fragment_normal   = modelViewProjMat * vertex_normal;
+  // fragment_normal   = modelViewProjMat * vertex_normal;
 }
