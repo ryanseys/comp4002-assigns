@@ -193,12 +193,12 @@ void display() {
   Matrix4f translateMat = Matrix4f::translation(2.0, 0.0, 0.0);
   // setting up the transformaiton of the object from model coord. system to world coord.
 
-  Matrix4f m = cam->getViewMatrix();
+  Matrix4f m = cam->getViewMatrix() * initTranslateMat;
 
   glUseProgram(shaderProg);
 
-  sphere->drawSphere(shaderProg, m * initTranslateMat);
-  sphereTwo->drawSphere(shaderProg, m * initTranslateMat * translateMat);
+  sphere->drawSphere(shaderProg, m);
+  sphereTwo->drawSphere(shaderProg, m * translateMat);
 
   // viewMat.m = (float *) viewMat.vm;
   // projMat.m = (float *) projMat.vm;
@@ -452,6 +452,8 @@ int main(int argc, char** argv) {
   cam = new Camera(position, lookAtPoint, upVector);
   sphere = new SolidSphere(1.0, 16, 16);
   sphereTwo = new SolidSphere(1.0, 16, 16);
+
+  cam->refresh();
 
   // glutPostRedisplay();
   // glEnable(GL_DEPTH_TEST);
