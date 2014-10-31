@@ -37,6 +37,7 @@ protected:
     GLuint triangleVBO; // Triangle handle that contains triangle indices
     GLuint * ind = NULL;
     int numInd;
+    std::vector<Matrix4f> transformations;
 public:
   // SolidSphere(float radius, unsigned int rings, unsigned int sectors) {
   //   radius = radius;
@@ -177,6 +178,11 @@ public:
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numTriangles*3, ind, GL_STATIC_DRAW);
   }
 
+  void rotateY(GLfloat degrees) {
+    Matrix4f rotateYMat = Matrix4f::rotateY(degrees, true);
+    this->applyTransformation(rotateYMat);
+  }
+
   /**
    * Adjust the pitch of the sphere by some amount
    * @param degrees Degrees to adjust pitch.
@@ -207,7 +213,13 @@ public:
     // glPopMatrix();
   }
 
-  void drawSphere(GLuint shaderProg, Matrix4f matrix) {
+  void drawSphere(GLuint shaderProg) {
+    Matrix4f matrix = Matrix4f::identity();
+    int size = this->transformations.size();
+    for(int i = 0; i < size; i++) {
+      matrix = matrix * this->transformations.at(i);
+    }
+
     GLuint locMat = 0;
     locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
     glUniformMatrix4fv(locMat, 1, 1, (float *) matrix.vm);
@@ -228,6 +240,14 @@ public:
 
     // draw the triangles
     glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+  }
+
+  void applyTransformation(Matrix4f m) {
+    this->transformations.push_back(m);
+  }
+
+  void clear() {
+    this->transformations.clear();
   }
 };
 

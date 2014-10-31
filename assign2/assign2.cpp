@@ -67,8 +67,9 @@ GLint timerMs = 20;
 
 // Robot arm
 // RobotArm robotarm;
-SolidSphere * sphere;
-SolidSphere * sphereTwo;
+SolidSphere * sphere1;
+SolidSphere * sphere2;
+SolidSphere * sphere3;
 
 /**
  * Draw a grid.
@@ -172,9 +173,9 @@ GLfloat deg2 = 0.0;
  */
 void display() {
   glEnable(GL_DEPTH_TEST);
-  glClearColor(0.0,0.0,0,1);
+  glClearColor(0.0, 0.0, 0,1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-  glClearColor(1.0,0.0,0,1);
+  glClearColor(1.0, 0.0, 0, 1);
 
   // Matrix4f viewMat, projMat, modelMat;
 
@@ -186,15 +187,29 @@ void display() {
   // Matrix4f rotateMat = Matrix4f::rotateY(deg += 5.0, true);
   // Matrix4f rotateMat2 = Matrix4f::rotateY(deg2 -= 5.0, true);
   // Matrix4f translateMat = Matrix4f::scale(1.5, 0.0, 0);
-  Matrix4f translateMat = Matrix4f::translation(2.0, 0.0, 0.0);
+  Matrix4f transSph1 = Matrix4f::translation(1.0, 0.0, 0.0);
+  // Matrix4f transSph2 = Matrix4f::translation(2.0, 0.0, 2.0);
   // setting up the transformaiton of the object from model coord. system to world coord.
 
   Matrix4f m = cam->getViewMatrix() * initTranslateMat;
 
   glUseProgram(shaderProg);
 
-  sphere->drawSphere(shaderProg, m);
-  sphereTwo->drawSphere(shaderProg, m * translateMat);
+  sphere1->applyTransformation(m);
+  sphere1->rotateY(sphere1Rotate += 5);
+
+  sphere2->applyTransformation(m);
+  sphere2->applyTransformation(transSph1);
+  sphere2->rotateY(sphere2Rotate -= 5);
+
+  // draw them spheres, applying all transformations
+  sphere1->drawSphere(shaderProg);
+  sphere2->drawSphere(shaderProg);
+  // sphere2->drawSphere(shaderProg);
+
+  sphere1->clear();
+  sphere2->clear();
+  sphere3->clear();
 
   // viewMat.m = (float *) viewMat.vm;
   // projMat.m = (float *) projMat.vm;
@@ -242,7 +257,7 @@ void reshape(GLint w, GLint h) {
   glLoadIdentity();
 
   /** Fovy, aspect, zNear, zFar */
-  gluPerspective(60.0, (GLfloat)w/(GLfloat)h, 1.0, 1000.0);
+  // gluPerspective(60.0, (GLfloat)w/(GLfloat)h, 1.0, 1000.0);
   // reset the current matrix mode to GL_MODELVIEW to be used in display
   glMatrixMode(GL_MODELVIEW);
 }
@@ -419,7 +434,6 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
   *numVtx1 = numVtx;
   *numInd1 = numTriangles*3;
 
-
   return(0);
 err:
   return(rc);
@@ -442,12 +456,13 @@ int main(int argc, char** argv) {
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
   cam = new Camera(position, lookAtPoint, upVector);
-  sphere = new SolidSphere(1.0, 16, 16);
-  sphereTwo = new SolidSphere(1.0, 16, 16);
+  sphere1 = new SolidSphere(1.0, 16, 16);
+  sphere2 = new SolidSphere(1.0, 16, 16);
+  sphere3 = new SolidSphere(1.0, 16, 16);
 
-  // glutPostRedisplay();
-  // glEnable(GL_DEPTH_TEST);
-  // glutTimerFunc(1, renderTick, 1);
+  glutPostRedisplay();
+  glEnable(GL_DEPTH_TEST);
+  glutTimerFunc(1, renderTick, 1);
   glutMainLoop();
   return 0;
 }
