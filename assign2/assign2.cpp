@@ -187,17 +187,16 @@ void display() {
 
   // the next three lines of code mimic a camera.
   // the lines should be replaced with camera position
-  // Vector3f position (102, 12, 102);
-  // Vector3f lookAtPoint(100, 10, 100);
-  // Vector3f upVector(0, 1, 0);
-  Vector3f position (10, 10, 10);
-  Vector3f lookAtPoint(0, 0, 0);
+  Vector3f position (103, 13, 103);
+  Vector3f lookAtPoint(100, 10, 100);
   Vector3f upVector(0, 1, 0);
+
+  Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
 
   Matrix4f rotateMat = Matrix4f::rotateY(deg += 5.0, true);
   Matrix4f rotateMat2 = Matrix4f::rotateY(deg2 -= 5.0, true);
   // Matrix4f translateMat = Matrix4f::scale(1.5, 0.0, 0);
-  Matrix4f translateMat = Matrix4f::translation(2.0, 0.0, 0.0);
+  // Matrix4f translateMat = Matrix4f::translation(2.0, 0.0, 0.0);
   // setting up the transformaiton of the object from model coord. system to world coord.
   modelMat = Matrix4f::identity();
 
@@ -205,14 +204,14 @@ void display() {
   viewMat = Matrix4f::cameraMatrix(position, lookAtPoint, upVector);
 
   // setting up the projection transformation
-  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, .1, 1000);
+  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
 
   Matrix4f m = projMat * viewMat * modelMat;
 
   glUseProgram(shaderProg);
 
-  sphere->drawSphere(shaderProg, m * rotateMat);
-  sphereTwo->drawSphere(shaderProg, m * translateMat);
+  sphere->drawSphere(shaderProg, m * initTranslateMat * rotateMat);
+  sphereTwo->drawSphere(shaderProg, m * initTranslateMat);
 
   // viewMat.m = (float *) viewMat.vm;
   // projMat.m = (float *) projMat.vm;
