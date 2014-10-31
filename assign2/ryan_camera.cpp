@@ -34,6 +34,8 @@ Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
   viewMat = Matrix4f::cameraMatrix(this->position, this->lookAtVector, this->upVector);
   // setting up the projection transformation
   projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
+
+  this->refresh();
 }
 
 /**

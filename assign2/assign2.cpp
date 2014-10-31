@@ -445,8 +445,6 @@ int main(int argc, char** argv) {
   sphere = new SolidSphere(1.0, 16, 16);
   sphereTwo = new SolidSphere(1.0, 16, 16);
 
-  cam->refresh();
-
   // glutPostRedisplay();
   // glEnable(GL_DEPTH_TEST);
   // glutTimerFunc(1, renderTick, 1);
