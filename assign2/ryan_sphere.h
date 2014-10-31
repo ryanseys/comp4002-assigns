@@ -33,6 +33,9 @@ protected:
     GLfloat radius;
     struct sphereVertex * vtx = NULL;
     GLuint sphereVBO;   // Vertex handle that contains interleaved positions and colors
+    GLuint triangleVBO; // Triangle handle that contains triangle indices
+    GLuint * ind = NULL;
+    int numInd;
 public:
   SolidSphere(float radius, unsigned int rings, unsigned int sectors) {
     radius = radius;
@@ -82,7 +85,7 @@ public:
     }
   }
 
-  SolidSphere(int numLong, int numLat, float radius, GLuint **ind, int *numInd1) {
+  SolidSphere(int numLong, int numLat, float radius, float wat) {
     int rc = 0;
     int i,j,k;
     float alpha = 0.0;  // angle of latitude starting from the "south pole" at angle -90
@@ -91,6 +94,7 @@ public:
     float deltaBeta;
     int numRows;
     int numCols;
+    numInd = 0;
 
     numRows = numLat*2;  // number of horizonal slabs
     numCols = numLong;  // number of vertical slabs
@@ -108,7 +112,7 @@ public:
       printf("Oops! An error occurred\n");
     }
 
-    *ind = (GLuint *) malloc(sizeof(GLuint) * numTriangles * 3);
+    ind = (GLuint *) malloc(sizeof(GLuint) * numTriangles * 3);
     if (ind == NULL) {
       // error
       rc = 1;
@@ -120,7 +124,7 @@ public:
     alpha = 0.0;  // angle of latitude starting from the "south pole"
     deltaAlpha = (float)90.0 / numLat; // increment of alpha
     beta = 0;   // angle of the longtidute
-      deltaBeta = (float)360.0/(numLong); // increment of beta
+    deltaBeta = (float)360.0/(numLong); // increment of beta
 
     for(i = 0, alpha = -90; i <= numRows; i++ ,alpha += deltaAlpha) {
       for(j = 0, beta = 0; j <= numCols; j++, beta += deltaBeta) {
@@ -148,25 +152,28 @@ public:
       {
         // fill indices for the quad
         // change by making a quad function
-        (*ind)[k] = i * (numCols+1) + j;
-        (*ind)[k+1] = i * (numCols+1) + j + 1;
-        (*ind)[k+2] = (i+1) * (numCols+1) + j + 1;
+        (ind)[k] = i * (numCols+1) + j;
+        (ind)[k+1] = i * (numCols+1) + j + 1;
+        (ind)[k+2] = (i+1) * (numCols+1) + j + 1;
 
         k +=3;
-        (*ind)[k] = i * (numCols+1) + j;
-        (*ind)[k+1] = (i+1) * (numCols+1) + j + 1;
-        (*ind)[k+2] = (i+1) * (numCols+1) + j;
+        (ind)[k] = i * (numCols+1) + j;
+        (ind)[k+1] = (i+1) * (numCols+1) + j + 1;
+        (ind)[k+2] = (i+1) * (numCols+1) + j;
 
         k+=3;
       }
     }
 
     // *numVtx1 = numVtx;
-    *numInd1 = numTriangles*3;
+    numInd = numTriangles*3;
 
     glGenBuffers(1, &sphereVBO);
     glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
+    glGenBuffers(1, &triangleVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numTriangles*3, ind, GL_STATIC_DRAW);
   }
 
   /**
@@ -199,7 +206,7 @@ public:
     glPopMatrix();
   }
 
-  void drawSphere(GLuint shaderProg, GLuint triangleVBO) {
+  void drawSphere(GLuint shaderProg) {
     GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
     GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
     glEnableVertexAttribArray(positionLoc);

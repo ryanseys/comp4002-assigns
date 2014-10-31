@@ -26,12 +26,7 @@
 
 
 
-GLuint triangleVBO; // Triangle handle that contains triangle indices
 
-
-int numVtx = 0;
-GLuint *ind = NULL;
-int numInd = 0;
 int scalex = 1, scaley=1, scalez=1;
 
 GLdouble initX = 100.0;
@@ -99,9 +94,7 @@ void InitVBO() {
 
 
   //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
-  glGenBuffers(1, &triangleVBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numInd, ind, GL_STATIC_DRAW);
+
 }
 
 /**
@@ -230,7 +223,7 @@ void display() {
   glUniformMatrix4fv(locMat, 1, 1, (float *)m.vm);
 
   // bind the buffers to the shaders
-  sphere->drawSphere(shaderProg, triangleVBO);
+  sphere->drawSphere(shaderProg);
 
   // draw some grid lines and regular sphere from task 1
   // glPushMatrix();
@@ -480,7 +473,7 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
-  sphere = new SolidSphere(16, 8, 1, &ind, &numInd);
+  sphere = new SolidSphere(16, 8, 1, 0.0);
   InitVBO();
 
   // cam.setCamera(camInitPoint, camLookAtPoint, camUp);
