@@ -59,11 +59,11 @@ int Camera::roll(float angleDeg) {
 
   GLfloat angle = DegreeToRadians(angleDeg);
   // calculate the angle between upVector and rightVector for roll amount
-  upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
+  this->upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
   // update rightVector for new upVector
-  rightVector = Vector3f::cross(upVector, lookAtVector);
+  this->rightVector = Vector3f::cross(upVector, lookAtVector);
 
-  this->setCamera(position, lookAtVector, upVector);
+  this->refresh();
 
   return 0;
 }
@@ -83,7 +83,7 @@ int Camera::pitch(float angleDeg) {
   // update upVector for the new lookAtVector
   upVector = Vector3f::cross(rightVector, lookAtVector);
 
-  this->setCamera(position, lookAtVector, upVector);
+  this->refresh();
 
   return 0;
 }
@@ -101,7 +101,7 @@ int Camera::yaw(float angleDeg) {
   // update right angle for new lookAtVector
   rightVector = Vector3f::cross(lookAtVector, upVector);
 
-  this->setCamera(position, lookAtVector, upVector);
+  this->refresh();
 
   return 0;
 }

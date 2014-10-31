@@ -130,7 +130,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
       cam->roll(-PITCH_AMT);
-      cam->refresh();
       break;
     }
     case 'd': {
@@ -138,19 +137,16 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Yes, this is backward (i.e. PITCH_AMT vs. -PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
       cam->roll(PITCH_AMT);
-      cam->refresh();
       break;
     }
     case 'w': {
       // Move camera forward along lookAtVector
       cam->moveForward(FORWARD_AMT);
-      cam->refresh();
       break;
     }
     case 's': {
       // Move camera backward along lookAtVector
       cam->moveForward(-FORWARD_AMT);
-      cam->refresh();
       break;
     }
     case 'z': {
@@ -265,22 +261,18 @@ void pressSpecialKey(int key, int xx, int yy) {
   switch (key) {
     case GLUT_KEY_UP: {
       cam->pitch(PITCH_AMT);
-      cam->refresh();
       break;
     }
     case GLUT_KEY_DOWN: {
       cam->pitch(-PITCH_AMT);
-      cam->refresh();
       break;
     }
     case GLUT_KEY_RIGHT: {
       cam->yaw(YAW_AMT);
-      cam->refresh();
       break;
     }
     case GLUT_KEY_LEFT: {
       cam->yaw(-YAW_AMT);
-      cam->refresh();
       break;
     }
   }
