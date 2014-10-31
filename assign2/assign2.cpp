@@ -75,6 +75,7 @@ SolidCube cube(2.5, 1.0, 1.0);
 
 // Robot arm
 RobotArm robotarm;
+SolidSphere * sphere;
 
 /**
  * Draw a grid.
@@ -238,22 +239,7 @@ void display() {
   glUniformMatrix4fv(locMat, 1, 1, (float *)m.vm);
 
   // bind the buffers to the shaders
-  GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
-  GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
-  glEnableVertexAttribArray(positionLoc);
-  glEnableVertexAttribArray(normalLoc);
-  glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
-
-  // Tells OpenGL how to walk through the two VBOs
-  struct sphereVertex v;
-  int relAddress = (char *) v.pos - (char *) &v;
-  glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
-  relAddress = (char *) v.normal - (char *) &v;
-  glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
-
-  // draw the triangles
-  glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+  sphere->drawSphere(shaderProg, sphereVBO, triangleVBO);
 
   // draw some grid lines and regular sphere from task 1
   // glPushMatrix();
@@ -503,7 +489,7 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
-  SolidSphere sphere(16, 8, 1, &vtx, &numVtx, &ind, &numInd);
+  sphere = new SolidSphere(16, 8, 1, &vtx, &numVtx, &ind, &numInd);
   InitVBO();
 
   // cam.setCamera(camInitPoint, camLookAtPoint, camUp);

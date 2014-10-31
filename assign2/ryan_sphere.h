@@ -193,6 +193,25 @@ public:
     glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
     glPopMatrix();
   }
+
+  void drawSphere(GLuint shaderProg, GLuint sphereVBO, GLuint triangleVBO) {
+    GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
+    GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
+    glEnableVertexAttribArray(positionLoc);
+    glEnableVertexAttribArray(normalLoc);
+    glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
+
+    // Tells OpenGL how to walk through the two VBOs
+    struct sphereVertex v;
+    int relAddress = (char *) v.pos - (char *) &v;
+    glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+    relAddress = (char *) v.normal - (char *) &v;
+    glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+
+    // draw the triangles
+    glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+  }
 };
 
 #endif
