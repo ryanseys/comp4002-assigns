@@ -63,13 +63,13 @@ GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
 
-SolidSphere sphere0(0.5, 24, 24);
-SolidSphere sphere1(0.5, 24, 24);
-SolidSphere sphere2(0.5, 24, 24);
-SolidCube cube(2.5, 1.0, 1.0);
+// SolidSphere sphere0(0.5, 24, 24);
+// SolidSphere sphere1(0.5, 24, 24);
+// SolidSphere sphere2(0.5, 24, 24);
+// SolidCube cube(2.5, 1.0, 1.0);
 
 // Robot arm
-RobotArm robotarm;
+// RobotArm robotarm;
 SolidSphere * sphere;
 
 /**
@@ -83,18 +83,6 @@ void drawGrid() {
     glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
   }
   glEnd();
-}
-
-/**
- * Initialize the VBO.
- */
-void InitVBO() {
-
-  // Create the vertex handle and copy the data to the GPU memory
-
-
-  //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
-
 }
 
 /**
@@ -169,12 +157,12 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'z': {
       // Rotate robot part +1 degree
-      robotarm.rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
+      // robotarm.rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
       break;
     }
     case 'x': {
       // Rotate robot part -1 degree
-      robotarm.rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
+      // robotarm.rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
       break;
     }
     default: return;
@@ -355,9 +343,6 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
   int numRows;
   int numCols;
 
-
-
-
   numRows = 1;  // number of horizonal slabs
   numCols = numLong;  // number of vertical slabs
 
@@ -473,8 +458,7 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
-  sphere = new SolidSphere(16, 8, 1, 0.0);
-  InitVBO();
+  sphere = new SolidSphere(1, 16, 16);
 
   // cam.setCamera(camInitPoint, camLookAtPoint, camUp);
   // cam.refresh();
