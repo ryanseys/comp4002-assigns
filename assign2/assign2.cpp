@@ -170,6 +170,8 @@ void keyboardFunc(unsigned char key, int x, int y) {
   glutPostRedisplay();
 }
 
+GLfloat deg = 0.0;
+
 /**
  * Rendering the window.
  */
@@ -179,16 +181,18 @@ void display() {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   glClearColor(1.0,0.0,0,1);
 
-  Matrix4f viewMat, projMat, modelMat, m;
+  Matrix4f viewMat, projMat, modelMat;
 
   // the next three lines of code mimic a camera.
   // the lines should be replaced with camera position
   // Vector3f position (102, 12, 102);
   // Vector3f lookAtPoint(100, 10, 100);
   // Vector3f upVector(0, 1, 0);
-  Vector3f position (10,10,10);
-  Vector3f lookAtPoint(0,0,0);
-  Vector3f upVector(0,1,0);
+  Vector3f position (10, 10, 10);
+  Vector3f lookAtPoint(0, 0, 0);
+  Vector3f upVector(0, 1, 0);
+
+  Matrix4f rotateMat = Matrix4f::rotateY(deg += 5.0, true);
 
   // setting up the transformaiton of the object from model coord. system to world coord.
   modelMat = Matrix4f::identity();
@@ -197,18 +201,18 @@ void display() {
   viewMat = Matrix4f::cameraMatrix(position, lookAtPoint, upVector);
 
   // setting up the projection transformation
-  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(30, 800.0/600.0, .1, 100);
+  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(30, 800.0/600.0, .1, 1000);
 
-  m = projMat * viewMat * modelMat;
+  Matrix4f m = projMat * viewMat * modelMat * rotateMat;
 
   glUseProgram(shaderProg);
 
-  viewMat.m = (float *) viewMat.vm;
-  projMat.m = (float *) projMat.vm;
+  // viewMat.m = (float *) viewMat.vm;
+  // projMat.m = (float *) projMat.vm;
 
   GLuint locMat = 0;
   locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
-  glUniformMatrix4fv(locMat, 1, 1, (float *)m.vm);
+  glUniformMatrix4fv(locMat, 1, 1, (float *) m.vm);
 
   // bind the buffers to the shaders
   sphere->drawSphere(shaderProg);
@@ -458,7 +462,7 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
-  sphere = new SolidSphere(1, 16, 16);
+  sphere = new SolidSphere(1.0, 16, 16);
 
   // cam.setCamera(camInitPoint, camLookAtPoint, camUp);
   // cam.refresh();

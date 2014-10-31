@@ -9,8 +9,8 @@ uniform mat4 modelViewProjMat;
 
 void main()
 {
-  fragment_position = vec3(vertex_position);
-  fragment_normal   = vertex_normal;
+  // fragment_position = vec3(vertex_position);
+  // fragment_normal   = vertex_normal;
 
   gl_Position = modelViewProjMat * vertex_position;
   fragment_position = vec3(gl_Position);
