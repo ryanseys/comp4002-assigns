@@ -25,30 +25,14 @@
 #include "ryan_robotarm.h"
 
 
-
-struct sphereVertex {
-  float pos[4];
-  float normal[4];  // the average normal
-  short numFaces;   // number of faces shared by the vertex
-  long colora;    // ambient colour - change to a colour structure
-    long colord;        // diffuse color    - change to a colour structure
-  long colors;    // specular colour  - change to a colour structure
-
-};
-
-GLuint vertex_handle;   // Vertex handle that contains interleaved positions and colors
-GLuint triangle_handle; // Triangle handle that contains triangle indices
+GLuint sphereVBO;   // Vertex handle that contains interleaved positions and colors
+GLuint triangleVBO; // Triangle handle that contains triangle indices
 
 struct sphereVertex *vtx = NULL;
 int numVtx = 0;
 GLuint *ind = NULL;
 int numInd = 0;
 int scalex = 1, scaley=1, scalez=1;
-
-int numTriangles;
-
-int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) ;
-int createCylinder(int numLong, float radius, float height, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) ;
 
 GLdouble initX = 100.0;
 GLdouble initY = 10.0;
@@ -112,18 +96,19 @@ void InitVBO() {
   int rc = 0;
 
   // Create the vertex handle and copy the data to the GPU memory
-  glGenBuffers(1, &vertex_handle);
+  glGenBuffers(1, &sphereVBO);
+  glGenBuffers(1, &triangleVBO);
   rc = glGetError();
   if (rc != GL_NO_ERROR) {
     printf("error in attach shaders \n");
   }
 
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
+  glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
 
   //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
-  glGenBuffers(1, &triangle_handle);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numInd, ind, GL_STATIC_DRAW);
 }
 
@@ -257,8 +242,8 @@ void display() {
   GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
   glEnableVertexAttribArray(positionLoc);
   glEnableVertexAttribArray(normalLoc);
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
+  glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
 
   // Tells OpenGL how to walk through the two VBOs
   struct sphereVertex v;
@@ -351,108 +336,6 @@ void pressSpecialKey(int key, int xx, int yy) {
   }
   glutPostRedisplay();
 }
-
-int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1)
-
-{
-  int rc = 0;
-  int i,j,k;
-  float alpha = 0.0;  // angle of latitude starting from the "south pole" at angle -90
-  float beta = 0.0;   // angle of longtitude in the rage of 0-360
-  float deltaAlpha;
-  float deltaBeta;
-  int numRows;
-  int numCols;
-
-  //int numTriangles;
-
-
-
-  numRows = numLat*2;  // number of horizonal slabs
-  numCols = numLong;  // number of vertical slabs
-
-  int numVtx = (numRows+1) * (numCols+1);   // define only the north hemisphere
-
-  int numQuads = numRows * numCols;
-  numTriangles = numQuads * 2;
-
-  // allocate memory
-  *vtx = (struct sphereVertex *) malloc(sizeof(struct sphereVertex) * numVtx);
-  if (vtx == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  *ind = (GLuint *) malloc(sizeof(GLuint) * numTriangles * 3);
-  if (ind == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  // Fill the vertex buffer with positions
-  k = 0;
-  alpha = 0.0;  // angle of latitude starting from the "south pole"
-  deltaAlpha = (float)90.0 / numLat; // increment of alpha
-  beta = 0;   // angle of the longtidute
-    deltaBeta = (float)360.0/(numLong); // increment of beta
-
-  for(i = 0, alpha = -90; i <= numRows; i++ ,alpha += deltaAlpha) {
-    for(j = 0, beta = 0; j <= numCols; j++, beta += deltaBeta) {
-      (*vtx)[k].normal[2] = sin(DegreeToRadians(alpha));  // z coordinate
-      (*vtx)[k].normal[0] = cos(DegreeToRadians(alpha))*cos(DegreeToRadians(beta));   // x coordinate
-      (*vtx)[k].normal[1] = cos(DegreeToRadians(alpha))*sin(DegreeToRadians(beta)); // y coordinate
-      (*vtx)[k].normal[3] = 0.0;
-      struct sphereVertex v;
-      v = (*vtx)[k];
-
-      // position in space
-      (*vtx)[k].pos[0]  = (*vtx)[k].normal[0] * radius;
-      (*vtx)[k].pos[1]  = (*vtx)[k].normal[1] * radius;
-      (*vtx)[k].pos[2]  = (*vtx)[k].normal[2] * radius;
-      (*vtx)[k].pos[3]  = 1.0;
-      k++;
-    }
-  }
-
-
-
-
-  // fill the index buffer
-
-  k = 0;
-  for(i = 0; i < numRows; i++) {
-    for(j = 0; j < numCols; j++)
-    {
-      // fill indices for the quad
-      // change by making a quad function
-      (*ind)[k] = i * (numCols+1) + j;
-      (*ind)[k+1] = i * (numCols+1) + j + 1;
-      (*ind)[k+2] = (i+1) * (numCols+1) + j + 1;
-
-      k +=3;
-      (*ind)[k] = i * (numCols+1) + j;
-      (*ind)[k+1] = (i+1) * (numCols+1) + j + 1;
-      (*ind)[k+2] = (i+1) * (numCols+1) + j;
-
-      k+=3;
-    }
-  }
-
-
-
-
-
-  *numVtx1 = numVtx;
-  *numInd1 = numTriangles*3;
-
-
-  return(0);
-err:
-  return(rc);
-}
-
 
 
 /**************************************************************************************/
@@ -618,10 +501,10 @@ int main(int argc, char** argv) {
   glutKeyboardFunc(keyboardFunc);
   glutSpecialFunc(pressSpecialKey);
 
-  createSphere(16, 8, 1, &vtx, &numVtx, &ind, &numInd);
-  InitVBO();
-
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
+
+  SolidSphere sphere(16, 8, 1, &vtx, &numVtx, &ind, &numInd);
+  InitVBO();
 
   // cam.setCamera(camInitPoint, camLookAtPoint, camUp);
   // cam.refresh();
