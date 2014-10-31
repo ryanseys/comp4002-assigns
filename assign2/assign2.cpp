@@ -24,11 +24,6 @@
 #include "ryan_matrix.h"
 #include "ryan_robotarm.h"
 
-
-
-
-int scalex = 1, scaley=1, scalez=1;
-
 GLdouble initX = 100.0;
 GLdouble initY = 10.0;
 GLdouble initZ = 100.0;
@@ -46,16 +41,18 @@ GLdouble armZ = 1.1;
 GLint robotPartSelected = -1; // nothing initially selected
 GLfloat ROBOT_ROTATE_DEG = 1.0;
 
-Camera cam;
 GLuint shaderProg;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
-Vector3f camInitPoint(102.0, 12.0, 102.0);
-Vector3f camLookAtPoint(100.0, 10.0, 100.0);
-Vector3f camUp(0.0, 1.0, 0.0);
+Vector3f position (103, 13, 103);
+Vector3f lookAtPoint(100, 10, 100);
+Vector3f upVector(0, 1, 0);
+
+// initialize camera
+Camera * cam;
 
 GLdouble rotateDelta1 = 0.1; // degrees per frame
 GLdouble rotateDelta2 = 0.2; // degrees per frame
@@ -132,28 +129,28 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam.roll(-PITCH_AMT);
-      cam.refresh();
+      cam->roll(-PITCH_AMT);
+      cam->refresh();
       break;
     }
     case 'd': {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. PITCH_AMT vs. -PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam.roll(PITCH_AMT);
-      cam.refresh();
+      cam->roll(PITCH_AMT);
+      cam->refresh();
       break;
     }
     case 'w': {
       // Move camera forward along lookAtVector
-      cam.moveForward(FORWARD_AMT);
-      cam.refresh();
+      cam->moveForward(FORWARD_AMT);
+      cam->refresh();
       break;
     }
     case 's': {
       // Move camera backward along lookAtVector
-      cam.moveForward(-FORWARD_AMT);
-      cam.refresh();
+      cam->moveForward(-FORWARD_AMT);
+      cam->refresh();
       break;
     }
     case 'z': {
@@ -183,43 +180,30 @@ void display() {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   glClearColor(1.0,0.0,0,1);
 
-  Matrix4f viewMat, projMat, modelMat;
+  // Matrix4f viewMat, projMat, modelMat;
 
   // the next three lines of code mimic a camera.
   // the lines should be replaced with camera position
-  Vector3f position (103, 13, 103);
-  Vector3f lookAtPoint(100, 10, 100);
-  Vector3f upVector(0, 1, 0);
 
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
 
-  Matrix4f rotateMat = Matrix4f::rotateY(deg += 5.0, true);
-  Matrix4f rotateMat2 = Matrix4f::rotateY(deg2 -= 5.0, true);
+  // Matrix4f rotateMat = Matrix4f::rotateY(deg += 5.0, true);
+  // Matrix4f rotateMat2 = Matrix4f::rotateY(deg2 -= 5.0, true);
   // Matrix4f translateMat = Matrix4f::scale(1.5, 0.0, 0);
-  // Matrix4f translateMat = Matrix4f::translation(2.0, 0.0, 0.0);
+  Matrix4f translateMat = Matrix4f::translation(2.0, 0.0, 0.0);
   // setting up the transformaiton of the object from model coord. system to world coord.
-  modelMat = Matrix4f::identity();
 
-  // setting up the viewpoint transformation
-  viewMat = Matrix4f::cameraMatrix(position, lookAtPoint, upVector);
-
-  // setting up the projection transformation
-  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
-
-  Matrix4f m = projMat * viewMat * modelMat;
+  Matrix4f m = cam->getViewMatrix();
 
   glUseProgram(shaderProg);
 
-  sphere->drawSphere(shaderProg, m * initTranslateMat * rotateMat);
-  sphereTwo->drawSphere(shaderProg, m * initTranslateMat);
+  sphere->drawSphere(shaderProg, m * initTranslateMat);
+  sphereTwo->drawSphere(shaderProg, m * initTranslateMat * translateMat);
 
   // viewMat.m = (float *) viewMat.vm;
   // projMat.m = (float *) projMat.vm;
 
-
-
   // bind the buffers to the shaders
-
 
   // draw some grid lines and regular sphere from task 1
   // glPushMatrix();
@@ -280,23 +264,23 @@ void renderTick(int value) {
 void pressSpecialKey(int key, int xx, int yy) {
   switch (key) {
     case GLUT_KEY_UP: {
-      cam.pitch(PITCH_AMT);
-      cam.refresh();
+      cam->pitch(PITCH_AMT);
+      cam->refresh();
       break;
     }
     case GLUT_KEY_DOWN: {
-      cam.pitch(-PITCH_AMT);
-      cam.refresh();
+      cam->pitch(-PITCH_AMT);
+      cam->refresh();
       break;
     }
     case GLUT_KEY_RIGHT: {
-      cam.yaw(YAW_AMT);
-      cam.refresh();
+      cam->yaw(YAW_AMT);
+      cam->refresh();
       break;
     }
     case GLUT_KEY_LEFT: {
-      cam.yaw(-YAW_AMT);
-      cam.refresh();
+      cam->yaw(-YAW_AMT);
+      cam->refresh();
       break;
     }
   }
@@ -440,7 +424,6 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
       k +=3;
   }
 
-
   *numVtx1 = numVtx;
   *numInd1 = numTriangles*3;
 
@@ -466,11 +449,9 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
+  cam = new Camera(position, lookAtPoint, upVector);
   sphere = new SolidSphere(1.0, 16, 16);
   sphereTwo = new SolidSphere(1.0, 16, 16);
-
-  // cam.setCamera(camInitPoint, camLookAtPoint, camUp);
-  // cam.refresh();
 
   // glutPostRedisplay();
   // glEnable(GL_DEPTH_TEST);

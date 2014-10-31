@@ -18,11 +18,22 @@
 /**
  * Camera constructor
  */
-Camera::Camera(void) {
-  Vector3f position(0.0, 0.0, 0.0);
-  Vector3f lookAtVector(0.0, 0.0, 0.0);
-  Vector3f upVector(0.0, 0.0, 0.0);
-  speed = 0;
+// Camera::Camera(void) {
+//   modelMat = Matrix4f::identity();
+//   viewMat = Matrix4f::cameraMatrix(Vector3f(10, 10, 10), Vector3f(0.0, 0.0, 0.0), Vector3f(0.0, 1.0, 0.0));
+//   projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
+// }
+
+Camera::Camera(Vector3f posVec, Vector3f lookAtVec, Vector3f upVec) {
+  position = posVec;
+  lookAtVector = lookAtVec;
+  upVector = upVec;
+
+  modelMat = Matrix4f::identity();
+  // setting up the viewpoint transformation
+  viewMat = Matrix4f::cameraMatrix(posVec, lookAtVec, upVec);
+  // setting up the projection transformation
+  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
 }
 
 /**
@@ -205,11 +216,7 @@ int Camera::updateOrientation(Vector3f rotVector, float angleRad) {
  * @return The transformation matrix
  */
 Matrix4f Camera::getViewMatrix() {
-  Matrix4f m1;
-
-  // TODO: Add Code
-
-  return(m1);
+  return projMat * viewMat * modelMat;
 }
 
 /**
