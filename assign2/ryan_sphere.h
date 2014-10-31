@@ -183,6 +183,11 @@ public:
     this->applyTransformation(rotateYMat);
   }
 
+  void translate(GLfloat x, GLfloat y, GLfloat z) {
+    Matrix4f translateZMat = Matrix4f::translation(x, y, z);
+    this->applyTransformation(translateZMat);
+  }
+
   /**
    * Adjust the pitch of the sphere by some amount
    * @param degrees Degrees to adjust pitch.

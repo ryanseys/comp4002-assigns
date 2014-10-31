@@ -67,9 +67,9 @@ GLint timerMs = 20;
 
 // Robot arm
 // RobotArm robotarm;
+SolidSphere * sphere0;
 SolidSphere * sphere1;
 SolidSphere * sphere2;
-SolidSphere * sphere3;
 
 /**
  * Draw a grid.
@@ -177,39 +177,33 @@ void display() {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   glClearColor(1.0, 0.0, 0, 1);
 
-  // Matrix4f viewMat, projMat, modelMat;
-
-  // the next three lines of code mimic a camera.
-  // the lines should be replaced with camera position
-
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
-
-  // Matrix4f rotateMat = Matrix4f::rotateY(deg += 5.0, true);
-  // Matrix4f rotateMat2 = Matrix4f::rotateY(deg2 -= 5.0, true);
-  // Matrix4f translateMat = Matrix4f::scale(1.5, 0.0, 0);
-  Matrix4f transSph1 = Matrix4f::translation(1.0, 0.0, 0.0);
-  // Matrix4f transSph2 = Matrix4f::translation(2.0, 0.0, 2.0);
   // setting up the transformaiton of the object from model coord. system to world coord.
 
   Matrix4f m = cam->getViewMatrix() * initTranslateMat;
 
   glUseProgram(shaderProg);
 
+  sphere0->applyTransformation(m);
+
   sphere1->applyTransformation(m);
+  sphere1->translate(-0.7, 1.0, -1.0);
   sphere1->rotateY(sphere1Rotate += 5);
 
   sphere2->applyTransformation(m);
-  sphere2->applyTransformation(transSph1);
+  sphere2->translate(0.7, 1.0, -1.0);
   sphere2->rotateY(sphere2Rotate -= 5);
 
   // draw them spheres, applying all transformations
+  sphere0->drawSphere(shaderProg);
   sphere1->drawSphere(shaderProg);
   sphere2->drawSphere(shaderProg);
   // sphere2->drawSphere(shaderProg);
 
+  sphere0->clear();
   sphere1->clear();
   sphere2->clear();
-  sphere3->clear();
+
 
   // viewMat.m = (float *) viewMat.vm;
   // projMat.m = (float *) projMat.vm;
@@ -456,9 +450,9 @@ int main(int argc, char** argv) {
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
   cam = new Camera(position, lookAtPoint, upVector);
-  sphere1 = new SolidSphere(1.0, 16, 16);
-  sphere2 = new SolidSphere(1.0, 16, 16);
-  sphere3 = new SolidSphere(1.0, 16, 16);
+  sphere0 = new SolidSphere(0.5, 24, 24);
+  sphere1 = new SolidSphere(0.5, 24, 24);
+  sphere2 = new SolidSphere(0.5, 24, 24);
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
