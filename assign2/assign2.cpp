@@ -25,10 +25,10 @@
 #include "ryan_robotarm.h"
 
 
-GLuint sphereVBO;   // Vertex handle that contains interleaved positions and colors
+
 GLuint triangleVBO; // Triangle handle that contains triangle indices
 
-struct sphereVertex *vtx = NULL;
+
 int numVtx = 0;
 GLuint *ind = NULL;
 int numInd = 0;
@@ -94,21 +94,12 @@ void drawGrid() {
  * Initialize the VBO.
  */
 void InitVBO() {
-  int rc = 0;
 
   // Create the vertex handle and copy the data to the GPU memory
-  glGenBuffers(1, &sphereVBO);
-  glGenBuffers(1, &triangleVBO);
-  rc = glGetError();
-  if (rc != GL_NO_ERROR) {
-    printf("error in attach shaders \n");
-  }
 
-  glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
 
   //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
-
+  glGenBuffers(1, &triangleVBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numInd, ind, GL_STATIC_DRAW);
 }
@@ -239,7 +230,7 @@ void display() {
   glUniformMatrix4fv(locMat, 1, 1, (float *)m.vm);
 
   // bind the buffers to the shaders
-  sphere->drawSphere(shaderProg, sphereVBO, triangleVBO);
+  sphere->drawSphere(shaderProg, triangleVBO);
 
   // draw some grid lines and regular sphere from task 1
   // glPushMatrix();
@@ -489,7 +480,7 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
-  sphere = new SolidSphere(16, 8, 1, &vtx, &numVtx, &ind, &numInd);
+  sphere = new SolidSphere(16, 8, 1, &ind, &numInd);
   InitVBO();
 
   // cam.setCamera(camInitPoint, camLookAtPoint, camUp);

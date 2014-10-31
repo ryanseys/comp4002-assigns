@@ -31,7 +31,8 @@ protected:
     std::vector<GLushort> indices;
     std::vector<GLfloat> colors; // added colors
     GLfloat radius;
-
+    struct sphereVertex * vtx = NULL;
+    GLuint sphereVBO;   // Vertex handle that contains interleaved positions and colors
 public:
   SolidSphere(float radius, unsigned int rings, unsigned int sectors) {
     radius = radius;
@@ -81,7 +82,7 @@ public:
     }
   }
 
-  SolidSphere(int numLong, int numLat, float radius, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) {
+  SolidSphere(int numLong, int numLat, float radius, GLuint **ind, int *numInd1) {
     int rc = 0;
     int i,j,k;
     float alpha = 0.0;  // angle of latitude starting from the "south pole" at angle -90
@@ -100,7 +101,7 @@ public:
     numTriangles = numQuads * 2;
 
     // allocate memory
-    *vtx = (struct sphereVertex *) malloc(sizeof(struct sphereVertex) * numVtx);
+    vtx = (struct sphereVertex *) malloc(sizeof(struct sphereVertex) * numVtx);
     if (vtx == NULL) {
       // error
       rc = 1;
@@ -123,18 +124,18 @@ public:
 
     for(i = 0, alpha = -90; i <= numRows; i++ ,alpha += deltaAlpha) {
       for(j = 0, beta = 0; j <= numCols; j++, beta += deltaBeta) {
-        (*vtx)[k].normal[2] = sin(DegreeToRadians(alpha));  // z coordinate
-        (*vtx)[k].normal[0] = cos(DegreeToRadians(alpha))*cos(DegreeToRadians(beta));   // x coordinate
-        (*vtx)[k].normal[1] = cos(DegreeToRadians(alpha))*sin(DegreeToRadians(beta)); // y coordinate
-        (*vtx)[k].normal[3] = 0.0;
+        (vtx)[k].normal[2] = sin(DegreeToRadians(alpha));  // z coordinate
+        (vtx)[k].normal[0] = cos(DegreeToRadians(alpha))*cos(DegreeToRadians(beta));   // x coordinate
+        (vtx)[k].normal[1] = cos(DegreeToRadians(alpha))*sin(DegreeToRadians(beta)); // y coordinate
+        (vtx)[k].normal[3] = 0.0;
         struct sphereVertex v;
-        v = (*vtx)[k];
+        v = (vtx)[k];
 
         // position in space
-        (*vtx)[k].pos[0]  = (*vtx)[k].normal[0] * radius;
-        (*vtx)[k].pos[1]  = (*vtx)[k].normal[1] * radius;
-        (*vtx)[k].pos[2]  = (*vtx)[k].normal[2] * radius;
-        (*vtx)[k].pos[3]  = 1.0;
+        (vtx)[k].pos[0]  = (vtx)[k].normal[0] * radius;
+        (vtx)[k].pos[1]  = (vtx)[k].normal[1] * radius;
+        (vtx)[k].pos[2]  = (vtx)[k].normal[2] * radius;
+        (vtx)[k].pos[3]  = 1.0;
         k++;
       }
     }
@@ -160,8 +161,12 @@ public:
       }
     }
 
-    *numVtx1 = numVtx;
+    // *numVtx1 = numVtx;
     *numInd1 = numTriangles*3;
+
+    glGenBuffers(1, &sphereVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
   }
 
   /**
@@ -194,7 +199,7 @@ public:
     glPopMatrix();
   }
 
-  void drawSphere(GLuint shaderProg, GLuint sphereVBO, GLuint triangleVBO) {
+  void drawSphere(GLuint shaderProg, GLuint triangleVBO) {
     GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
     GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
     glEnableVertexAttribArray(positionLoc);
