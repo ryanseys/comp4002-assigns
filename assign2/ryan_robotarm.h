@@ -5,6 +5,7 @@
 #include <cmath>
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
+#include "ryan_vector.h"
 /**
  * This robot arm class developed by Ryan Seys.
  */
@@ -53,10 +54,8 @@ public:
 
     // start arm 4
     glPushMatrix();
-    // TODO: apply arm 4 pitch
-    // glTranslatef(0.0, -1.75, 0.0);
-    // glRotatef(arm4PitchAngle += 1.0, 0.0, 0.0, 0.0);
-    // glTranslatef(0.0, 1.75, 0.0);
+    // apply pitch around x-axis
+    arm4->pitch(Vector3f(0.25, 1.75, 0.25), Vector3f(1.0, 0.0, 0.0), arm4PitchAngle);
     arm4->draw(0.25, 1.75, 0.25, 0.0);
 
     // start arm 3
@@ -66,7 +65,8 @@ public:
     arm3->draw(0.0, 2.0, 0.0);
 
     glPushMatrix();
-    // TODO: apply arm 2 pitch
+    // apply pitch around x-axis
+    arm2->pitch(Vector3f(0.25, 0.75, 0.25), Vector3f(1.0, 0.0, 0.0), arm2PitchAngle);
     arm2->draw(0.25, 0.75, 0.25, 0.0);
     glPushMatrix(); // apply arm 1 yaw
 
@@ -88,8 +88,16 @@ public:
         arm5YawAngle += degrees;
         break;
       }
+      case 4: {
+        arm4PitchAngle += degrees;
+        break;
+      }
       case 3: {
         arm3YawAngle += degrees;
+        break;
+      }
+      case 2: {
+        arm2PitchAngle += degrees;
         break;
       }
       case 1: {

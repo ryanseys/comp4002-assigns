@@ -59,7 +59,6 @@ SolidSphere sphere2(0.5, 24, 24);
 SolidCube cube(2.5, 1.0, 1.0);
 
 // Robot arm
-//
 RobotArm robotarm;
 
 /**

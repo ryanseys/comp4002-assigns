@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <cmath>
+#include "ryan_vector.h"
 
 /**
  * This sphere class was derived from: http://tinyurl.com/onmhley
@@ -65,6 +66,16 @@ public:
       *i++ = (r+1) * sectors + (s+1);
       *i++ = (r+1) * sectors + s;
     }
+  }
+
+  /**
+   * Adjust the pitch of the sphere by some amount
+   * @param degrees Degrees to adjust pitch.
+   */
+  void pitch(Vector3f position, Vector3f lookAt, GLfloat degrees) {
+    glTranslatef(position.x, position.y, position.z);
+    glRotatef(degrees, lookAt.x, lookAt.y, lookAt.z);
+    glTranslatef(-position.x, -position.y, -position.z);
   }
 
   void draw(GLfloat x, GLfloat y, GLfloat z, GLfloat rotate) {
