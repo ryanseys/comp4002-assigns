@@ -42,6 +42,7 @@ GLint robotPartSelected = -1; // nothing initially selected
 GLfloat ROBOT_ROTATE_DEG = 1.0;
 
 GLuint shaderProg;
+GLuint cubeShaderProg;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
@@ -60,16 +61,12 @@ GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
 
-// SolidSphere sphere0(0.5, 24, 24);
-// SolidSphere sphere1(0.5, 24, 24);
-// SolidSphere sphere2(0.5, 24, 24);
-// SolidCube cube(2.5, 1.0, 1.0);
-
 // Robot arm
 // RobotArm robotarm;
 SolidSphere * sphere0;
 SolidSphere * sphere1;
 SolidSphere * sphere2;
+SolidCube * cube;
 
 /**
  * Draw a grid.
@@ -190,6 +187,9 @@ void display() {
   sphere1->translate(-0.7, 1.0, -1.0);
   sphere1->rotateY(sphere1Rotate += 5);
 
+  cube->applyTransformation(m);
+  cube->translate(0.0, 0.0, 0.0);
+
   sphere2->applyTransformation(m);
   sphere2->translate(0.7, 1.0, -1.0);
   sphere2->rotateY(sphere2Rotate -= 5);
@@ -198,11 +198,14 @@ void display() {
   sphere0->drawSphere(shaderProg);
   sphere1->drawSphere(shaderProg);
   sphere2->drawSphere(shaderProg);
+  cube->draw(shaderProg);
+
   // sphere2->drawSphere(shaderProg);
 
   sphere0->clear();
   sphere1->clear();
   sphere2->clear();
+  cube->clear();
 
 
   // viewMat.m = (float *) viewMat.vm;
@@ -288,156 +291,12 @@ void pressSpecialKey(int key, int xx, int yy) {
   glutPostRedisplay();
 }
 
-
-/**************************************************************************************/
-/* this function creates a cylinder.  The cylinder is genreated using two arrays.  The vertex data array which
-contains the vertex data (geometry) and an index array which contains the topology of the triangles.  The trainagles
-are stored in the index array as a triangle list.
-
-Input
-numLong - number of longitudes lines.  For example if numLong == 10 than the sphere is divided into 10
-of 36 degrees each
-
-
-Radius - the radius of the sphere.  Note, that this is superfluous since it can be achieved by scaling the
-sphere.
-
-height - the height of the cylinder - Note that this is superfluous since it can be achieved by scaling.
-
-Ouptut:
-vtx - a buffer with all the vertex information.  Currently the function computes the position information
-and the normal of each vertex.  Note, the array is allocted by the function.
-
-numVtx1 - returns the number of vertices there were genrated.
-
-ind - a buffer which contains the topology of the triangles.
-
-numInd 1 - the number of entries in the buffer.
-
-Return:
-the function returns 0 is successful.
-
-
-*/
-int createCylinder(int numLong, float radius, float height, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1)
-
-{
-  int rc = 0;
-  int i,j,k;
-  //float rowPos[4] = {0.0,1.0,0.0,1.0};
-  //float colPos[4] = {0.0,1.0,0.0,1.0};
-  //float u[4],v[4],w[4]; // used to cmpute the normals - w is the normal
-  //float rangeMax = 10;
-  //float rangeMin = 0;
-  float alpha = 0.0;  // angle of latitude starting from the "south pole" at angle -90
-  float beta = 0.0;   // angle of longtitude in the rage of 0-360
-  float deltaAlpha;
-  float deltaBeta;
-  int numRows;
-  int numCols;
-
-  numRows = 1;  // number of horizonal slabs
-  numCols = numLong;  // number of vertical slabs
-
-  int numVtx = (numRows+1) * (numCols+1);   // define only the north hemisphere
-
-  int numQuads = numRows * numCols;
-  numTriangles = numQuads * 2 + 2*(numCols-2);   // number of triangles on the wall + number of triangles top and bottom
-
-  // allocate memory
-  *vtx = (struct sphereVertex *) malloc(sizeof(struct sphereVertex) * numVtx);
-  if (vtx == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  *ind = (GLuint *) malloc(sizeof(GLuint) * numTriangles * 3);
-  if (ind == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  // Fill the vertex buffer with positions
-  k = 0;
-  alpha = 0.0;  // angle of latitude starting from the "south pole"
-  deltaAlpha = 90;  // increment of alpha
-  beta = 0;   // angle of the longtidute
-    deltaBeta = 360.0/(numLong);  // increment of beta
-
-  for(i = 0, alpha = -45; i <= numRows; i++ ,alpha += deltaAlpha) {
-    for(j = 0, beta = 0; j <= numCols; j++, beta += deltaBeta) {
-      (*vtx)[k].normal[2] = sin(DegreeToRadians(alpha));  // z coordinate
-      (*vtx)[k].normal[0] = cos(DegreeToRadians(alpha))*cos(DegreeToRadians(beta));   // x coordinate
-      (*vtx)[k].normal[1] = cos(DegreeToRadians(alpha))*sin(DegreeToRadians(beta)); // y coordinate
-      (*vtx)[k].normal[3] = 0.0;
-
-      // position in space
-      (*vtx)[k].pos[0]  = (*vtx)[k].normal[0] * radius;
-      (*vtx)[k].pos[1]  = (*vtx)[k].normal[1] * radius;
-      (*vtx)[k].pos[2]  = (*vtx)[k].normal[2] * radius;
-      (*vtx)[k].pos[3]  = (alpha < 0) ? -height/2.0 : height/.2;
-
-      k++;
-    }
-  }
-
-
-
-  // fill the index buffer of the walls
-
-  k = 0;
-  for(i = 0; i < numRows; i++) {
-    for(j = 0; j < numCols; j++)
-    {
-      // fill indices for the quad
-      (*ind)[k] = i * (numCols+1) + j;
-      (*ind)[k+1] = i * (numCols+1) + j + 1;
-      (*ind)[k+2] = (i+1) * (numCols+1) + j + 1;
-
-      k +=3;
-      (*ind)[k] = i * (numCols+1) + j;
-      (*ind)[k+1] = (i+1) * (numCols+1) + j + 1;
-      (*ind)[k+2] = (i+1) * (numCols+1) + j;
-
-      k+=3;
-    }
-  }
-
-
-  // fill the index buffer of the top plate
-  for (i = 0, j = numCols+2; i < numCols - 2; i++, j++) {
-      // fill indices of the top plate
-      (*ind)[k] = numCols+1;
-      (*ind)[k+1] = j;
-      (*ind)[k+2] = j+1;
-      k +=3;
-  }
-
-
-  // fill the index buffer of the bottom plate
-  for (i = 0, j = 1; i < numCols - 2; i++, j++) {
-      // fill indices of the top plate
-      (*ind)[k] = 0;
-      (*ind)[k+1] = j+1;
-      (*ind)[k+2] = j;
-      k +=3;
-  }
-
-  *numVtx1 = numVtx;
-  *numInd1 = numTriangles*3;
-
-  return(0);
-err:
-  return(rc);
-}
-
 /**
  * Main.
  */
 int main(int argc, char** argv) {
   Shader s;
+  // Shader c;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
@@ -448,11 +307,13 @@ int main(int argc, char** argv) {
   glutSpecialFunc(pressSpecialKey);
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
+  // c.createShaderProgram("cube.vert", "cube.frag", &cubeShaderProg);
 
   cam = new Camera(position, lookAtPoint, upVector);
   sphere0 = new SolidSphere(0.5, 24, 24);
   sphere1 = new SolidSphere(0.5, 24, 24);
   sphere2 = new SolidSphere(0.5, 24, 24);
+  cube = new SolidCube(1.0, 0.5, 0.5);
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
