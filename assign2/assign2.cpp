@@ -604,7 +604,6 @@ err:
   return(rc);
 }
 
-
 /**
  * Main.
  */
@@ -633,4 +632,3 @@ int main(int argc, char** argv) {
   glutMainLoop();
   return 0;
 }
-
