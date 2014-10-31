@@ -196,9 +196,9 @@ public:
     Matrix4f m1;
 
     m1 = identity();
-    m1.vm[0].x = dx;
-    m1.vm[1].y = dy;
-    m1.vm[2].z = dz;
+    m1.vm[0].w = dx;
+    m1.vm[1].w = dy;
+    m1.vm[2].w = dz;
     return(m1);
   }
 

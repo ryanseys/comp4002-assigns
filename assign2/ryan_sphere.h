@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include "ryan_vector.h"
+#include "ryan_matrix.h"
 
 /**
  * This sphere class was derived from: http://tinyurl.com/onmhley
@@ -206,7 +207,11 @@ public:
     // glPopMatrix();
   }
 
-  void drawSphere(GLuint shaderProg) {
+  void drawSphere(GLuint shaderProg, Matrix4f matrix) {
+    GLuint locMat = 0;
+    locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
+    glUniformMatrix4fv(locMat, 1, 1, (float *) matrix.vm);
+
     GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
     GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
     glEnableVertexAttribArray(positionLoc);

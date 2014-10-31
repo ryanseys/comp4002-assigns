@@ -71,6 +71,7 @@ GLint timerMs = 20;
 // Robot arm
 // RobotArm robotarm;
 SolidSphere * sphere;
+SolidSphere * sphereTwo;
 
 /**
  * Draw a grid.
@@ -171,6 +172,7 @@ void keyboardFunc(unsigned char key, int x, int y) {
 }
 
 GLfloat deg = 0.0;
+GLfloat deg2 = 0.0;
 
 /**
  * Rendering the window.
@@ -193,7 +195,9 @@ void display() {
   Vector3f upVector(0, 1, 0);
 
   Matrix4f rotateMat = Matrix4f::rotateY(deg += 5.0, true);
-
+  Matrix4f rotateMat2 = Matrix4f::rotateY(deg2 -= 5.0, true);
+  // Matrix4f translateMat = Matrix4f::scale(1.5, 0.0, 0);
+  Matrix4f translateMat = Matrix4f::translation(2.0, 0.0, 0.0);
   // setting up the transformaiton of the object from model coord. system to world coord.
   modelMat = Matrix4f::identity();
 
@@ -201,21 +205,22 @@ void display() {
   viewMat = Matrix4f::cameraMatrix(position, lookAtPoint, upVector);
 
   // setting up the projection transformation
-  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(30, 800.0/600.0, .1, 1000);
+  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, .1, 1000);
 
-  Matrix4f m = projMat * viewMat * modelMat * rotateMat;
+  Matrix4f m = projMat * viewMat * modelMat;
 
   glUseProgram(shaderProg);
+
+  sphere->drawSphere(shaderProg, m * rotateMat);
+  sphereTwo->drawSphere(shaderProg, m * translateMat);
 
   // viewMat.m = (float *) viewMat.vm;
   // projMat.m = (float *) projMat.vm;
 
-  GLuint locMat = 0;
-  locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
-  glUniformMatrix4fv(locMat, 1, 1, (float *) m.vm);
+
 
   // bind the buffers to the shaders
-  sphere->drawSphere(shaderProg);
+
 
   // draw some grid lines and regular sphere from task 1
   // glPushMatrix();
@@ -463,6 +468,7 @@ int main(int argc, char** argv) {
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
   sphere = new SolidSphere(1.0, 16, 16);
+  sphereTwo = new SolidSphere(1.0, 16, 16);
 
   // cam.setCamera(camInitPoint, camLookAtPoint, camUp);
   // cam.refresh();
