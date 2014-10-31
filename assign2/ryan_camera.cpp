@@ -50,7 +50,7 @@ int Camera::roll(float angleDeg) {
   // calculate the angle between upVector and rightVector for roll amount
   upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
   // update rightVector for new upVector
-  rightVector = lookAtVector.cross(upVector);
+  rightVector = Vector3f::cross(lookAtVector, upVector);
 
   return 0;
 }
@@ -68,7 +68,7 @@ int Camera::pitch(float angleDeg) {
   // calculate the angle between lookAtVector and upVector
   lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
   // update upVector for the new lookAtVector
-  upVector = rightVector.cross(lookAtVector);
+  upVector = Vector3f::cross(rightVector, lookAtVector);
 
   return 0;
 }
@@ -84,7 +84,7 @@ int Camera::yaw(float angleDeg) {
   // calculate angle between lookAtVector and rightVector to get yaw angle
   lookAtVector = (lookAtVector * cos(angle) + rightVector * sin(angle)).normalize();
   // update right angle for new lookAtVector
-  rightVector = lookAtVector.cross(upVector);
+  rightVector = Vector3f::cross(lookAtVector, upVector);
 
   return 0;
 }
@@ -222,7 +222,7 @@ void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVecto
   this->position = position;
   this->lookAtVector = lookAtPoint - position;
   this->upVector = upVector;
-  this->rightVector = lookAtVector.cross(upVector);
+  this->rightVector = Vector3f::cross(lookAtVector, upVector);
   this->upVector.normalize();
   this->lookAtVector.normalize();
   this->rightVector.normalize();

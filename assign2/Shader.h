@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RYAN_SHADER
+#define RYAN_SHADER
 
 // #include <windows.h>
 
@@ -30,3 +31,5 @@ private:
 	GLuint vertShaderid;
 	GLuint fragShaderid;
 };
+
+#endif
