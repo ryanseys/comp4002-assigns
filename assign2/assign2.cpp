@@ -48,7 +48,7 @@ const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
-Vector3f position (107, 17, 107);
+Vector3f position (106, 16, 106);
 Vector3f lookAtPoint(100, 10, 100);
 Vector3f upVector(0, 1, 0);
 

@@ -53,9 +53,6 @@ public:
       armMat = armMat * this->transformations.at(i);
     }
 
-    // glPushMatrix(); // arm start
-    // glTranslatef(x, y, z);
-
     // start arm 5
     Matrix4f arm5Mat = Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm5YawAngle, true);
     arm5->applyTransformation(armMat);
@@ -97,44 +94,6 @@ public:
     arm1->applyTransformation(arm1Mat);
     arm1->draw(shaderProg);
 
-
-    // arm4->applyTransformation(matrix);
-    // arm4->pitch(Vector3f(0.25, 1.75, 0.25), arm4PitchAngle);
-    // // arm4->pitch(, Vector3f(1.0, 0.0, 0.0), arm4PitchAngle);
-    // arm4->translate(0.0, 2.0, 0.0);
-    // arm4->drawSphere(shaderProg);
-
-    // start arm 4
-    // glPushMatrix();
-    // apply pitch around x-axis
-    //
-    // arm4->draw(0.25, 1.75, 0.25, 0.0);
-
-    // start arm 3
-    // glPushMatrix();
-    // apply arm 3 yaw
-    // arm3->rotate(arm3YawAngle);
-    // arm3->draw(0.0, 2.0, 0.0);
-
-    // start arm 2
-    // glPushMatrix();
-    // apply pitch around x-axis
-    // arm2->pitch(Vector3f(0.25, 0.75, 0.25), Vector3f(1.0, 0.0, 0.0), arm2PitchAngle);
-    // arm2->draw(0.25, 0.75, 0.25, 0.0);
-
-    // start arm 1
-    // glPushMatrix();
-    // apply arm 1 yaw
-    // arm1->rotate(arm1YawAngle);
-    // arm1->draw(0.0, 0.0, 0.0);
-
-    // glPopMatrix(); // arm 1 done
-    // glPopMatrix(); // arm 2 done
-    // glPopMatrix(); // arm 3 done
-    // glPopMatrix(); // arm 4 done
-    // glPopMatrix(); // arm 5 done
-
-    // glPopMatrix(); // arm done
     this->clear();
   }
 
