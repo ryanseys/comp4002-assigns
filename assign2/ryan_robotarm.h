@@ -54,44 +54,34 @@ public:
     }
 
     // start arm 5
-    Matrix4f arm5Mat = Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm5YawAngle, true);
-    arm5->applyTransformation(armMat);
+    Matrix4f arm5Mat = armMat*Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm5YawAngle, true);
     arm5->applyTransformation(arm5Mat);
     arm5->applyTransformation(Matrix4f::translation(0.0, 4.0, 0.0));
     arm5->draw(shaderProg);
 
-    Matrix4f arm4Mat = Matrix4f::rotateRollPitchYaw(0.0, arm4PitchAngle, 0.0, true);
-    arm4->applyTransformation(armMat);
-    arm4->applyTransformation(arm5Mat);
-    arm4->applyTransformation(Matrix4f::translation(0.0, 3.0, 0.0));
+    Matrix4f arm4Mat = arm5Mat*Matrix4f::rotateRollPitchYaw(0.0, arm4PitchAngle, 0.0, true);
     arm4->applyTransformation(arm4Mat);
+    arm4->applyTransformation(Matrix4f::translation(0.0, 3.0, 0.0));
     arm4->drawSphere(shaderProg);
 
-    Matrix4f arm3Mat = Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm3YawAngle, true);
-    arm3->applyTransformation(armMat);
-    arm3->applyTransformation(arm5Mat);
-    arm3->applyTransformation(arm4Mat);
-    arm3->applyTransformation(Matrix4f::translation(0.0, 2.0, 0.0));
+    Matrix4f arm3Mat = arm4Mat*Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm3YawAngle, true);
+
+    // arm3->applyTransformation(Matrix4f::translation(0.0, 2.0, 0.0));
     arm3->applyTransformation(arm3Mat);
+    // arm3->applyTransformation(Matrix4f::translation(0.0, -2.0, 0.0));
+    arm3->applyTransformation(Matrix4f::translation(0.0, 2.0, 0.0));
+    // arm3->applyTransformation(arm3Mat);
     arm3->draw(shaderProg);
 
-    Matrix4f arm2Mat = Matrix4f::rotateRollPitchYaw(0.0, arm2PitchAngle, 0.0, true);
-    arm2->applyTransformation(armMat);
-    arm2->applyTransformation(arm5Mat);
-    arm2->applyTransformation(arm4Mat);
-    arm2->applyTransformation(arm3Mat);
-    arm2->applyTransformation(Matrix4f::translation(0.0, 1.0, 0.0));
+    Matrix4f arm2Mat = arm3Mat*Matrix4f::rotateRollPitchYaw(0.0, arm2PitchAngle, 0.0, true);
     arm2->applyTransformation(arm2Mat);
+    arm2->applyTransformation(Matrix4f::translation(0.0, 1.0, 0.0));
     arm2->drawSphere(shaderProg);
 
-    Matrix4f arm1Mat = Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm1YawAngle, true);
-    arm1->applyTransformation(armMat);
-    arm1->applyTransformation(arm5Mat);
-    arm1->applyTransformation(arm4Mat);
-    arm1->applyTransformation(arm3Mat);
-    arm1->applyTransformation(arm2Mat);
-    arm1->applyTransformation(Matrix4f::translation(0.0, 0.0, 0.0));
+    Matrix4f arm1Mat = arm2Mat*Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm1YawAngle, true);
     arm1->applyTransformation(arm1Mat);
+    arm1->applyTransformation(Matrix4f::translation(0.0, 0.0, 0.0));
+    // arm1->applyTransformation(arm1Mat);
     arm1->draw(shaderProg);
 
     this->clear();
