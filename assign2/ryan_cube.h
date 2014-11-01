@@ -158,7 +158,6 @@ public:
 
   void draw(GLuint shaderProg) {
     Matrix4f matrix = Matrix4f::identity();
-    // matrix = matrix * Matrix4f::scale(width, height, depth);
     int size = this->transformations.size();
     for(int i = 0; i < size; i++) {
       matrix = matrix * this->transformations.at(i);

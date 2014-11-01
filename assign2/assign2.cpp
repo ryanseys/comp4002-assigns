@@ -32,7 +32,7 @@ GLdouble delta = 0.1;
 // translate entire scene to (100,10,100)
 GLdouble objX = 0.0;
 GLdouble objY = 0.0;
-GLdouble objZ = -1.1;
+GLdouble objZ = 0.0;
 
 GLdouble armX = -1.0;
 GLdouble armY = 0.0;
@@ -183,16 +183,24 @@ void display() {
 
   sphere0->applyTransformation(m);
 
+  Matrix4f translateObjMat = Matrix4f::translation(objX, objY, objZ);
+
   sphere1->applyTransformation(m);
   sphere1->translate(-0.7, 1.0, -1.0);
+  sphere1->applyTransformation(translateObjMat);
   sphere1->rotateY(sphere1Rotate += 5);
 
   sphere2->applyTransformation(m);
   sphere2->translate(0.7, 1.0, -1.0);
+  sphere2->applyTransformation(translateObjMat);
   sphere2->rotateY(sphere2Rotate -= 5);
 
   cube->applyTransformation(m);
-  cube->translate(objX, objY, objZ);
+  cube->applyTransformation(translateObjMat);
+  cube->applyTransformation(Matrix4f::scale(1.5, 0.5, 1.0));
+  cube->translate(-0.25, -0.25, -1.6);
+  // cube->applyTransformation(translateObjMat);
+
 
   // draw them spheres, applying all transformations
   sphere0->drawSphere(shaderProg);
