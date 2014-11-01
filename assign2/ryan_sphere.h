@@ -1,3 +1,10 @@
+/**
+ * This sphere class was derived from Professor Nussbaum's solution.
+ *
+ * It was modified by Ryan Seys to add colors to the spheres and
+ * rotation transformation.
+ */
+
 #ifndef RYAN_SPHERE
 #define RYAN_SPHERE
 #include <stdlib.h>
@@ -5,13 +12,6 @@
 #include <cmath>
 #include "ryan_vector.h"
 #include "ryan_matrix.h"
-
-/**
- * This sphere class was derived from: http://tinyurl.com/onmhley
- *
- * It was modified by Ryan Seys to add colors to the spheres and
- * rotation transformation.
- */
 
 int numTriangles;
 
@@ -26,11 +26,6 @@ struct sphereVertex {
 
 class SolidSphere {
 protected:
-    std::vector<GLfloat> vertices;
-    std::vector<GLfloat> normals;
-    std::vector<GLfloat> texcoords;
-    std::vector<GLushort> indices;
-    std::vector<GLfloat> colors; // added colors
     GLfloat radius;
     struct sphereVertex * vtx = NULL;
     GLuint sphereVBO;   // Vertex handle that contains interleaved positions and colors
@@ -43,7 +38,7 @@ public:
   SolidSphere(GLfloat radius, GLuint numLong, GLuint numLat) {
     this->radius = radius;
     int rc = 0;
-    int i,j,k;
+    int i, j, k;
     float alpha = 0.0;  // angle of latitude starting from the "south pole" at angle -90
     float beta = 0.0;   // angle of longtitude in the rage of 0-360
     float deltaAlpha;
@@ -51,12 +46,10 @@ public:
     int numRows;
     int numCols;
     numInd = 0;
-
     numRows = numLat*2;  // number of horizonal slabs
     numCols = numLong;  // number of vertical slabs
 
     int numVtx = (numRows+1) * (numCols+1);   // define only the north hemisphere
-
     int numQuads = numRows * numCols;
     numTriangles = numQuads * 2;
 
@@ -101,11 +94,9 @@ public:
     }
 
     // fill the index buffer
-
     k = 0;
     for(i = 0; i < numRows; i++) {
-      for(j = 0; j < numCols; j++)
-      {
+      for(j = 0; j < numCols; j++) {
         // fill indices for the quad
         // change by making a quad function
         (ind)[k] = i * (numCols+1) + j;
@@ -132,11 +123,23 @@ public:
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numTriangles*3, ind, GL_STATIC_DRAW);
   }
 
+  /**
+   * Rotate the sphere around the y-axis.
+   *
+   * @param degrees Degrees to rotate it.
+   */
   void rotateY(GLfloat degrees) {
     Matrix4f rotateYMat = Matrix4f::rotateY(degrees, true);
     this->applyTransformation(rotateYMat);
   }
 
+  /**
+   * Translate the sphere.
+   *
+   * @param x translation on x-axis
+   * @param y translation on y-axis
+   * @param z translation on z-axis
+   */
   void translate(GLfloat x, GLfloat y, GLfloat z) {
     Matrix4f translateZMat = Matrix4f::translation(x, y, z);
     this->applyTransformation(translateZMat);
@@ -152,26 +155,10 @@ public:
     this->applyTransformation(Matrix4f::translation(-position.x, -position.y, -position.z));
   }
 
-  void draw(GLfloat x, GLfloat y, GLfloat z, GLfloat rotate) {
-    // glMatrixMode(GL_MODELVIEW);
-    // glPushMatrix();
-    // glTranslatef(x, y, z);
-    // glRotatef(rotate, 0.0, 1.0, 0.0);
-
-    // glEnableClientState(GL_VERTEX_ARRAY);
-    // glEnableClientState(GL_NORMAL_ARRAY);
-    // glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    // glEnableClientState(GL_COLOR_ARRAY);
-
-    // glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
-    // glNormalPointer(GL_FLOAT, 0, &normals[0]);
-    // glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
-    // glColorPointer(3, GL_FLOAT, 0, &colors[0]);
-
-    // glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
-    // glPopMatrix();
-  }
-
+  /**
+   * Draw the sphere using the supplied shaderProgram.
+   * @param shaderProg Shader program to use.
+   */
   void drawSphere(GLuint shaderProg) {
     Matrix4f matrix = Matrix4f::identity();
     int size = this->transformations.size();
