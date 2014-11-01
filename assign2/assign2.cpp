@@ -62,19 +62,6 @@ SolidSphere * sphere2;
 SolidCube * cube;
 
 /**
- * Draw a grid.
- */
-void drawGrid() {
-  glColor3f(0.5, 0.5, 0.5);
-  glBegin(GL_LINES);
-  for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
-    glVertex3f(i, 0, 2.5); glVertex3f(i, 0, -2.5);
-    glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
-  }
-  glEnd();
-}
-
-/**
  * When a regular (not special) key is pressed.
  */
 void keyboardFunc(unsigned char key, int x, int y) {
@@ -154,9 +141,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
   glutPostRedisplay();
 }
 
-GLfloat deg = 0.0;
-GLfloat deg2 = 0.0;
-
 /**
  * Rendering the window.
  */
@@ -205,12 +189,12 @@ void display() {
 }
 
 /**
- * When the window reshapes to a new size
+ * When the window reshapes to a new size, you must update the camera.
+ *
  * @param w the window new width
  * @param h the window new height
  */
 void reshape(GLint w, GLint h) {
-  glViewport(0, 0, w, h);
   cam->reshape(w, h);
 }
 
@@ -262,9 +246,6 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
-  // For Task 3.
-  cam = new Camera(position, lookAtPoint, upVector);
-
   // For Task 1.
   sphere0 = new SolidSphere(0.75, 24, 24);
 
@@ -272,6 +253,9 @@ int main(int argc, char** argv) {
   cube = new SolidCube(1.0, 0.5, 0.5);
   sphere1 = new SolidSphere(0.75, 24, 24);
   sphere2 = new SolidSphere(0.75, 24, 24);
+
+  // For Task 3.
+  cam = new Camera(position, lookAtPoint, upVector);
 
   // Robot arm for Task 4 (Bonus)
   robotarm = new RobotArm();
