@@ -53,7 +53,7 @@ public:
       armMat = armMat * this->transformations.at(i);
     }
 
-    // start arm 5
+    // Hierarchical transformation of arm pieces
     Matrix4f arm5Mat = armMat*Matrix4f::translation(0.0, 4.0, 0.0)*Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm5YawAngle, true);
     arm5->applyTransformation(arm5Mat);
     arm5->draw(shaderProg);
