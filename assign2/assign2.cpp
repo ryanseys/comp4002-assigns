@@ -48,11 +48,11 @@ Vector3f upVector(0, 1, 0);
 // initialize camera
 Camera * cam;
 
-GLdouble rotateDelta1 = 0.1; // degrees per frame
-GLdouble rotateDelta2 = 0.2; // degrees per frame
+GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
+GLdouble rotateDelta2 = 0.2; // Rotate second sphere 0.2 degrees per frame
 GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
-GLint timerMs = 20;
+GLint timerMs = 1;
 
 // Robot arm
 RobotArm * robotarm;
@@ -162,12 +162,12 @@ void display() {
   sphere1->applyTransformation(worldMat);
   sphere1->translate(-0.7, 1.0, -1.25);
   sphere1->applyTransformation(objMat);
-  sphere1->rotateY(sphere1Rotate += 5);
+  sphere1->rotateY(sphere1Rotate);
 
   sphere2->applyTransformation(worldMat);
   sphere2->translate(0.7, 1.0, -1.25);
   sphere2->applyTransformation(objMat);
-  sphere2->rotateY(sphere2Rotate -= 5);
+  sphere2->rotateY(sphere2Rotate);
 
   cube->applyTransformation(worldMat);
   cube->applyTransformation(objMat);
