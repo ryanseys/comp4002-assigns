@@ -8,5 +8,5 @@ a1t2:
 	g++ -w assign1part2/assign1part2.cpp -o assign1part2/a1t2.out -framework OpenGL -framework GLUT && cd assign1part2 && ./a1t2.out
 
 a2:
-	g++ -w assign2/assign2.cpp assign2/ryan_camera.cpp -o assign2/a2.out -framework OpenGL -framework GLUT && cd assign2 && ./a2.out
+	g++ -w assign2/assign2.cpp assign2/Shader.cpp assign2/ryan_camera.cpp  -o assign2/a2.out -framework OpenGL -framework GLUT && cd assign2 && ./a2.out
 

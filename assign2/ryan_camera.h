@@ -15,10 +15,14 @@ public:
   Vector3f upVector;
   Vector3f lookAtVector;
   Vector3f rightVector;
+  Matrix4f modelMat;
+  Matrix4f viewMat;
+  Matrix4f projMat;
   Matrix4f getViewMatrix();
   float speed;
 
-  Camera(void);
+  // Camera(void);
+  Camera(Vector3f posVec, Vector3f lookAtVec, Vector3f upVec);
   ~Camera(void);
   int roll(float angleDeg);
   int pitch(float angleDeg);
@@ -37,6 +41,7 @@ public:
   Camera(GLfloat w, GLfloat h, GLfloat d);
   void setCamera(Vector3f, Vector3f, Vector3f);
   void refresh(void);
+  void reshape(GLfloat w, GLfloat h);
 };
 
 #endif

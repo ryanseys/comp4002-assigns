@@ -4,75 +4,62 @@
  * Task 1: Render a sphere at (100, 10, 100) using perspective projection.
  * Task 2: Render a hierarchical object beside the sphere from Task 1.
  * Task 3: Create a camera class with yaw, pitch and roll.
+ * Task 4: Bonus: Use keys 1-5 to select robot arm, then z & x to move arm piece.
  *
  * Author: Ryan Seys - 100817604
  */
+
 #ifdef __APPLE_CC__
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
+
+#include <stdio.h>
 #include <cmath>
+#include "math.h"
+#include "Shader.h"
 #include "ryan_sphere.h"
 #include "ryan_cube.h"
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
 #include "ryan_robotarm.h"
-#include <stdio.h>
 
-GLdouble initX = 100.0;
-GLdouble initY = 10.0;
-GLdouble initZ = 100.0;
+GLdouble delta = 0.1; // how much to move the object (Task 2)
 
-GLdouble delta = 0.1;
-// translate entire scene to (100,10,100)
 GLdouble objX = 0.0;
 GLdouble objY = 0.0;
-GLdouble objZ = -1.1;
-
-GLdouble armX = -1.0;
-GLdouble armY = 0.0;
-GLdouble armZ = 1.1;
+GLdouble objZ = 0.0;
 
 GLint robotPartSelected = -1; // nothing initially selected
 GLfloat ROBOT_ROTATE_DEG = 1.0;
 
-Camera cam;
+GLuint shaderProg;
+GLint windowHeight, windowWidth;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
-Vector3f camInitPoint(102.0, 12.0, 102.0);
-Vector3f camLookAtPoint(100.0, 10.0, 100.0);
-Vector3f camUp(0.0, 1.0, 0.0);
+Vector3f position (106, 16, 106);
+Vector3f lookAtPoint(100, 10, 100);
+Vector3f upVector(0, 1, 0);
 
-GLdouble rotateDelta1 = 0.1; // degrees per frame
-GLdouble rotateDelta2 = 0.2; // degrees per frame
+// initialize camera
+Camera * cam;
+
+GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
+GLdouble rotateDelta2 = 0.2; // Rotate second sphere 0.2 degrees per frame
 GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
-GLint timerMs = 20;
-
-SolidSphere sphere0(0.5, 24, 24);
-SolidSphere sphere1(0.5, 24, 24);
-SolidSphere sphere2(0.5, 24, 24);
-SolidCube cube(2.5, 1.0, 1.0);
+GLint timerMs = 1;
 
 // Robot arm
-RobotArm robotarm;
-
-/**
- * Draw a grid.
- */
-void drawGrid() {
-  glColor3f(0.5, 0.5, 0.5);
-  glBegin(GL_LINES);
-  for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
-    glVertex3f(i, 0, 2.5); glVertex3f(i, 0, -2.5);
-    glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
-  }
-  glEnd();
-}
+RobotArm * robotarm;
+SolidSphere * sphere0;
+SolidSphere * sphere1;
+SolidSphere * sphere2;
+SolidCube * cube;
 
 /**
  * When a regular (not special) key is pressed.
@@ -80,7 +67,6 @@ void drawGrid() {
 void keyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
     case '1': {
-
       robotPartSelected = 1;
       break;
     }
@@ -120,38 +106,34 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam.roll(-PITCH_AMT);
-      cam.refresh();
+      cam->roll(-PITCH_AMT);
       break;
     }
     case 'd': {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. PITCH_AMT vs. -PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam.roll(PITCH_AMT);
-      cam.refresh();
+      cam->roll(PITCH_AMT);
       break;
     }
     case 'w': {
       // Move camera forward along lookAtVector
-      cam.moveForward(FORWARD_AMT);
-      cam.refresh();
+      cam->moveForward(FORWARD_AMT);
       break;
     }
     case 's': {
       // Move camera backward along lookAtVector
-      cam.moveForward(-FORWARD_AMT);
-      cam.refresh();
+      cam->moveForward(-FORWARD_AMT);
       break;
     }
     case 'z': {
       // Rotate robot part +1 degree
-      robotarm.rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
+      robotarm->rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
       break;
     }
     case 'x': {
       // Rotate robot part -1 degree
-      robotarm.rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
+      robotarm->rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
       break;
     }
     default: return;
@@ -163,30 +145,43 @@ void keyboardFunc(unsigned char key, int x, int y) {
  * Rendering the window.
  */
 void display() {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
+  glClearColor(0.0, 0.0, 0,1);
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-  // draw some grid lines and regular sphere from task 1
-  glPushMatrix();
-  // glMatrixMode(GL_MODELVIEW);
-  glTranslatef(initX, initY, initZ);
+  Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
 
-  drawGrid();
+  // setting up the transformaiton of the object from model coord. system to world coord.
+  Matrix4f worldMat = cam->getViewMatrix() * initTranslateMat;
 
-  sphere0.draw(0.0, 0.0, 0.0, 0.0);
-  glPopMatrix();
+  glUseProgram(shaderProg);
 
-  // object
-  // glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glTranslatef(initX + objX, initY + objY, initZ + objZ);
+  sphere0->applyTransformation(worldMat);
+  Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
 
-  cube.draw(-0.5, -0.5, -0.5);
-  sphere1.draw(-0.7, 1.0, 0.0, sphere1Rotate);
-  sphere2.draw(0.7, 1.0, 0.0, sphere2Rotate);
-  glPopMatrix();
+  sphere1->applyTransformation(worldMat);
+  sphere1->translate(-0.7, 1.0, -1.25);
+  sphere1->applyTransformation(objMat);
+  sphere1->rotateY(sphere1Rotate);
 
-  // Start Robot arm
-  robotarm.draw(initX + armX, initY + armY, initZ + armZ);
+  sphere2->applyTransformation(worldMat);
+  sphere2->translate(0.7, 1.0, -1.25);
+  sphere2->applyTransformation(objMat);
+  sphere2->rotateY(sphere2Rotate);
+
+  cube->applyTransformation(worldMat);
+  cube->applyTransformation(objMat);
+  cube->translate(-0.25, -0.25, -1.6);
+
+  robotarm->applyTransformation(worldMat);
+  robotarm->applyTransformation(Matrix4f::translation(-3, 0.0, 1.0));
+
+  // draw them spheres, applying all transformations
+  sphere0->drawSphere(shaderProg);
+  sphere1->drawSphere(shaderProg);
+  sphere2->drawSphere(shaderProg);
+  cube->draw(shaderProg);
+  robotarm->draw(shaderProg);
 
   glUseProgram(0);
   glFlush();
@@ -194,21 +189,13 @@ void display() {
 }
 
 /**
- * When the window reshapes to a new size
+ * When the window reshapes to a new size, you must update the camera.
+ *
  * @param w the window new width
  * @param h the window new height
  */
 void reshape(GLint w, GLint h) {
-  glViewport(0, 0, w, h);
-
-  // setting the current matrix mode to GL_PROJECTION
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-
-  /** Fovy, aspect, zNear, zFar */
-  gluPerspective(60.0, (GLfloat)w/(GLfloat)h, 1.0, 1000.0);
-  // reset the current matrix mode to GL_MODELVIEW to be used in display
-  glMatrixMode(GL_MODELVIEW);
+  cam->reshape(w, h);
 }
 
 /**
@@ -224,23 +211,19 @@ void renderTick(int value) {
 void pressSpecialKey(int key, int xx, int yy) {
   switch (key) {
     case GLUT_KEY_UP: {
-      cam.pitch(PITCH_AMT);
-      cam.refresh();
+      cam->pitch(PITCH_AMT);
       break;
     }
     case GLUT_KEY_DOWN: {
-      cam.pitch(-PITCH_AMT);
-      cam.refresh();
+      cam->pitch(-PITCH_AMT);
       break;
     }
     case GLUT_KEY_RIGHT: {
-      cam.yaw(YAW_AMT);
-      cam.refresh();
+      cam->yaw(YAW_AMT);
       break;
     }
     case GLUT_KEY_LEFT: {
-      cam.yaw(-YAW_AMT);
-      cam.refresh();
+      cam->yaw(-YAW_AMT);
       break;
     }
   }
@@ -251,6 +234,7 @@ void pressSpecialKey(int key, int xx, int yy) {
  * Main.
  */
 int main(int argc, char** argv) {
+  Shader s;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
@@ -260,8 +244,21 @@ int main(int argc, char** argv) {
   glutKeyboardFunc(keyboardFunc);
   glutSpecialFunc(pressSpecialKey);
 
-  cam.setCamera(camInitPoint, camLookAtPoint, camUp);
-  cam.refresh();
+  s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
+
+  // For Task 1.
+  sphere0 = new SolidSphere(0.75, 24, 24);
+
+  // Object for Task 2.
+  cube = new SolidCube(1.0, 0.5, 0.5);
+  sphere1 = new SolidSphere(0.75, 24, 24);
+  sphere2 = new SolidSphere(0.75, 24, 24);
+
+  // For Task 3.
+  cam = new Camera(position, lookAtPoint, upVector);
+
+  // Robot arm for Task 4 (Bonus)
+  robotarm = new RobotArm();
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);

@@ -18,11 +18,28 @@
 /**
  * Camera constructor
  */
-Camera::Camera(void) {
-  Vector3f position(0.0, 0.0, 0.0);
-  Vector3f lookAtVector(0.0, 0.0, 0.0);
-  Vector3f upVector(0.0, 0.0, 0.0);
-  speed = 0;
+Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
+  this->position = posVec;
+  this->lookAtVector = lookAtPoint - position;
+  this->upVector = upVec;
+
+  modelMat = Matrix4f::identity();
+  // setting up the viewpoint transformation
+  viewMat = Matrix4f::cameraMatrix(this->position, this->lookAtVector, this->upVector);
+  // setting up the projection transformation
+  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
+
+  this->refresh();
+}
+
+/**
+ * When you reshape the window, you must update the projection matrix.
+ *
+ * @param w new window width
+ * @param h new window height
+ */
+void Camera::reshape(GLfloat w, GLfloat h) {
+  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, w/h, 1.0, 1000);
 }
 
 /**
@@ -48,9 +65,11 @@ int Camera::roll(float angleDeg) {
 
   GLfloat angle = DegreeToRadians(angleDeg);
   // calculate the angle between upVector and rightVector for roll amount
-  upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
+  this->upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
   // update rightVector for new upVector
-  rightVector = lookAtVector.cross(upVector);
+  this->rightVector = Vector3f::cross(upVector, lookAtVector);
+
+  this->refresh();
 
   return 0;
 }
@@ -68,7 +87,9 @@ int Camera::pitch(float angleDeg) {
   // calculate the angle between lookAtVector and upVector
   lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
   // update upVector for the new lookAtVector
-  upVector = rightVector.cross(lookAtVector);
+  upVector = Vector3f::cross(rightVector, lookAtVector);
+
+  this->refresh();
 
   return 0;
 }
@@ -84,7 +105,9 @@ int Camera::yaw(float angleDeg) {
   // calculate angle between lookAtVector and rightVector to get yaw angle
   lookAtVector = (lookAtVector * cos(angle) + rightVector * sin(angle)).normalize();
   // update right angle for new lookAtVector
-  rightVector = lookAtVector.cross(upVector);
+  rightVector = Vector3f::cross(lookAtVector, upVector);
+
+  this->refresh();
 
   return 0;
 }
@@ -172,7 +195,10 @@ int Camera::changeAbsPosition(Vector3f *v) {
  * @return          The new position.
  */
 Vector3f Camera::moveForward(float numUnits) {
-  position = position + (lookAtVector * numUnits);
+  this->position = position + (lookAtVector * numUnits);
+
+  this->refresh();
+
   return position;
 }
 
@@ -205,48 +231,30 @@ int Camera::updateOrientation(Vector3f rotVector, float angleRad) {
  * @return The transformation matrix
  */
 Matrix4f Camera::getViewMatrix() {
-  Matrix4f m1;
-
-  // TODO: Add Code
-
-  return(m1);
+  return projMat * viewMat * modelMat;
 }
 
 /**
  * Set the camera parameters.
- * @param position    [description]
- * @param lookAtPoint [description]
- * @param upVector    [description]
+ *
+ * @param position    position vector of camera
+ * @param lookAtPoint look at point of camera
+ * @param upVector    up vector of camera
  */
 void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVector) {
   this->position = position;
   this->lookAtVector = lookAtPoint - position;
   this->upVector = upVector;
-  this->rightVector = lookAtVector.cross(upVector);
+  this->rightVector = Vector3f::cross(lookAtVector, upVector);
   this->upVector.normalize();
   this->lookAtVector.normalize();
   this->rightVector.normalize();
+  viewMat = Matrix4f::cameraMatrix(this->position, this->getLookAtPoint(), this->upVector);
 }
 
 void Camera::refresh(void) {
-  Vector3f lookPoint = this->getLookAtPoint();
-  glLoadIdentity();
-  gluLookAt(
-    position.x,
-    position.y,
-    position.z,
-    lookPoint.x,
-    lookPoint.y,
-    lookPoint.z,
-    upVector.x,
-    upVector.y,
-    upVector.z
-  );
+  this->setCamera(this->position, this->getLookAtPoint(), this->upVector);
 }
-
-// void Camera::refresh() {
-
-// }
 
 /**
  * Change the speed of the camera motion.

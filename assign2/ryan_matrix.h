@@ -3,7 +3,7 @@
  * This file is governed by the GNU General Public License.
  * Copyright 2014 Doron Nussbaum
  *
- * Cleaned and edited by Ryan Seys - 100817604
+ * Cleaned, edited and fixed in some places by Ryan Seys - 100817604
  */
 
 #ifndef RYAN_MATRIX
@@ -21,7 +21,7 @@
 class Matrix4f {
 
 public:
-  float *m[4]; // can be removed
+  float *m;
   Vector4f vm[4];
 
   Matrix4f() {
@@ -34,6 +34,7 @@ public:
     vm[1] = v1;
     vm[2] = v2;
     vm[3] = v3;
+    m = (float *) vm;
   }
 
   // Static functions
@@ -78,9 +79,9 @@ public:
   static Matrix4f scale(float scaleX, float scaleY, float scaleZ) {
     Matrix4f m1;
     m1 = identity();
-    m1.vm[0].x = scaleX;
-    m1.vm[1].y = scaleY;
-    m1.vm[2].z = scaleZ;
+    m1.vm[0].x *= scaleX;
+    m1.vm[1].y *= scaleY;
+    m1.vm[2].z *= scaleZ;
     return m1;
   }
 
@@ -116,7 +117,7 @@ public:
     Matrix4f m1;
     if (degree) angle = DegreeToRadians(angle);
     m1 = identity();
-    m1.vm[0].x = m1.vm[2].z=cos(angle);
+    m1.vm[0].x = m1.vm[2].z = cos(angle);
     m1.vm[0].z = sin(angle);
     m1.vm[2].x = -m1.vm[0].z;
     return(m1);
@@ -141,6 +142,7 @@ public:
 
     return(m1);
   }
+
 
   // set the matrix as a roll pitch and yaw rotation matrix
   // the resulting matrix M=Mat(yaw)*mat(pitch)*mat(roll)
@@ -195,17 +197,32 @@ public:
     Matrix4f m1;
 
     m1 = identity();
-    m1.vm[0].x = dx;
-    m1.vm[1].y = dy;
-    m1.vm[2].z = dz;
+    m1.vm[0].w = dx;
+    m1.vm[1].w = dy;
+    m1.vm[2].w = dz;
     return(m1);
   }
 
-  static Matrix4f cameraMatrix(Vector3f position, Vector4f lookAtVector, Vector3f UpVector) {
+  static Matrix4f cameraMatrix(Vector3f position, Vector3f lookAtPoint, Vector3f upVector) {
     Matrix4f m1;
-    m1 = identity();
+    Vector3f u,v,n;
 
-    // ADD CODE
+    m1 = identity();
+    n = position-lookAtPoint;
+    n.normalize();
+    upVector.normalize();
+
+    u = Vector3f::cross(upVector, n);
+    u.normalize();
+    v = Vector3f::cross(n, u);
+
+    m1.vm[0] = Vector4f(u,0);
+    m1.vm[1] = Vector4f(v,0);
+    m1.vm[2] = Vector4f(n,0);
+    m1.vm[3] = Vector4f(0,0,0,1);
+    m1.vm[0].w = Vector3f::dot(-u,position);
+    m1.vm[1].w = Vector3f::dot(-v,position);
+    m1.vm[2].w = Vector3f::dot(-n,position);
 
     return(m1);
   }
@@ -214,7 +231,13 @@ public:
     Matrix4f m1;
     m1 = identity();
 
-    // ADD CODE
+    float cot = 1/tan(DegreeToRadians(fieldOfView / 2.0));
+    m1.vm[0].x = cot/aspectRatio;
+    m1.vm[1].y = cot;
+    m1.vm[2].z = (nearPlane+farPlane)/(nearPlane-farPlane);
+    m1.vm[2].w = 2.0*nearPlane*farPlane/(nearPlane-farPlane);
+    m1.vm[3].z = -1;
+    m1.vm[3].w = 0;
 
     return(m1);
   }
@@ -223,19 +246,17 @@ public:
     Matrix4f m1;
     m1 = identity();
 
-    // ADD CODE
+    m1.vm[0].x = 2*nearPlane/(winMaxX - winMinX);   // check why it is not "-2"
+    m1.vm[0].z = (winMaxX + winMinX) /  (winMaxX - winMinX);
+    m1.vm[1].y = 2*nearPlane/(winMaxY - winMinY);   // check why it is not "-2"
+    m1.vm[1].z = (winMaxY + winMinY) /  (winMaxY - winMinY);
+    m1.vm[2].z = (nearPlane + farPlane) / (nearPlane - farPlane);
+    m1.vm[2].w = (2*nearPlane * farPlane) / (nearPlane - farPlane);
+    m1.vm[3].z = -1;
+    m1.vm[3].w = 0;
 
     return(m1);
   }
-
-  // print the matrix (prints the vectors)
-  // friend std::ostream& operator << (std::ostream& os, const Matrix4f& m1) {
-  //   int i;
-  //   for (i = 0; i <=3; i++) {
-  //     os <<m1.vm[i] << std::endl;
-  //   }
-  //   return(os);
-  // }
 
   /**
    * Resets all the values of the matrix to "value".
@@ -250,25 +271,25 @@ public:
   }
 
   // operators
-
   inline Matrix4f operator*(const Matrix4f& rhs) const {
-    Matrix4f m1,m2;
-    int i,j;
+    Matrix4f m1, m2;
+    int i, j;
 
     m2 = transpose(rhs);
+    m1.m = (float *) m1.vm;
     for (i = 0 ; i < 4 ; i++) {
       for (j = 0 ; j < 4 ; j++) {
-        m1.m[i][j] = dot(vm[i], m2.vm[j]);
+        m1.m[i*4+j] = Vector4f::dot(vm[i], m2.vm[j]);
       }
     }
+
     return(m1);
   }
 
   inline Matrix4f operator*(const float f) const {
     Matrix4f m1;
     int i;
-
-    for (i = 0 ; i < 4 ; i++) {
+    for (i = 0; i < 4; i++) {
       m1.vm[i] = vm[i]*f;
     }
 
@@ -304,12 +325,10 @@ public:
   // multiply the matrix by a vector
   Vector4f operator*(const Vector4f& v) const {
     Vector4f r;
-
-    r.x = dot(vm[0],v);
-    r.y = dot(vm[1],v);
-    r.z = dot(vm[2],v);
-    r.w = dot(vm[3],v);
-
+    r.x = Vector4f::dot(vm[0],v);
+    r.y = Vector4f::dot(vm[1],v);
+    r.z = Vector4f::dot(vm[2],v);
+    r.w = Vector4f::dot(vm[3],v);
     return r;
   }
 };
