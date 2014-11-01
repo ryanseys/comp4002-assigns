@@ -130,9 +130,15 @@ public:
    * @param degrees Number of degrees to rotate
    */
   void rotate(GLfloat degrees) {
-    glTranslatef(width/2, 0.0, depth/2); // half of the cube width and height
-    glRotatef(degrees, 0.0, 1.0, 0.0);
-    glTranslatef(-(width/2), 0.0, -(depth/2)); // inverse transformation
+    Matrix4f translateDown = Matrix4f::translation(width/2, 0.0, depth/2);
+    this->applyTransformation(translateDown);
+    Matrix4f rotateYMat = Matrix4f::rotateY(degrees, true);
+    this->applyTransformation(rotateYMat);
+    Matrix4f translateUp = Matrix4f::translation(-(width/2), 0.0, -(depth/2));
+    this->applyTransformation(translateUp);
+    // glTranslatef(width/2, 0.0, depth/2); // half of the cube width and height
+    // glRotatef(degrees, 0.0, 1.0, 0.0);
+    // glTranslatef(-(width/2), 0.0, -(depth/2)); // inverse transformation
   }
 
   void translate(GLfloat x, GLfloat y, GLfloat z) {
@@ -171,13 +177,10 @@ public:
     GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
     glEnableVertexAttribArray(positionLoc);
     glEnableVertexAttribArray(normalLoc);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
 
-    // Tells OpenGL how to walk through the two VBOs
-    // struct sphereVertex v;
-    // int relAddress = (char *) v.pos - (char *) &v;
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glVertexAttribPointer(positionLoc, 4, GL_FLOAT, GL_FALSE, 0, (void*) 0);
+
     glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
     glVertexAttribPointer(
       1,                        // attribute. No particular reason for 1, but must match the layout in the shader.
@@ -190,6 +193,7 @@ public:
 
     // draw the triangles
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
+    this->clear();
   }
 
   void applyTransformation(Matrix4f m) {

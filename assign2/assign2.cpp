@@ -62,7 +62,7 @@ GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
 
 // Robot arm
-// RobotArm robotarm;
+RobotArm * robotarm;
 SolidSphere * sphere0;
 SolidSphere * sphere1;
 SolidSphere * sphere2;
@@ -87,7 +87,6 @@ void drawGrid() {
 void keyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
     case '1': {
-
       robotPartSelected = 1;
       break;
     }
@@ -149,12 +148,12 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'z': {
       // Rotate robot part +1 degree
-      // robotarm.rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
+      robotarm->rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
       break;
     }
     case 'x': {
       // Rotate robot part -1 degree
-      // robotarm.rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
+      robotarm->rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
       break;
     }
     default: return;
@@ -177,29 +176,31 @@ void display() {
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
   // setting up the transformaiton of the object from model coord. system to world coord.
 
-  Matrix4f m = cam->getViewMatrix() * initTranslateMat;
+  Matrix4f worldMat = cam->getViewMatrix() * initTranslateMat;
 
   glUseProgram(shaderProg);
 
-  sphere0->applyTransformation(m);
+  sphere0->applyTransformation(worldMat);
 
-  Matrix4f translateObjMat = Matrix4f::translation(objX, objY, objZ);
+  Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
 
-  sphere1->applyTransformation(m);
+  sphere1->applyTransformation(worldMat);
   sphere1->translate(-0.7, 1.0, -1.0);
-  sphere1->applyTransformation(translateObjMat);
+  sphere1->applyTransformation(objMat);
   sphere1->rotateY(sphere1Rotate += 5);
 
-  sphere2->applyTransformation(m);
+  sphere2->applyTransformation(worldMat);
   sphere2->translate(0.7, 1.0, -1.0);
-  sphere2->applyTransformation(translateObjMat);
+  sphere2->applyTransformation(objMat);
   sphere2->rotateY(sphere2Rotate -= 5);
 
-  cube->applyTransformation(m);
-  cube->applyTransformation(translateObjMat);
+  cube->applyTransformation(worldMat);
+  cube->applyTransformation(objMat);
   cube->applyTransformation(Matrix4f::scale(1.5, 0.5, 1.0));
   cube->translate(-0.25, -0.25, -1.6);
-  // cube->applyTransformation(translateObjMat);
+
+  robotarm->applyTransformation(worldMat);
+  robotarm->applyTransformation(Matrix4f::translation(0.0, 0.0, 2.0));
 
 
   // draw them spheres, applying all transformations
@@ -207,42 +208,7 @@ void display() {
   sphere1->drawSphere(shaderProg);
   sphere2->drawSphere(shaderProg);
   cube->draw(shaderProg);
-
-  // sphere2->drawSphere(shaderProg);
-
-  sphere0->clear();
-  sphere1->clear();
-  sphere2->clear();
-  cube->clear();
-
-
-  // viewMat.m = (float *) viewMat.vm;
-  // projMat.m = (float *) projMat.vm;
-
-  // bind the buffers to the shaders
-
-  // draw some grid lines and regular sphere from task 1
-  // glPushMatrix();
-  // // glMatrixMode(GL_MODELVIEW);
-  // glTranslatef(initX, initY, initZ);
-
-  // drawGrid();
-
-  // sphere0.draw(0.0, 0.0, 0.0, 0.0);
-  // glPopMatrix();
-
-  // // object
-  // // glMatrixMode(GL_MODELVIEW);
-  // glPushMatrix();
-  // glTranslatef(initX + objX, initY + objY, initZ + objZ);
-
-  // cube.draw(-0.5, -0.5, -0.5);
-  // sphere1.draw(-0.7, 1.0, 0.0, sphere1Rotate);
-  // sphere2.draw(0.7, 1.0, 0.0, sphere2Rotate);
-  // glPopMatrix();
-
-  // // Start Robot arm
-  // robotarm.draw(initX + armX, initY + armY, initZ + armZ);
+  robotarm->draw(shaderProg);
 
   glUseProgram(0);
   glFlush();
@@ -261,9 +227,6 @@ void reshape(GLint w, GLint h) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  /** Fovy, aspect, zNear, zFar */
-  // gluPerspective(60.0, (GLfloat)w/(GLfloat)h, 1.0, 1000.0);
-  // reset the current matrix mode to GL_MODELVIEW to be used in display
   glMatrixMode(GL_MODELVIEW);
 }
 
@@ -322,6 +285,7 @@ int main(int argc, char** argv) {
   sphere1 = new SolidSphere(0.5, 24, 24);
   sphere2 = new SolidSphere(0.5, 24, 24);
   cube = new SolidCube(1.0, 0.5, 0.5);
+  robotarm = new RobotArm();
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);

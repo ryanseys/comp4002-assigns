@@ -245,6 +245,7 @@ public:
 
     // draw the triangles
     glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+    this->clear();
   }
 
   void applyTransformation(Matrix4f m) {
