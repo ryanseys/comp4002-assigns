@@ -18,12 +18,6 @@
 /**
  * Camera constructor
  */
-// Camera::Camera(void) {
-//   modelMat = Matrix4f::identity();
-//   viewMat = Matrix4f::cameraMatrix(Vector3f(10, 10, 10), Vector3f(0.0, 0.0, 0.0), Vector3f(0.0, 1.0, 0.0));
-//   projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
-// }
-
 Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
   this->position = posVec;
   this->lookAtVector = lookAtPoint - position;
@@ -36,6 +30,16 @@ Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
   projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
 
   this->refresh();
+}
+
+/**
+ * When you reshape the window, you must update the projection matrix.
+ *
+ * @param w new window width
+ * @param h new window height
+ */
+void Camera::reshape(GLfloat w, GLfloat h) {
+  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, w/h, 1.0, 1000);
 }
 
 /**
@@ -232,9 +236,10 @@ Matrix4f Camera::getViewMatrix() {
 
 /**
  * Set the camera parameters.
- * @param position    [description]
- * @param lookAtPoint [description]
- * @param upVector    [description]
+ *
+ * @param position    position vector of camera
+ * @param lookAtPoint look at point of camera
+ * @param upVector    up vector of camera
  */
 void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVector) {
   this->position = position;
@@ -250,10 +255,6 @@ void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVecto
 void Camera::refresh(void) {
   this->setCamera(this->position, this->getLookAtPoint(), this->upVector);
 }
-
-// void Camera::refresh() {
-
-// }
 
 /**
  * Change the speed of the camera motion.

@@ -3,7 +3,7 @@
  * This file is governed by the GNU General Public License.
  * Copyright 2014 Doron Nussbaum
  *
- * Cleaned and edited by Ryan Seys - 100817604
+ * Cleaned, edited and fixed in some places by Ryan Seys - 100817604
  */
 
 #ifndef RYAN_MATRIX
@@ -21,7 +21,7 @@
 class Matrix4f {
 
 public:
-  float *m;     // can be removed
+  float *m;
   Vector4f vm[4];
 
   Matrix4f() {
@@ -258,15 +258,6 @@ public:
     return(m1);
   }
 
-  // print the matrix (prints the vectors)
-  // friend std::ostream& operator << (std::ostream& os, const Matrix4f& m1) {
-  //   int i;
-  //   for (i = 0; i <=3; i++) {
-  //     os <<m1.vm[i] << std::endl;
-  //   }
-  //   return(os);
-  // }
-
   /**
    * Resets all the values of the matrix to "value".
    * Sets all 16 values of the matrix to value.
@@ -280,16 +271,15 @@ public:
   }
 
   // operators
-
   inline Matrix4f operator*(const Matrix4f& rhs) const {
-    Matrix4f m1,m2;
-    int i,j;
+    Matrix4f m1, m2;
+    int i, j;
 
     m2 = transpose(rhs);
     m1.m = (float *) m1.vm;
-        for (i = 0 ; i < 4 ; i++) {
-            for (j = 0 ; j < 4 ; j++) {
-                m1.m[i*4+j] = Vector4f::dot(vm[i], m2.vm[j]);
+    for (i = 0 ; i < 4 ; i++) {
+      for (j = 0 ; j < 4 ; j++) {
+        m1.m[i*4+j] = Vector4f::dot(vm[i], m2.vm[j]);
       }
     }
 
@@ -335,12 +325,11 @@ public:
   // multiply the matrix by a vector
   Vector4f operator*(const Vector4f& v) const {
     Vector4f r;
-
-        r.x = Vector4f::dot(vm[0],v);
-        r.y = Vector4f::dot(vm[1],v);
+    r.x = Vector4f::dot(vm[0],v);
+    r.y = Vector4f::dot(vm[1],v);
     r.z = Vector4f::dot(vm[2],v);
     r.w = Vector4f::dot(vm[3],v);
-        return r;
+    return r;
   }
 };
 

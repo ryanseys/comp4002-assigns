@@ -4,6 +4,7 @@
  * Task 1: Render a sphere at (100, 10, 100) using perspective projection.
  * Task 2: Render a hierarchical object beside the sphere from Task 1.
  * Task 3: Create a camera class with yaw, pitch and roll.
+ * Task 4: Bonus: Use keys 1-5 to select robot arm, then z & x to move arm piece.
  *
  * Author: Ryan Seys - 100817604
  */
@@ -24,25 +25,17 @@
 #include "ryan_matrix.h"
 #include "ryan_robotarm.h"
 
-GLdouble initX = 100.0;
-GLdouble initY = 10.0;
-GLdouble initZ = 100.0;
+GLdouble delta = 0.1; // how much to move the object (Task 2)
 
-GLdouble delta = 0.1;
-// translate entire scene to (100,10,100)
 GLdouble objX = 0.0;
 GLdouble objY = 0.0;
 GLdouble objZ = 0.0;
 
-GLdouble armX = -1.0;
-GLdouble armY = 0.0;
-GLdouble armZ = 1.1;
-
 GLint robotPartSelected = -1; // nothing initially selected
-GLfloat ROBOT_ROTATE_DEG = 5.0;
+GLfloat ROBOT_ROTATE_DEG = 1.0;
 
 GLuint shaderProg;
-GLuint cubeShaderProg;
+GLint windowHeight, windowWidth;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
@@ -171,17 +164,15 @@ void display() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.0, 0.0, 0,1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-  // glClearColor(1.0, 0.0, 0, 1);
 
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
-  // setting up the transformaiton of the object from model coord. system to world coord.
 
+  // setting up the transformaiton of the object from model coord. system to world coord.
   Matrix4f worldMat = cam->getViewMatrix() * initTranslateMat;
 
   glUseProgram(shaderProg);
 
   sphere0->applyTransformation(worldMat);
-
   Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
 
   sphere1->applyTransformation(worldMat);
@@ -196,12 +187,10 @@ void display() {
 
   cube->applyTransformation(worldMat);
   cube->applyTransformation(objMat);
-  // cube->applyTransformation(Matrix4f::scale(1.5, 0.5, 1.0));
   cube->translate(-0.25, -0.25, -1.6);
 
   robotarm->applyTransformation(worldMat);
   robotarm->applyTransformation(Matrix4f::translation(-3, 0.0, 1.0));
-
 
   // draw them spheres, applying all transformations
   sphere0->drawSphere(shaderProg);
@@ -222,12 +211,7 @@ void display() {
  */
 void reshape(GLint w, GLint h) {
   glViewport(0, 0, w, h);
-
-  // setting the current matrix mode to GL_PROJECTION
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-
-  glMatrixMode(GL_MODELVIEW);
+  cam->reshape(w, h);
 }
 
 /**
@@ -267,7 +251,6 @@ void pressSpecialKey(int key, int xx, int yy) {
  */
 int main(int argc, char** argv) {
   Shader s;
-  // Shader c;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
@@ -278,13 +261,19 @@ int main(int argc, char** argv) {
   glutSpecialFunc(pressSpecialKey);
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
-  // c.createShaderProgram("cube.vert", "cube.frag", &cubeShaderProg);
 
+  // For Task 3.
   cam = new Camera(position, lookAtPoint, upVector);
+
+  // For Task 1.
   sphere0 = new SolidSphere(0.75, 24, 24);
+
+  // Object for Task 2.
+  cube = new SolidCube(1.0, 0.5, 0.5);
   sphere1 = new SolidSphere(0.75, 24, 24);
   sphere2 = new SolidSphere(0.75, 24, 24);
-  cube = new SolidCube(1.0, 0.5, 0.5);
+
+  // Robot arm for Task 4 (Bonus)
   robotarm = new RobotArm();
 
   glutPostRedisplay();
