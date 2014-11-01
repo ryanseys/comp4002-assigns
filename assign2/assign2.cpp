@@ -172,7 +172,7 @@ void display() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.0, 0.0, 0,1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-  glClearColor(1.0, 0.0, 0, 1);
+  // glClearColor(1.0, 0.0, 0, 1);
 
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
   // setting up the transformaiton of the object from model coord. system to world coord.
@@ -187,12 +187,12 @@ void display() {
   sphere1->translate(-0.7, 1.0, -1.0);
   sphere1->rotateY(sphere1Rotate += 5);
 
-  cube->applyTransformation(m);
-  cube->translate(0.0, 0.0, 0.0);
-
   sphere2->applyTransformation(m);
   sphere2->translate(0.7, 1.0, -1.0);
   sphere2->rotateY(sphere2Rotate -= 5);
+
+  cube->applyTransformation(m);
+  cube->translate(objX, objY, objZ);
 
   // draw them spheres, applying all transformations
   sphere0->drawSphere(shaderProg);

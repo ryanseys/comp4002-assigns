@@ -10,7 +10,7 @@ uniform mat4 modelViewProjMat;
 void main()
 {
   gl_Position = modelViewProjMat * vertex_position;
-  fragment_position = vec3(gl_Position);
-  fragment_normal = modelViewProjMat * vertex_normal;
+  // fragment_position = vec3(gl_Position);
+  // fragment_normal = modelViewProjMat * vertex_normal;
   vtx_normal = vertex_normal; // added for funky colors
 }
