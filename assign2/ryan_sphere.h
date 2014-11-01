@@ -88,6 +88,7 @@ public:
   // }
 
   SolidSphere(GLfloat radius, GLuint numLong, GLuint numLat) {
+    this->radius = radius;
     int rc = 0;
     int i,j,k;
     float alpha = 0.0;  // angle of latitude starting from the "south pole" at angle -90
@@ -192,10 +193,10 @@ public:
    * Adjust the pitch of the sphere by some amount
    * @param degrees Degrees to adjust pitch.
    */
-  void pitch(Vector3f position, Vector3f lookAt, GLfloat degrees) {
-    // glTranslatef(position.x, position.y, position.z);
-    // glRotatef(degrees, lookAt.x, lookAt.y, lookAt.z);
-    // glTranslatef(-position.x, -position.y, -position.z);
+  void pitch(Vector3f position, GLfloat degrees) {
+    this->applyTransformation(Matrix4f::translation(position.x, position.y, position.z));
+    this->applyTransformation(Matrix4f::rotateRollPitchYaw(0.0, degrees, 0.0, true));
+    this->applyTransformation(Matrix4f::translation(-position.x, -position.y, -position.z));
   }
 
   void draw(GLfloat x, GLfloat y, GLfloat z, GLfloat rotate) {
@@ -224,6 +225,8 @@ public:
     for(int i = 0; i < size; i++) {
       matrix = matrix * this->transformations.at(i);
     }
+
+    matrix = matrix * Matrix4f::scale(radius, radius, radius);
 
     GLuint locMat = 0;
     locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");

@@ -39,7 +39,7 @@ GLdouble armY = 0.0;
 GLdouble armZ = 1.1;
 
 GLint robotPartSelected = -1; // nothing initially selected
-GLfloat ROBOT_ROTATE_DEG = 1.0;
+GLfloat ROBOT_ROTATE_DEG = 5.0;
 
 GLuint shaderProg;
 GLuint cubeShaderProg;
@@ -48,7 +48,7 @@ const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
-Vector3f position (103, 13, 103);
+Vector3f position (107, 17, 107);
 Vector3f lookAtPoint(100, 10, 100);
 Vector3f upVector(0, 1, 0);
 
@@ -185,22 +185,22 @@ void display() {
   Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
 
   sphere1->applyTransformation(worldMat);
-  sphere1->translate(-0.7, 1.0, -1.0);
+  sphere1->translate(-0.7, 1.0, -1.25);
   sphere1->applyTransformation(objMat);
   sphere1->rotateY(sphere1Rotate += 5);
 
   sphere2->applyTransformation(worldMat);
-  sphere2->translate(0.7, 1.0, -1.0);
+  sphere2->translate(0.7, 1.0, -1.25);
   sphere2->applyTransformation(objMat);
   sphere2->rotateY(sphere2Rotate -= 5);
 
   cube->applyTransformation(worldMat);
   cube->applyTransformation(objMat);
-  cube->applyTransformation(Matrix4f::scale(1.5, 0.5, 1.0));
+  // cube->applyTransformation(Matrix4f::scale(1.5, 0.5, 1.0));
   cube->translate(-0.25, -0.25, -1.6);
 
   robotarm->applyTransformation(worldMat);
-  robotarm->applyTransformation(Matrix4f::translation(0.0, 0.0, 2.0));
+  robotarm->applyTransformation(Matrix4f::translation(-3, 0.0, 1.0));
 
 
   // draw them spheres, applying all transformations
@@ -281,9 +281,9 @@ int main(int argc, char** argv) {
   // c.createShaderProgram("cube.vert", "cube.frag", &cubeShaderProg);
 
   cam = new Camera(position, lookAtPoint, upVector);
-  sphere0 = new SolidSphere(0.5, 24, 24);
-  sphere1 = new SolidSphere(0.5, 24, 24);
-  sphere2 = new SolidSphere(0.5, 24, 24);
+  sphere0 = new SolidSphere(0.75, 24, 24);
+  sphere1 = new SolidSphere(0.75, 24, 24);
+  sphere2 = new SolidSphere(0.75, 24, 24);
   cube = new SolidCube(1.0, 0.5, 0.5);
   robotarm = new RobotArm();
 

@@ -15,7 +15,7 @@
 GLfloat CUBE_WIDTH = 0.5;
 GLfloat CUBE_HEIGHT = 0.5;
 GLfloat CUBE_DEPTH = 0.5;
-GLfloat SPHERE_RADIUS = 0.25;
+GLfloat SPHERE_RADIUS = 0.75;
 GLfloat SPHERE_SLICES = 24;
 GLfloat SPHERE_STACKS = 24;
 
@@ -47,25 +47,67 @@ public:
   }
 
   void draw(GLuint shaderProg) {
-    Matrix4f matrix = Matrix4f::identity();
+    Matrix4f armMat = Matrix4f::identity();
     int size = this->transformations.size();
     for(int i = 0; i < size; i++) {
-      matrix = matrix * this->transformations.at(i);
+      armMat = armMat * this->transformations.at(i);
     }
 
     // glPushMatrix(); // arm start
     // glTranslatef(x, y, z);
 
     // start arm 5
-    arm5->applyTransformation(matrix);
-    arm5->rotate(arm5YawAngle);
-    arm5->translate(0.0, 4.0, 0.0);
+    Matrix4f arm5Mat = Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm5YawAngle, true);
+    arm5->applyTransformation(armMat);
+    arm5->applyTransformation(arm5Mat);
+    arm5->applyTransformation(Matrix4f::translation(0.0, 4.0, 0.0));
     arm5->draw(shaderProg);
+
+    Matrix4f arm4Mat = Matrix4f::rotateRollPitchYaw(0.0, arm4PitchAngle, 0.0, true);
+    arm4->applyTransformation(armMat);
+    arm4->applyTransformation(arm5Mat);
+    arm4->applyTransformation(Matrix4f::translation(0.0, 3.0, 0.0));
+    arm4->applyTransformation(arm4Mat);
+    arm4->drawSphere(shaderProg);
+
+    Matrix4f arm3Mat = Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm3YawAngle, true);
+    arm3->applyTransformation(armMat);
+    arm3->applyTransformation(arm5Mat);
+    arm3->applyTransformation(arm4Mat);
+    arm3->applyTransformation(Matrix4f::translation(0.0, 2.0, 0.0));
+    arm3->applyTransformation(arm3Mat);
+    arm3->draw(shaderProg);
+
+    Matrix4f arm2Mat = Matrix4f::rotateRollPitchYaw(0.0, arm2PitchAngle, 0.0, true);
+    arm2->applyTransformation(armMat);
+    arm2->applyTransformation(arm5Mat);
+    arm2->applyTransformation(arm4Mat);
+    arm2->applyTransformation(arm3Mat);
+    arm2->applyTransformation(Matrix4f::translation(0.0, 1.0, 0.0));
+    arm2->applyTransformation(arm2Mat);
+    arm2->drawSphere(shaderProg);
+
+    Matrix4f arm1Mat = Matrix4f::rotateRollPitchYaw(0.0, 0.0, arm1YawAngle, true);
+    arm1->applyTransformation(armMat);
+    arm1->applyTransformation(arm5Mat);
+    arm1->applyTransformation(arm4Mat);
+    arm1->applyTransformation(arm3Mat);
+    arm1->applyTransformation(arm2Mat);
+    arm1->applyTransformation(Matrix4f::translation(0.0, 0.0, 0.0));
+    arm1->applyTransformation(arm1Mat);
+    arm1->draw(shaderProg);
+
+
+    // arm4->applyTransformation(matrix);
+    // arm4->pitch(Vector3f(0.25, 1.75, 0.25), arm4PitchAngle);
+    // // arm4->pitch(, Vector3f(1.0, 0.0, 0.0), arm4PitchAngle);
+    // arm4->translate(0.0, 2.0, 0.0);
+    // arm4->drawSphere(shaderProg);
 
     // start arm 4
     // glPushMatrix();
     // apply pitch around x-axis
-    // arm4->pitch(Vector3f(0.25, 1.75, 0.25), Vector3f(1.0, 0.0, 0.0), arm4PitchAngle);
+    //
     // arm4->draw(0.25, 1.75, 0.25, 0.0);
 
     // start arm 3

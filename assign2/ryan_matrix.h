@@ -117,7 +117,7 @@ public:
     Matrix4f m1;
     if (degree) angle = DegreeToRadians(angle);
     m1 = identity();
-    m1.vm[0].x = m1.vm[2].z=cos(angle);
+    m1.vm[0].x = m1.vm[2].z = cos(angle);
     m1.vm[0].z = sin(angle);
     m1.vm[2].x = -m1.vm[0].z;
     return(m1);
@@ -142,6 +142,7 @@ public:
 
     return(m1);
   }
+
 
   // set the matrix as a roll pitch and yaw rotation matrix
   // the resulting matrix M=Mat(yaw)*mat(pitch)*mat(roll)

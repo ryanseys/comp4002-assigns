@@ -136,30 +136,11 @@ public:
     this->applyTransformation(rotateYMat);
     Matrix4f translateUp = Matrix4f::translation(-(width/2), 0.0, -(depth/2));
     this->applyTransformation(translateUp);
-    // glTranslatef(width/2, 0.0, depth/2); // half of the cube width and height
-    // glRotatef(degrees, 0.0, 1.0, 0.0);
-    // glTranslatef(-(width/2), 0.0, -(depth/2)); // inverse transformation
   }
 
   void translate(GLfloat x, GLfloat y, GLfloat z) {
     Matrix4f translateZMat = Matrix4f::translation(x, y, z);
     this->applyTransformation(translateZMat);
-  }
-
-  void draw(GLfloat x, GLfloat y, GLfloat z) {
-    // glPushMatrix();
-    // glScalef(width, height, depth);
-    // glTranslatef(x, y, z);
-
-    // glBegin(GL_QUADS);
-    // for (int i = 0; i < NUM_FACES; i++) {
-    //   for (int j = 0; j < 4; j++) {
-    //     glColor3fv((GLfloat*)&vertexColors[faces[i][j]]);
-    //     glVertex3iv((GLint*)&vertices[faces[i][j]]);
-    //   }
-    // }
-    // glEnd();
-    // glPopMatrix();
   }
 
   void draw(GLuint shaderProg) {
@@ -168,6 +149,8 @@ public:
     for(int i = 0; i < size; i++) {
       matrix = matrix * this->transformations.at(i);
     }
+
+    matrix = matrix * Matrix4f::scale(width, height, depth);
 
     GLuint locMat = 0;
     locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
