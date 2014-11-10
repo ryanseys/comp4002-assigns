@@ -37,7 +37,8 @@ GLdouble objZ = 0.0;
 GLint robotPartSelected = -1; // nothing initially selected
 GLfloat ROBOT_ROTATE_DEG = 1.0;
 
-GLuint shaderProg;
+GLuint gouraudShaderProg, phongShaderProg;
+GLuint activeShaderProgram;
 GLint windowHeight, windowWidth;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
@@ -89,22 +90,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
       robotPartSelected = 5;
       break;
     }
-    case 'i': {
-      objX -= delta;
-      break;
-    }
-    case 'j': {
-      objZ -= delta;
-      break;
-    }
-    case 'k': {
-      objZ += delta;
-      break;
-    }
-    case 'l': {
-      objX += delta;
-      break;
-    }
     case 'a': {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
@@ -139,6 +124,89 @@ void keyboardFunc(unsigned char key, int x, int y) {
       robotarm->rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
       break;
     }
+    case '+': {
+      printf("+ pressed\n");
+      break;
+    }
+    case '-': {
+      printf("- pressed\n");
+      break;
+    }
+    case 'M': {
+      printf("M pressed - turn ambient light off.\n");
+      break;
+    }
+    case 'm': {
+      printf("m pressed - turn ambient light on.\n");
+      break;
+    }
+    case 'N': {
+      printf("N pressed - turn diffuse light off.\n");
+      break;
+    }
+    case 'n': {
+      printf("n pressed - turn diffuse light on.\n");
+      break;
+    }
+    case 'B': {
+      printf("B pressed - turn specular light off.\n");
+      break;
+    }
+    case 'b': {
+      printf("b pressed - turn specular light on.\n");
+      break;
+    }
+    case 'c': {
+      printf("c pressed - change the colour of the light sources.\n");
+      // ambient colour to (0, 1.0, 0.5)
+      // diffuse colour to (0.7, 0, 0.7)
+      // specular light to (1, 0, 0)
+      break;
+    }
+    case 'C': {
+      printf("C pressed - light change back to white.\n");
+      break;
+    }
+    case 'i': {
+      printf("i pressed - increase scale sphere in the x-direction by 0.5 increments.\n");
+      break;
+    }
+    case 'j': {
+      printf("j pressed - decrease scale sphere in the x-direction by 0.5 increments.\n");
+      break;
+    }
+    case 'k': {
+      printf("k pressed - increase scale sphere in the y-direction by 0.5 increments.\n");
+      break;
+    }
+    case 'l': {
+      printf("l pressed - decrease scale sphere in the y-direction by 0.5 increments.\n");
+      break;
+    }
+    case 'r': {
+      printf("r pressed - reset the scale of sphere in x,y,z to 1.\n");
+      break;
+    }
+    case 'p': {
+      printf("p pressed - Use Phong model.\n");
+      activeShaderProgram = phongShaderProg;
+      break;
+    }
+    case 'P': {
+      printf("P pressed - Use Phong model.\n");
+      activeShaderProgram = phongShaderProg;
+      break;
+    }
+    case 'g': {
+      printf("g pressed - Use Gouraud model.\n");
+      activeShaderProgram = gouraudShaderProg;
+      break;
+    }
+    case 'G': {
+      printf("G pressed - Use Gouraud model.\n");
+      activeShaderProgram = gouraudShaderProg;
+      break;
+    }
     default: return;
   }
   glutPostRedisplay();
@@ -157,7 +225,7 @@ void display() {
   // setting up the transformaiton of the object from model coord. system to world coord.
   Matrix4f worldMat = cam->getViewMatrix() * initTranslateMat;
 
-  glUseProgram(shaderProg);
+  glUseProgram(activeShaderProgram);
 
   sphere0->applyTransformation(worldMat);
   Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
@@ -181,7 +249,7 @@ void display() {
 
   // draw them spheres, applying all transformations
 
-  sphere0->drawSphere(shaderProg);
+  sphere0->drawSphere(activeShaderProgram);
   // sphere1->drawSphere(shaderProg);
   // sphere2->drawSphere(shaderProg);
   // cube->draw(shaderProg);
@@ -250,10 +318,13 @@ int main(int argc, char** argv) {
 
   INIT_GLEW();
 
-  s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
+  s.createShaderProgram("gouraud.vert", "gouraud.frag", &gouraudShaderProg);
+  s.createShaderProgram("phong.vert", "phong.frag", &phongShaderProg);
+
+  activeShaderProgram = gouraudShaderProg; // default gouraud shader
 
   // For Task 1.
-  sphere0 = new SolidSphere(0.75, 24, 24);
+  sphere0 = new SolidSphere(1, 20, 20);
 
   // Object for Task 2.
   cube = new SolidCube(1.0, 0.5, 0.5);

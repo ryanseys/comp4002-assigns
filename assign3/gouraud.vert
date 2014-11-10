@@ -1,3 +1,7 @@
+/**
+ * Gouraud lighting model - vertex shader.
+ * Ryan Seys - 100817604
+ */
 #version 120
 attribute vec4 vertex_position;   // the vertex position (in the local space) from VBO
 attribute vec4 vertex_normal;   // the vertex normal (in the local space) from VBO
@@ -21,11 +25,10 @@ uniform vec4 specMat;
 uniform float specPow;
 
 void main() {
-vec4 ambientMatTemp = vec4(0.8, 0.4, 0.2, 1.0);
-vec4 diffuseMatTemp = vec4(0.75, 0.75, 0.5, 1.0);
-vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 1.0);
-
-float specPow = 5;
+vec4 ambientMatTemp = vec4(0.8, 0.4, 0.2, 0.0);
+vec4 diffuseMatTemp = vec4(0.75, 0.75, 0.5, 0.0);
+vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 0.0);
+float specPow = 1;
 vec4 L;
 
   v = vec4(modelViewProjMat * vertex_position);
@@ -38,7 +41,7 @@ vec4 L;
 
   // "gl_NormalMatrix", it's defined as "the transpose of the inverse of the gl_ModelViewMatrix"
   N = normalize(normalMat * vertex_normal);
-  L = normalize(vec4(1, 30, 1000, 0.0) - v);
+  L = normalize(vec4(150, 60, 20, 0.0) - v);
   vec4 E = normalize(-v);
   vec4 R = normalize(reflect(-L, N));
 
