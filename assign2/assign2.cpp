@@ -11,11 +11,11 @@
 
 #ifdef __APPLE_CC__
 #include <GLUT/glut.h>
-#define glewInit(); // Don't glewInit on Mac
+#define INIT_GLEW(); // Don't glewInit on Mac
 #else
 #include <glew.h>
 #include <GL\freeglut.h>
-#define glewInit(); glewInit();
+#define INIT_GLEW(); glewInit();
 #endif
 
 #include <stdio.h>
@@ -247,7 +247,7 @@ int main(int argc, char** argv) {
   glutKeyboardFunc(keyboardFunc);
   glutSpecialFunc(pressSpecialKey);
 
-  glewInit();
+  INIT_GLEW();
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
