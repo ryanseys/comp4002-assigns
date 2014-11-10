@@ -96,11 +96,11 @@ public:
 
   static Matrix4f inverse(Matrix4f m1) {
     Matrix4f inv;
-    float det = m1.determinant();
+    float det = determinant(m1);
     if(det == 0) {
-      return NULL;
+      return m1;
     } else {
-      float bx = ((m1.vm[1].y * m1.vm[2].z * m1.vm[3].w) +
+      float b11 = ((m1.vm[1].y * m1.vm[2].z * m1.vm[3].w) +
       (m1.vm[1].z * m1.vm[2].w * m1.vm[3].y) +
       (m1.vm[1].w * m1.vm[2].y * m1.vm[3].z) -
       (m1.vm[1].y * m1.vm[2].w * m1.vm[3].z) -
@@ -217,9 +217,7 @@ public:
       inv.vm[3].z = b43;
       inv.vm[3].w = b44;
 
-      inv = (1.0/det) * inv;
-      return inv;
-
+      return (inv*(1.0 / det));
     }
   }
 
