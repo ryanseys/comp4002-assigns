@@ -168,9 +168,13 @@ public:
 
     matrix = matrix * Matrix4f::scale(radius, radius, radius);
 
-    GLuint locMat = 0;
-    locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
+    Matrix4f normalMat = Matrix4f::transpose(Matrix4f::inverse(matrix));
+
+    GLuint locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
     glUniformMatrix4fv(locMat, 1, 1, (float *) matrix.vm);
+
+    GLuint normalMatLoc = glGetUniformLocation(shaderProg,  "normalMat");
+    glUniformMatrix4fv(normalMatLoc, 1, 1, (float *) normalMat.vm);
 
     GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
     GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
