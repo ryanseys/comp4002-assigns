@@ -19,14 +19,14 @@ uniform vec4 diffuseMat;
 uniform vec4 specMat;
 uniform float specPow;
 
-void main()
-{
+void main() {
 vec4 ambientMatTemp = vec4(0.8, 0.4, 0.2, 0.0);
 vec4 diffuseMatTemp = vec4(0.75, 0.75, 0.5, 0.0);
 vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 0.0);
 vec4 ambient;
 vec4 diffuse = vec4(0, 0, 0, 0);
 vec4 spec = vec4(0, 0, 0, 0);
+float specPow = 5;
 vec4 L;
 
   v = vec4(modelViewProjMat * vertex_position);
@@ -44,7 +44,7 @@ vec4 L;
   vec4 R = normalize(reflect(-L, N));
 
   ambient = ambientMatTemp;
-  // diffuse = clamp( diffuseMatTemp * max(dot(N,L), 0.0), 0.0, 1.0 ) ;
-  // spec = clamp ( specMat * pow(max(dot(R,E),0.0),0.3*specPow) , 0.0, 1.0 );
+  diffuse = clamp( diffuseMatTemp * max(dot(N,L), 0.0), 0.0, 1.0 ) ;
+  spec = clamp ( specMatTemp * pow(max(dot(R, E),0.0),0.3*specPow) , 0.0, 1.0 );
   color = ambient + diffuse + spec;
 }
