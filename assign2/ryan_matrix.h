@@ -25,7 +25,6 @@ public:
   Vector4f vm[4];
 
   Matrix4f() {
-    int i;
     reset(0.0);
   }
 

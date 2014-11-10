@@ -11,8 +11,11 @@
 
 #ifdef __APPLE_CC__
 #include <GLUT/glut.h>
+#define glewInit(); // Don't glewInit on Mac
 #else
-#include <GL/glut.h>
+#include <glew.h>
+#include <GL\freeglut.h>
+#define glewInit(); glewInit();
 #endif
 
 #include <stdio.h>
@@ -52,7 +55,7 @@ GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
 GLdouble rotateDelta2 = 0.2; // Rotate second sphere 0.2 degrees per frame
 GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
-GLint timerMs = 1;
+GLint timerMs = 20;
 
 // Robot arm
 RobotArm * robotarm;
@@ -243,6 +246,8 @@ int main(int argc, char** argv) {
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
   glutSpecialFunc(pressSpecialKey);
+
+  glewInit();
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 

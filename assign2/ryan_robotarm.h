@@ -16,8 +16,8 @@ GLfloat CUBE_WIDTH = 0.5;
 GLfloat CUBE_HEIGHT = 0.5;
 GLfloat CUBE_DEPTH = 0.5;
 GLfloat SPHERE_RADIUS = 0.75;
-GLfloat SPHERE_SLICES = 24;
-GLfloat SPHERE_STACKS = 24;
+GLuint SPHERE_SLICES = 24;
+GLuint SPHERE_STACKS = 24;
 
 class RobotArm {
 protected:
