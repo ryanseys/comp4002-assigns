@@ -65,6 +65,36 @@ public:
     return(m2);
   }
 
+  static float determinant(Matrix4f m1) {
+    float det = (
+       m1.vm[0].x * m1.vm[1].y * m1.vm[2].z * m1.vm[3].w) +
+      (m1.vm[0].x * m1.vm[1].z * m1.vm[2].w * m1.vm[3].y) + // done
+      (m1.vm[0].x * m1.vm[1].w * m1.vm[2].y * m1.vm[3].z) + //
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[2].w * m1.vm[3].z) + //
+      (m1.vm[0].y * m1.vm[1].z * m1.vm[2].x * m1.vm[3].w) +
+      (m1.vm[0].y * m1.vm[1].w * m1.vm[2].z * m1.vm[3].x) +
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[2].y * m1.vm[3].w) +
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[2].w * m1.vm[3].x) +
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[2].x * m1.vm[3].y) +
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[2].z * m1.vm[3].y) +
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[2].x * m1.vm[3].z) +
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[2].y * m1.vm[3].x) - // done
+      (m1.vm[0].x * m1.vm[1].y * m1.vm[2].w * m1.vm[3].z) -
+      (m1.vm[0].x * m1.vm[1].z * m1.vm[2].y * m1.vm[3].w) -
+      (m1.vm[0].x * m1.vm[1].w * m1.vm[2].z * m1.vm[3].y) -
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[2].z * m1.vm[3].w) -
+      (m1.vm[0].y * m1.vm[1].z * m1.vm[2].w * m1.vm[3].x) -
+      (m1.vm[0].y * m1.vm[1].w * m1.vm[2].x * m1.vm[3].z) -
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[2].w * m1.vm[3].y) -
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[2].x * m1.vm[3].w) -
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[2].y * m1.vm[3].x) -
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[2].y * m1.vm[3].z) -
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[2].z * m1.vm[3].x) -
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[2].x * m1.vm[3].y
+    );
+    return det;
+  }
+
   /**
    * Return a scale matrix.
    * Note: Internal parameters are not changed.

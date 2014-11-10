@@ -44,7 +44,7 @@ const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
-Vector3f position (103, 13, 103);
+Vector3f position (102, 12, 102);
 Vector3f lookAtPoint(100, 10, 100);
 Vector3f upVector(0, 1, 0);
 
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
-  glutCreateWindow("COMP 4002 - Assignment 2 - Ryan Seys");
+  glutCreateWindow("COMP 4002 - Assignment 3 - Ryan Seys");
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);

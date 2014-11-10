@@ -217,6 +217,8 @@ int Shader::shaderStatus(void) {
 		fprintf(stderr,"shader info log = %s \n", s);
 	}
 
+	printf("Shading lang: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
 	glGetProgramiv(shaderProgramid, GL_ATTACHED_SHADERS, &rc);
 	fprintf(stderr,"shader number ofattached shaders= %d \n", rc);
 	glGetProgramiv(shaderProgramid, GL_ACTIVE_ATTRIBUTES, &rc);
