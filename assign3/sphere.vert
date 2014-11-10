@@ -8,6 +8,7 @@ varying vec4 vtx_normal;
 varying vec4 color;
 varying vec4 N;
 varying vec4 v;
+varying vec4 ambient;
 varying vec4 diffuse;
 varying vec4 spec;
 
@@ -20,12 +21,10 @@ uniform vec4 specMat;
 uniform float specPow;
 
 void main() {
-vec4 ambientMatTemp = vec4(0.8, 0.4, 0.2, 0.0);
-vec4 diffuseMatTemp = vec4(0.75, 0.75, 0.5, 0.0);
-vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 0.0);
-vec4 ambient;
-vec4 diffuse = vec4(0, 0, 0, 0);
-vec4 spec = vec4(0, 0, 0, 0);
+vec4 ambientMatTemp = vec4(0.8, 0.4, 0.2, 1.0);
+vec4 diffuseMatTemp = vec4(0.75, 0.75, 0.5, 1.0);
+vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 1.0);
+
 float specPow = 5;
 vec4 L;
 
@@ -39,7 +38,7 @@ vec4 L;
 
   // "gl_NormalMatrix", it's defined as "the transpose of the inverse of the gl_ModelViewMatrix"
   N = normalize(normalMat * vertex_normal);
-  L = normalize(vec4(110, 20, 110, 0.0) - v);
+  L = normalize(vec4(1, 30, 1000, 0.0) - v);
   vec4 E = normalize(-v);
   vec4 R = normalize(reflect(-L, N));
 
