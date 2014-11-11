@@ -27,6 +27,7 @@
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
 #include "ryan_robotarm.h"
+#include "ryan_light.h"
 
 GLdouble delta = 0.1; // how much to move the object (Task 2)
 
@@ -51,6 +52,8 @@ Vector3f upVector(0, 1, 0);
 
 // initialize camera
 Camera * cam;
+
+Light * light;
 
 GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
 GLdouble rotateDelta2 = 0.2; // Rotate second sphere 0.2 degrees per frame
@@ -134,10 +137,12 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'M': {
       printf("M pressed - turn ambient light off.\n");
+      light->setAmbient(0.0, 0.0, 0.0);
       break;
     }
     case 'm': {
       printf("m pressed - turn ambient light on.\n");
+      light->setAmbient(0.8, 0.4, 0.2);
       break;
     }
     case 'N': {
@@ -236,6 +241,8 @@ void display() {
   GLuint projMatLoc = glGetUniformLocation(activeShaderProgram,  "projMat");
   glUniformMatrix4fv(projMatLoc, 1, 1, (float *) cam->getProjMatrix().vm);
 
+  GLuint lightAmbLoc = glGetUniformLocation(activeShaderProgram,  "lightAmb");
+  glUniform4fv(lightAmbLoc, 1, (float *) &light->ambient);
 
   // sphere0->applyTransformation(worldMat);
   // Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
@@ -343,6 +350,9 @@ int main(int argc, char** argv) {
 
   // For Task 3.
   cam = new Camera(position, lookAtPoint, upVector);
+
+  light = new Light();
+  light->setAmbient(0.8, 0.4, 0.2);
 
   // Robot arm for Task 4 (Bonus)
   // robotarm = new RobotArm();

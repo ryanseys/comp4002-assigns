@@ -8,6 +8,7 @@ uniform mat4 modelMat;
 uniform mat4 viewMat;
 uniform mat4 projMat;
 uniform mat4 normalMat;
+uniform vec4 lightAmb;
 
 attribute vec4 vertex_position;   // the vertex position (in the local space) from VBO
 attribute vec4 vertex_normal;   // the vertex normal (in the local space) from VBO
@@ -28,7 +29,6 @@ uniform vec4 specMat;
 uniform float specPow;
 
 void main() {
-  vec4 ambientMatTemp = vec4(0.8, 0.4, 0.2, 1.0);
   vec4 diffuseMatTemp = vec4(0.75, 0.75, 0.5, 1.0);
   vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 1.0);
   float specPow = 5;
@@ -52,7 +52,7 @@ void main() {
   vec4 E = normalize(-v);
   vec4 R = normalize(reflect(-L, N));
 
-  ambient = ambientMatTemp;
+  ambient = lightAmb;
   diffuse = clamp( diffuseMatTemp * max(dot(N,L), 0.0), 0.0, 1.0 ) ;
   spec = clamp ( specMatTemp * pow(max(dot(R, E),0.0),0.3*specPow) , 0.0, 1.0 );
   color = ambient + diffuse + spec;
