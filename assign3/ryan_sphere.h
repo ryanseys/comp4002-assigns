@@ -33,6 +33,8 @@ protected:
     GLuint * ind = NULL;
     int numInd;
     std::vector<Matrix4f> transformations;
+    Matrix4f viewMat;
+    Matrix4f projMat;
 public:
 
   SolidSphere(GLfloat radius, GLuint numLong, GLuint numLat) {
@@ -167,11 +169,10 @@ public:
     }
 
     matrix = matrix * Matrix4f::scale(radius, radius, radius);
-
     Matrix4f normalMat = Matrix4f::transpose(Matrix4f::inverse(matrix));
 
-    GLuint locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
-    glUniformMatrix4fv(locMat, 1, 1, (float *) matrix.vm);
+    GLuint modelLoc = glGetUniformLocation(shaderProg,  "modelMat");
+    glUniformMatrix4fv(modelLoc, 1, 1, (float *) matrix.vm);
 
     GLuint normalMatLoc = glGetUniformLocation(shaderProg,  "normalMat");
     glUniformMatrix4fv(normalMatLoc, 1, 1, (float *) normalMat.vm);

@@ -9,7 +9,5 @@ varying vec4 vtx_normal;
 varying vec4 color;
 
 void main() {
-  // gl_FragColor = vec4(vtx_normal.x, vtx_normal.y, vtx_normal.z, 0.0);
   gl_FragColor = color;
-  // gl_FragColor = vec4(1.0, 0.0, 0.0, 0.0);
 }

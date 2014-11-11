@@ -223,12 +223,22 @@ void display() {
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
 
   // setting up the transformaiton of the object from model coord. system to world coord.
-  Matrix4f worldMat = cam->getViewMatrix() * initTranslateMat;
+  // Matrix4f worldMat =initTranslateMat;
 
   glUseProgram(activeShaderProgram);
 
-  sphere0->applyTransformation(worldMat);
-  Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
+
+  // sphere0->setViewMatrix();
+
+  GLuint viewMatLoc = glGetUniformLocation(activeShaderProgram,  "viewMat");
+  glUniformMatrix4fv(viewMatLoc, 1, 1, (float *) cam->getViewMatrix().vm);
+
+  GLuint projMatLoc = glGetUniformLocation(activeShaderProgram,  "projMat");
+  glUniformMatrix4fv(projMatLoc, 1, 1, (float *) cam->getProjMatrix().vm);
+
+
+  // sphere0->applyTransformation(worldMat);
+  // Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
 
   // sphere1->applyTransformation(worldMat);
   // sphere1->translate(-0.7, 1.0, -1.25);
@@ -248,7 +258,7 @@ void display() {
   // robotarm->applyTransformation(Matrix4f::translation(-3, 0.0, 1.0));
 
   // draw them spheres, applying all transformations
-
+  sphere0->applyTransformation(initTranslateMat);
   sphere0->drawSphere(activeShaderProgram);
   // sphere1->drawSphere(shaderProg);
   // sphere2->drawSphere(shaderProg);

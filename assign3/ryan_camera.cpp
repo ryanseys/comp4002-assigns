@@ -23,11 +23,11 @@ Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
   this->lookAtVector = lookAtPoint - position;
   this->upVector = upVec;
 
-  modelMat = Matrix4f::identity();
+  this->modelMat = Matrix4f::identity();
   // setting up the viewpoint transformation
-  viewMat = Matrix4f::cameraMatrix(this->position, this->lookAtVector, this->upVector);
+  this->viewMat = Matrix4f::cameraMatrix(this->position, this->lookAtVector, this->upVector);
   // setting up the projection transformation
-  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
+  this->projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
 
   this->refresh();
 }
@@ -39,7 +39,7 @@ Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
  * @param h new window height
  */
 void Camera::reshape(GLfloat w, GLfloat h) {
-  projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, w/h, 1.0, 1000);
+  this->projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, w/h, 1.0, 1000);
 }
 
 /**
@@ -85,9 +85,9 @@ int Camera::roll(float angleDeg) {
 int Camera::pitch(float angleDeg) {
   GLfloat angle = DegreeToRadians(angleDeg);
   // calculate the angle between lookAtVector and upVector
-  lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
+  this->lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
   // update upVector for the new lookAtVector
-  upVector = Vector3f::cross(rightVector, lookAtVector);
+  this->upVector = Vector3f::cross(rightVector, lookAtVector);
 
   this->refresh();
 
@@ -103,9 +103,9 @@ int Camera::pitch(float angleDeg) {
 int Camera::yaw(float angleDeg) {
   GLfloat angle = DegreeToRadians(angleDeg);
   // calculate angle between lookAtVector and rightVector to get yaw angle
-  lookAtVector = (lookAtVector * cos(angle) + rightVector * sin(angle)).normalize();
+  this->lookAtVector = (lookAtVector * cos(angle) + rightVector * sin(angle)).normalize();
   // update right angle for new lookAtVector
-  rightVector = Vector3f::cross(lookAtVector, upVector);
+  this->rightVector = Vector3f::cross(lookAtVector, upVector);
 
   this->refresh();
 
@@ -231,7 +231,11 @@ int Camera::updateOrientation(Vector3f rotVector, float angleRad) {
  * @return The transformation matrix
  */
 Matrix4f Camera::getViewMatrix() {
-  return projMat * viewMat * modelMat;
+  return viewMat;
+}
+
+Matrix4f Camera::getProjMatrix() {
+  return projMat;
 }
 
 /**
@@ -249,7 +253,8 @@ void Camera::setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVecto
   this->upVector.normalize();
   this->lookAtVector.normalize();
   this->rightVector.normalize();
-  viewMat = Matrix4f::cameraMatrix(this->position, this->getLookAtPoint(), this->upVector);
+
+  this->viewMat = Matrix4f::cameraMatrix(this->position, this->getLookAtPoint(), this->upVector);
 }
 
 void Camera::refresh(void) {

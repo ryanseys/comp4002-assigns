@@ -19,6 +19,7 @@ public:
   Matrix4f viewMat;
   Matrix4f projMat;
   Matrix4f getViewMatrix();
+  Matrix4f getProjMatrix();
   float speed;
 
   // Camera(void);
@@ -42,6 +43,7 @@ public:
   void setCamera(Vector3f, Vector3f, Vector3f);
   void refresh(void);
   void reshape(GLfloat w, GLfloat h);
+
 };
 
 #endif
