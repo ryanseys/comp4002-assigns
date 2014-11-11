@@ -29,12 +29,16 @@ public:
     this->ambient = Vector4f(r, g, b, 0.0);
   }
 
-  void setDiffuse(Vector4f diff) {
-    this->diffuse = diff;
+  void setDiffuse(GLfloat r, GLfloat g, GLfloat b) {
+    this->diffuse = Vector4f(r, g, b, 0.0);
   }
 
-  void setSpecular(Vector4f spec) {
-    this->specular = spec;
+  void setSpecular(GLfloat r, GLfloat g, GLfloat b) {
+    this->specular = Vector4f(r, g, b, 0.0);
+  }
+
+  void setPosition(GLfloat x, GLfloat y, GLfloat z, GLfloat w) {
+    this->position = Vector4f(x, y, z, w);
   }
 };
 

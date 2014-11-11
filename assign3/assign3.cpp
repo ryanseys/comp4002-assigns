@@ -142,27 +142,34 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'm': {
       printf("m pressed - turn ambient light on.\n");
-      light->setAmbient(0.8, 0.4, 0.2);
+      light->setAmbient(0.8, 0.4, 0.2); // default
       break;
     }
     case 'N': {
       printf("N pressed - turn diffuse light off.\n");
+      light->setDiffuse(0.0, 0.0, 0.0);
       break;
     }
     case 'n': {
       printf("n pressed - turn diffuse light on.\n");
+      light->setDiffuse(0.75, 0.75, 0.5);
       break;
     }
     case 'B': {
       printf("B pressed - turn specular light off.\n");
+      light->setSpecular(0.0, 0.0, 0.0);
       break;
     }
     case 'b': {
       printf("b pressed - turn specular light on.\n");
+      light->setSpecular(0.8, 0.8, 0.8);
       break;
     }
     case 'c': {
       printf("c pressed - change the colour of the light sources.\n");
+      light->setAmbient(0, 1.0, 0.5);
+      light->setDiffuse(0.7, 0, 0.7);
+      light->setSpecular(1, 0, 0);
       // ambient colour to (0, 1.0, 0.5)
       // diffuse colour to (0.7, 0, 0.7)
       // specular light to (1, 0, 0)
@@ -232,9 +239,6 @@ void display() {
 
   glUseProgram(activeShaderProgram);
 
-
-  // sphere0->setViewMatrix();
-
   GLuint viewMatLoc = glGetUniformLocation(activeShaderProgram,  "viewMat");
   glUniformMatrix4fv(viewMatLoc, 1, 1, (float *) cam->getViewMatrix().vm);
 
@@ -243,6 +247,15 @@ void display() {
 
   GLuint lightAmbLoc = glGetUniformLocation(activeShaderProgram,  "lightAmb");
   glUniform4fv(lightAmbLoc, 1, (float *) &light->ambient);
+
+  GLuint lightDiffLoc = glGetUniformLocation(activeShaderProgram,  "lightDiff");
+  glUniform4fv(lightDiffLoc, 1, (float *) &light->diffuse);
+
+  GLuint lightSpecLoc = glGetUniformLocation(activeShaderProgram,  "lightSpec");
+  glUniform4fv(lightSpecLoc, 1, (float *) &light->specular);
+
+  GLuint lightPosLoc = glGetUniformLocation(activeShaderProgram,  "lightPos");
+  glUniform4fv(lightPosLoc, 1, (float *) &light->position);
 
   // sphere0->applyTransformation(worldMat);
   // Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
@@ -353,7 +366,9 @@ int main(int argc, char** argv) {
 
   light = new Light();
   light->setAmbient(0.8, 0.4, 0.2);
-
+  light->setDiffuse(0.75, 0.75, 0.5);
+  light->setSpecular(0.8, 0.8, 0.8);
+  light->setPosition(150, 60, -100, 1.0);
   // Robot arm for Task 4 (Bonus)
   // robotarm = new RobotArm();
 

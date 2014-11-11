@@ -9,6 +9,9 @@ uniform mat4 viewMat;
 uniform mat4 projMat;
 uniform mat4 normalMat;
 uniform vec4 lightAmb;
+uniform vec4 lightDiff;
+uniform vec4 lightSpec;
+uniform vec4 lightPos;
 
 attribute vec4 vertex_position;   // the vertex position (in the local space) from VBO
 attribute vec4 vertex_normal;   // the vertex normal (in the local space) from VBO
@@ -23,13 +26,11 @@ varying vec4 ambient;
 varying vec4 diffuse;
 varying vec4 spec;
 
-uniform vec4 ambientMat;
-uniform vec4 diffuseMat;
 uniform vec4 specMat;
 uniform float specPow;
 
 void main() {
-  vec4 diffuseMatTemp = vec4(0.75, 0.75, 0.5, 1.0);
+  vec4 diffuseMatTemp = vec4( 1.0);
   vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 1.0);
   float specPow = 5;
   vec4 L;
@@ -48,12 +49,12 @@ void main() {
 
   // "gl_NormalMatrix", it's defined as "the transpose of the inverse of the gl_ModelViewMatrix"
   N = normalize(normalMat * vertex_normal);
-  L = normalize(vec4(150, 60, -100, 1.0) - v);
+  L = normalize(lightPos - v);
   vec4 E = normalize(-v);
   vec4 R = normalize(reflect(-L, N));
 
   ambient = lightAmb;
-  diffuse = clamp( diffuseMatTemp * max(dot(N,L), 0.0), 0.0, 1.0 ) ;
-  spec = clamp ( specMatTemp * pow(max(dot(R, E),0.0),0.3*specPow) , 0.0, 1.0 );
+  diffuse = clamp( lightDiff * max(dot(N,L), 0.0), 0.0, 1.0 ) ;
+  spec = clamp ( lightSpec * pow(max(dot(R, E),0.0),0.3*specPow) , 0.0, 1.0 );
   color = ambient + diffuse + spec;
 }
