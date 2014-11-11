@@ -48,7 +48,7 @@ void main() {
 
   // "gl_NormalMatrix", it's defined as "the transpose of the inverse of the gl_ModelViewMatrix"
   N = normalize(normalMat * vertex_normal);
-  L = normalize(vec4(150, 60, 20, 0.0) - v);
+  L = normalize(vec4(150, 60, -100, 1.0) - v);
   vec4 E = normalize(-v);
   vec4 R = normalize(reflect(-L, N));
 

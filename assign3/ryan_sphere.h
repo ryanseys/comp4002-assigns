@@ -122,7 +122,7 @@ public:
     glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
     glGenBuffers(1, &triangleVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numTriangles*3, ind, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numTriangles * 3, ind, GL_STATIC_DRAW);
   }
 
   /**

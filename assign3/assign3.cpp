@@ -336,16 +336,16 @@ int main(int argc, char** argv) {
   // For Task 1.
   sphere0 = new SolidSphere(1, 20, 20);
 
-  // Object for Task 2.
-  cube = new SolidCube(1.0, 0.5, 0.5);
-  sphere1 = new SolidSphere(0.75, 24, 24);
-  sphere2 = new SolidSphere(0.75, 24, 24);
+  // // Object for Task 2.
+  // cube = new SolidCube(1.0, 0.5, 0.5);
+  // sphere1 = new SolidSphere(0.75, 24, 24);
+  // sphere2 = new SolidSphere(0.75, 24, 24);
 
   // For Task 3.
   cam = new Camera(position, lookAtPoint, upVector);
 
   // Robot arm for Task 4 (Bonus)
-  robotarm = new RobotArm();
+  // robotarm = new RobotArm();
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
