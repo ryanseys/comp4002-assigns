@@ -11,8 +11,8 @@ varying vec4 N;
 varying vec4 v;
 
 uniform mat4 modelViewProjMat;
-
 uniform mat4 normalMat;
+
 uniform vec4 ambientMat; // have to still pass these in
 uniform vec4 diffuseMat; // pass this in
 uniform vec4 specMat; // pass this in

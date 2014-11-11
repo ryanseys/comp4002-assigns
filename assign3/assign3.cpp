@@ -217,7 +217,7 @@ void keyboardFunc(unsigned char key, int x, int y) {
  */
 void display() {
   glEnable(GL_DEPTH_TEST);
-  glClearColor(0.0, 0.0, 0,1);
+  glClearColor(0, 0, 0.3, 1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
