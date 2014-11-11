@@ -46,7 +46,7 @@ const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
-Vector3f position (102, 12, 102);
+Vector3f position (103, 13, 104);
 Vector3f lookAtPoint(100, 10, 100);
 Vector3f upVector(0, 1, 0);
 
@@ -375,8 +375,8 @@ int main(int argc, char** argv) {
 
   light->setAmbient(1.0, 1.0, 1.0);
   light->setDiffuse(1.0, 1.0, 1.0);
-  light->setSpecular(0, 0, 0);
-  light->setPosition(200, 60, -100, 1.0);
+  light->setSpecular(1.0, 1.0, 1.0);
+  light->setPosition(200, 210, 200, 1.0);
 
   // Robot arm for Task 4 (Bonus)
   // robotarm = new RobotArm();
