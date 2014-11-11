@@ -142,7 +142,7 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'm': {
       printf("m pressed - turn ambient light on.\n");
-      light->setAmbient(0.8, 0.4, 0.2); // default
+      light->setAmbient(1.0, 1.0, 1.0); // default
       break;
     }
     case 'N': {
@@ -152,7 +152,7 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'n': {
       printf("n pressed - turn diffuse light on.\n");
-      light->setDiffuse(0.75, 0.75, 0.5);
+      light->setDiffuse(1.0, 1.0, 1.0);
       break;
     }
     case 'B': {
@@ -162,7 +162,7 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'b': {
       printf("b pressed - turn specular light on.\n");
-      light->setSpecular(0.8, 0.8, 0.8);
+      light->setSpecular(1.0, 1.0, 1.0);
       break;
     }
     case 'c': {
@@ -177,6 +177,9 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'C': {
       printf("C pressed - light change back to white.\n");
+      light->setAmbient(1.0, 1.0, 1.0);
+      light->setDiffuse(1.0, 1.0, 1.0);
+      light->setSpecular(1.0, 1.0, 1.0);
       break;
     }
     case 'i': {
@@ -356,6 +359,10 @@ int main(int argc, char** argv) {
   // For Task 1.
   sphere0 = new SolidSphere(1, 20, 20);
 
+  sphere0->setAmbient(0.8, 0.4, 0.2);
+  sphere0->setDiffuse(0.75, 0.75, 0.5);
+  sphere0->setSpecular(0.8, 0.8, 0.8);
+
   // // Object for Task 2.
   // cube = new SolidCube(1.0, 0.5, 0.5);
   // sphere1 = new SolidSphere(0.75, 24, 24);
@@ -365,10 +372,12 @@ int main(int argc, char** argv) {
   cam = new Camera(position, lookAtPoint, upVector);
 
   light = new Light();
-  light->setAmbient(0.8, 0.4, 0.2);
-  light->setDiffuse(0.75, 0.75, 0.5);
-  light->setSpecular(0.8, 0.8, 0.8);
-  light->setPosition(150, 60, -100, 1.0);
+
+  light->setAmbient(1.0, 1.0, 1.0);
+  light->setDiffuse(1.0, 1.0, 1.0);
+  light->setSpecular(0, 0, 0);
+  light->setPosition(200, 60, -100, 1.0);
+
   // Robot arm for Task 4 (Bonus)
   // robotarm = new RobotArm();
 

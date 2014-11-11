@@ -35,9 +35,17 @@ protected:
     std::vector<Matrix4f> transformations;
     Matrix4f viewMat;
     Matrix4f projMat;
+
 public:
+  Vector4f materialAmbient;
+  Vector4f materialDiffuse;
+  Vector4f materialSpecular;
 
   SolidSphere(GLfloat radius, GLuint numLong, GLuint numLat) {
+    materialAmbient = Vector4f(0, 0, 0, 0);
+    materialDiffuse = Vector4f(0, 0, 0, 0);
+    materialSpecular = Vector4f(0, 0, 0, 0);
+
     this->radius = radius;
     int rc = 0;
     int i, j, k;
@@ -177,6 +185,15 @@ public:
     GLuint normalMatLoc = glGetUniformLocation(shaderProg,  "normalMat");
     glUniformMatrix4fv(normalMatLoc, 1, 1, (float *) normalMat.vm);
 
+    GLuint matAmbLoc = glGetUniformLocation(shaderProg,  "materialAmb");
+    glUniform4fv(matAmbLoc, 1, (float *) &materialAmbient);
+
+    GLuint matDiffLoc = glGetUniformLocation(shaderProg,  "materialDiff");
+    glUniform4fv(matDiffLoc, 1, (float *) &materialDiffuse);
+
+    GLuint matSpecLoc = glGetUniformLocation(shaderProg,  "materialSpec");
+    glUniform4fv(matSpecLoc, 1, (float *) &materialSpecular);
+
     GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
     GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
     glEnableVertexAttribArray(positionLoc);
@@ -190,7 +207,6 @@ public:
     glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
     relAddress = (char *) v.normal - (char *) &v;
     glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
-
     // draw the triangles
     glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
     this->clear();
@@ -198,6 +214,18 @@ public:
 
   void applyTransformation(Matrix4f m) {
     this->transformations.push_back(m);
+  }
+
+  void setAmbient(GLfloat r, GLfloat g, GLfloat b) {
+    this->materialAmbient = Vector4f(r, g, b, 0.0);
+  }
+
+  void setDiffuse(GLfloat r, GLfloat g, GLfloat b) {
+    this->materialDiffuse = Vector4f(r, g, b, 0.0);
+  }
+
+  void setSpecular(GLfloat r, GLfloat g, GLfloat b) {
+    this->materialSpecular = Vector4f(r, g, b, 0.0);
   }
 
   void clear() {
