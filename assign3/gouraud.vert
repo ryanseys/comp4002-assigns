@@ -35,15 +35,16 @@ varying vec4 ambient;
 varying vec4 diffuse;
 varying vec4 spec;
 
-uniform vec4 specMat;
 uniform float specPow;
 
 void main() {
-  float specPow = 3;
+  float specPow = 5; // specular exponent = GL_SHININESS
   vec4 L;
 
   mat4 modelViewMat = viewMat * modelMat;
   mat4 modelViewProjMat = projMat * modelViewMat;
+
+  vec4 materialEmission = vec4(0.0, 0.0, 0.0, 0.0); // material emission color
 
   gl_Position = modelViewProjMat * vertex_position;
 
@@ -61,7 +62,7 @@ void main() {
   vec4 R = normalize(reflect(-L, N));
 
   ambient = lightAmb * materialAmb;
-  diffuse = clamp( (lightDiff * materialDiff) * max(dot(N,L), 0.0), 0.0, 1.0 ) ;
-  spec = clamp ( (lightSpec * materialSpec) * pow(max(dot(R, E),0.0),0.3*specPow) , 0.0, 1.0 );
-  color = (ambient) + (diffuse) + (spec);
+  diffuse = clamp( max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0 ) ;
+  spec = clamp ( lightSpec * materialSpec * pow(max(dot(R, E), 0.0),0.3*specPow) , 0.0, 1.0 );
+  color = materialEmission + ambient + diffuse + spec;
 }
