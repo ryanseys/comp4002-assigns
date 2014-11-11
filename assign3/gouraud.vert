@@ -30,8 +30,6 @@ uniform vec4 specMat;
 uniform float specPow;
 
 void main() {
-  vec4 diffuseMatTemp = vec4( 1.0);
-  vec4 specMatTemp = vec4(0.8, 0.8, 0.8, 1.0);
   float specPow = 5;
   vec4 L;
 
