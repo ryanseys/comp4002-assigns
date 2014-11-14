@@ -358,7 +358,7 @@ int main(int argc, char** argv) {
   sphere0 = new SolidSphere(1, 50, 50);
 
   sphere0->setAmbient(0.8, 0.4, 0.2);
-  sphere0->setDiffuse(1, 1, 1);
+  sphere0->setDiffuse(0.75, 0.75, 0.5);
   sphere0->setSpecular(0.8, 0.8, 0.8);
 
   // // Object for Task 2.
