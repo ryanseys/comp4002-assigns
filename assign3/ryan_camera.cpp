@@ -98,7 +98,7 @@ int Camera::yaw(float angleDeg) {
   // calculate angle between lookAtVector and rightVector to get yaw angle
   this->lookAtVector = (lookAtVector * cos(angle) + rightVector * sin(angle)).normalize();
   this->rightVector = Vector3f::cross(lookAtVector, upVector);
-  // need to upload up vector because rightVector is always interpreted from others.
+  // need to update up vector because rightVector is always interpreted from others.
   this->upVector = Vector3f::cross(rightVector, lookAtVector);
 
   this->refresh();

@@ -42,10 +42,11 @@ GLuint gouraudShaderProg, phongShaderProg;
 GLuint activeShaderProgram;
 GLint windowHeight, windowWidth;
 
-const GLfloat PITCH_AMT = 1.0; // degrees up and down
+const GLfloat PITCH_AMT = 5.0; // degrees up and down
 const GLfloat YAW_AMT = 5.0; // degrees right and left
-const GLfloat FORWARD_AMT = 0.2;
+const GLfloat FORWARD_AMT = 1.0;
 
+// Camera defaults
 Vector3f position (103, 13, 103);
 Vector3f lookAtPoint(100, 10, 100);
 Vector3f upVector(0, 1, 0);
@@ -55,12 +56,24 @@ Camera * cam;
 Light * light;
 
 GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
-GLdouble rotateDelta2 = 0.2; // Rotate second sphere 0.2 degrees per frame
 GLdouble sphere1Rotate = 0.0;
-GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
+GLfloat shininess = 5.0; // min is zero
+GLfloat SHINY_FACTOR = 5.0;
 
 SolidSphere * sphere;
+
+float addShininess(GLfloat amount) {
+  GLfloat SHINY_MIN = 0;
+  GLfloat SHINY_MAX = 250;
+  shininess += amount;
+  if(shininess < SHINY_MIN) {
+    shininess = SHINY_MIN;
+  } else if(shininess > SHINY_MAX) {
+    shininess = SHINY_MAX;
+  }
+  return shininess;
+}
 
 /**
  * When a regular (not special) key is pressed.
@@ -92,11 +105,13 @@ void keyboardFunc(unsigned char key, int x, int y) {
       break;
     }
     case '+': {
-      printf("+ pressed\n");
+      addShininess(SHINY_FACTOR);
+      printf("+ pressed - increase shininess to %f.\n", shininess);
       break;
     }
     case '-': {
-      printf("- pressed\n");
+      addShininess(-SHINY_FACTOR);
+      printf("- pressed - decrease shininess to %f.\n", shininess);
       break;
     }
     case 'M': {
@@ -219,6 +234,9 @@ void display() {
   GLuint lightPosLoc = glGetUniformLocation(activeShaderProgram,  "lightPos");
   glUniform4fv(lightPosLoc, 1, (float *) &light->position);
 
+  GLuint shininessLoc = glGetUniformLocation(activeShaderProgram,  "shininess");
+  glUniform1f(shininessLoc, shininess);
+
   sphere->translate(100, 10, 100);
   sphere->drawSphere(activeShaderProgram);
 
@@ -241,10 +259,10 @@ void reshape(GLint w, GLint h) {
  * Every time the timer ticks
  */
 void renderTick(int value) {
-  sphere1Rotate = fmod(sphere1Rotate + rotateDelta1, 360);
-  sphere2Rotate = fmod(sphere2Rotate - rotateDelta2, 360);
+  // sphere1Rotate = fmod(sphere1Rotate + rotateDelta1, 360);
+  // sphere2Rotate = fmod(sphere2Rotate - rotateDelta2, 360);
   glutPostRedisplay();
-  glutTimerFunc(timerMs, renderTick, 1); // restart the timer
+  // glutTimerFunc(timerMs, renderTick, 1); // restart the timer
 }
 
 void pressSpecialKey(int key, int xx, int yy) {

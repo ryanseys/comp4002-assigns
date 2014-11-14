@@ -22,15 +22,13 @@ uniform vec4 lightSpec;
 uniform vec4 lightPos;
 
 // Specular power (shininess factor)
-uniform float specPow;
+uniform float shininess;
 
 attribute vec4 vPosition; // the vertex position
 attribute vec4 vNormal;   // the vertex normal
 varying vec4 color; // color to be exported to the fragment shader
 
 void main() {
-  float specPow = 10; // specular exponent = GL_SHININESS
-
   mat4 modelViewMat = viewMat * modelMat;
   mat4 modelViewProjMat = projMat * modelViewMat;
   vec4 v = vec4(modelViewMat * vPosition);
@@ -43,7 +41,7 @@ void main() {
 
   vec4 ambient = lightAmb * materialAmb;
   vec4 diffuse = clamp( max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0 ) ;
-  vec4 specular = clamp (lightSpec * materialSpec * pow(max(dot(R, E), 0.0), specPow) , 0.0, 1.0 );
+  vec4 specular = clamp (lightSpec * materialSpec * pow(max(dot(R, E), 0.0), shininess) , 0.0, 1.0 );
 
   // Exported
   color = ambient + diffuse + specular;
