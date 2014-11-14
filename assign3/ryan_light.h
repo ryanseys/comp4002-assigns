@@ -22,7 +22,7 @@ public:
 
     // Used only for spotlights
     this->lookAtPoint = Vector4f(0, 0, 0, 0);
-    this->angularAtten = 1;
+    this->angularAtten = 23;
     this->coneAngle = 35;
   }
 
