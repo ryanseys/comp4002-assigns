@@ -48,7 +48,7 @@ void main (void) {
     float intensity = cosA;
     float angle = degrees(acos(cosA));
     if(angle < spotConeAngle) {
-      power = pow(cosA, 3); // some spotExponent
+      power = pow(cosA, spotAngAtten); // some spotExponent
     }
   }
 

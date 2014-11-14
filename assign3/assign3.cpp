@@ -212,7 +212,7 @@ void keyboardFunc(unsigned char key, int x, int y) {
       if(spotlight->coneAngle > 120) {
         spotlight->coneAngle = 120;
       }
-      printf("0 pressed - Increase the cone opening angle to %f deg.\n", spotlight->coneAngle);
+      printf("0 pressed - Increase the spotlight cutoff angle to %f deg.\n", spotlight->coneAngle);
       break;
     }
     case '9': {
@@ -220,7 +220,20 @@ void keyboardFunc(unsigned char key, int x, int y) {
       if(spotlight->coneAngle < 1) {
         spotlight->coneAngle = 1;
       }
-      printf("9 pressed - Decrease the cone opening angle to %f deg.\n", spotlight->coneAngle);
+      printf("9 pressed - Decrease the spotlight cutoff angle to %f deg.\n", spotlight->coneAngle);
+      break;
+    }
+    case '8': {
+      spotlight->angularAtten += 1;
+      printf("8 pressed - Increase spotlight angular attenuation to %f deg.\n", spotlight->angularAtten);
+      break;
+    }
+    case '7': {
+      spotlight->angularAtten -= 1;
+      if(spotlight->angularAtten < 1) {
+        spotlight->angularAtten = 1;
+      }
+      printf("7 pressed - Decrease the spotlight angular attenuation to %f deg.\n", spotlight->angularAtten);
       break;
     }
     default: return;
