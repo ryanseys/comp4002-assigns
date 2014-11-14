@@ -212,6 +212,10 @@ public:
     this->clear();
   }
 
+  void scale(GLfloat xAmt, GLfloat yAmt, GLfloat zAmt) {
+    modelMat = modelMat * Matrix4f::scale(xAmt, yAmt, zAmt);
+  }
+
   void translate(GLfloat x, GLfloat y, GLfloat z) {
     modelMat = modelMat * Matrix4f::translation(x, y, z);
   }

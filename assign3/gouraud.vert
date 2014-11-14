@@ -40,10 +40,10 @@ void main() {
   vec4 R = normalize(reflect(-L, N));
 
   vec4 ambient = lightAmb * materialAmb;
-  vec4 diffuse = clamp( max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0 ) ;
-  vec4 specular = clamp (lightSpec * materialSpec * pow(max(dot(R, E), 0.0), shininess) , 0.0, 1.0 );
+  vec4 diffuse = clamp(max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0);
+  vec4 specular = clamp(lightSpec * materialSpec * pow(max(dot(R, E), 0.0), shininess), 0.0, 1.0);
 
   // Exported
   color = ambient + diffuse + specular;
-  gl_Position = projMat * viewMat * modelMat * vPosition;
+  gl_Position = modelViewProjMat * vPosition;
 }

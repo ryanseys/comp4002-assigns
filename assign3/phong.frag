@@ -27,8 +27,8 @@ void main (void) {
   vec4 R = normalize(reflect(-L, N));
 
   vec4 ambient = lightAmb * materialAmb;
-  vec4 diffuse = clamp( max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0 ) ;
-  vec4 specular = clamp (lightSpec * materialSpec * pow(max(dot(R, E), 0.0), specPow) , 0.0, 1.0 );
+  vec4 diffuse = clamp(max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0);
+  vec4 specular = clamp(lightSpec * materialSpec * pow(max(dot(R, E), 0.0), specPow) , 0.0, 1.0);
 
   gl_FragColor = ambient + diffuse + specular;
 }

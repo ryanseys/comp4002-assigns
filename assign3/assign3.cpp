@@ -29,15 +29,6 @@
 // #include "ryan_robotarm.h"
 #include "ryan_light.h"
 
-GLdouble delta = 0.1; // how much to move the object (Task 2)
-
-GLdouble objX = 0.0;
-GLdouble objY = 0.0;
-GLdouble objZ = 0.0;
-
-GLint robotPartSelected = -1; // nothing initially selected
-GLfloat ROBOT_ROTATE_DEG = 1.0;
-
 GLuint gouraudShaderProg, phongShaderProg;
 GLuint activeShaderProgram;
 GLint windowHeight, windowWidth;
@@ -62,6 +53,10 @@ GLfloat shininess = 5.0; // min is zero
 GLfloat SHINY_FACTOR = 5.0;
 
 SolidSphere * sphere;
+
+GLfloat sphereScaleX = 1.0;
+GLfloat sphereScaleY = 1.0;
+GLfloat sphereScaleZ = 1.0;
 
 float addShininess(GLfloat amount) {
   GLfloat SHINY_MIN = 0;
@@ -146,9 +141,9 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'c': {
       printf("c pressed - change the colour of the light sources.\n");
-      light->setAmbient(0, 1.0, 0.5);
-      light->setDiffuse(0.7, 0, 0.7);
-      light->setSpecular(1, 0, 0);
+      light->setAmbient(0.0, 1.0, 0.5);
+      light->setDiffuse(0.7, 0.0, 0.7);
+      light->setSpecular(1.0, 0.0, 0.0);
       break;
     }
     case 'C': {
@@ -160,22 +155,35 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'i': {
       printf("i pressed - increase scale sphere in the x-direction by 0.5 increments.\n");
+      sphereScaleX += 0.5;
       break;
     }
     case 'j': {
       printf("j pressed - decrease scale sphere in the x-direction by 0.5 increments.\n");
+      sphereScaleX -= 0.5;
+      if(sphereScaleX < 1.0) {
+        sphereScaleX = 1.0;
+      }
       break;
     }
     case 'k': {
       printf("k pressed - increase scale sphere in the y-direction by 0.5 increments.\n");
+      sphereScaleY += 0.5;
       break;
     }
     case 'l': {
       printf("l pressed - decrease scale sphere in the y-direction by 0.5 increments.\n");
+      sphereScaleY -= 0.5;
+      if(sphereScaleY < 1.0) {
+        sphereScaleY = 1.0;
+      }
       break;
     }
     case 'r': {
       printf("r pressed - reset the scale of sphere in x,y,z to 1.\n");
+      sphereScaleX = 1.0;
+      sphereScaleY = 1.0;
+      sphereScaleZ = 1.0;
       break;
     }
     case 'p': {
@@ -238,6 +246,7 @@ void display() {
   glUniform1f(shininessLoc, shininess);
 
   sphere->translate(100, 10, 100);
+  sphere->scale(sphereScaleX, sphereScaleY, sphereScaleZ);
   sphere->drawSphere(activeShaderProgram);
 
   glUseProgram(0);
