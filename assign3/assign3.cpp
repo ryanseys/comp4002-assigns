@@ -48,7 +48,7 @@ const GLfloat FORWARD_AMT = 0.2;
 
 Vector3f position (103, 13, 103);
 Vector3f lookAtPoint(100, 10, 100);
-Vector3f upVector(0, 0, 1);
+Vector3f upVector(0, 1, 0);
 
 // initialize camera
 Camera * cam;
@@ -170,9 +170,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
       light->setAmbient(0, 1.0, 0.5);
       light->setDiffuse(0.7, 0, 0.7);
       light->setSpecular(1, 0, 0);
-      // ambient colour to (0, 1.0, 0.5)
-      // diffuse colour to (0.7, 0, 0.7)
-      // specular light to (1, 0, 0)
       break;
     }
     case 'C': {
@@ -283,8 +280,6 @@ void display() {
   // draw them spheres, applying all transformations
 
   sphere0->translate(100, 10, 100);
-  sphere0->rotateY(sphere1Rotate += 5);
-  sphere0->rotateX(sphere1Rotate);
   sphere0->drawSphere(activeShaderProgram);
   // sphere1->drawSphere(shaderProg);
   // sphere2->drawSphere(shaderProg);
