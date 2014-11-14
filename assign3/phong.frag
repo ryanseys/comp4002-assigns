@@ -30,5 +30,23 @@ void main (void) {
   vec4 diffuse = clamp(max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0);
   vec4 specular = clamp(lightSpec * materialSpec * pow(max(dot(R, E), 0.0), specPow) , 0.0, 1.0);
 
-  gl_FragColor = ambient + diffuse + specular;
+  // position of spot light is set here
+  vec4 spotPosition = vec4(190, 200, 190, 0);
+  // spot direction vector is from position to the middle of sphere
+  vec4 spotDirection = normalize(vec4(100, 10, 100, 0) - spotPosition);
+  // this is the cutoff angle for the spotlight
+  float spotCutoffAngle = 1; // degrees
+
+  // float spotEffect = vec4(0, 0, 0, 0);
+  float intensity = max(dot(N, -spotDirection), 0.0);
+  vec4 spot = vec4(intensity, intensity, intensity, 1);
+  float power = 0;
+  if(intensity > 0.0) {
+    float angle = acos(dot(-spotDirection, N));
+    if(angle < spotCutoffAngle) {
+      power = pow(90-angle, 10); // some spotExponent
+    }
+  }
+
+  gl_FragColor = vec4(power, power, power, power) + ambient + diffuse + specular;
 }
