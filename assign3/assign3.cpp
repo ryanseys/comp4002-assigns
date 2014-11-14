@@ -358,7 +358,7 @@ int main(int argc, char** argv) {
   s.createShaderProgram("phong.vert", "phong.frag", &phongShaderProg);
 
   // Default: Gouraud shader
-  activeShaderProgram = phongShaderProg;
+  activeShaderProgram = gouraudShaderProg;
 
   // Set up sphere
   sphere = new SolidSphere(1, 25, 25);
