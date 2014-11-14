@@ -26,7 +26,7 @@
 #include "ryan_cube.h"
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
-#include "ryan_robotarm.h"
+// #include "ryan_robotarm.h"
 #include "ryan_light.h"
 
 GLdouble delta = 0.1; // how much to move the object (Task 2)
@@ -46,9 +46,9 @@ const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
-Vector3f position (95, 12, 103);
+Vector3f position (103, 13, 103);
 Vector3f lookAtPoint(100, 10, 100);
-Vector3f upVector(0, 1, 0);
+Vector3f upVector(0, 0, 1);
 
 // initialize camera
 Camera * cam;
@@ -62,7 +62,7 @@ GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
 
 // Robot arm
-RobotArm * robotarm;
+// RobotArm * robotarm;
 SolidSphere * sphere0;
 SolidSphere * sphere1;
 SolidSphere * sphere2;
@@ -119,12 +119,12 @@ void keyboardFunc(unsigned char key, int x, int y) {
     }
     case 'z': {
       // Rotate robot part +1 degree
-      robotarm->rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
+      // robotarm->rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
       break;
     }
     case 'x': {
       // Rotate robot part -1 degree
-      robotarm->rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
+      // robotarm->rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
       break;
     }
     case '+': {
@@ -281,7 +281,10 @@ void display() {
   // robotarm->applyTransformation(Matrix4f::translation(-3, 0.0, 1.0));
 
   // draw them spheres, applying all transformations
-  sphere0->applyTransformation(initTranslateMat);
+
+  sphere0->translate(100, 10, 100);
+  sphere0->rotateY(sphere1Rotate += 5);
+  sphere0->rotateX(sphere1Rotate);
   sphere0->drawSphere(activeShaderProgram);
   // sphere1->drawSphere(shaderProg);
   // sphere2->drawSphere(shaderProg);
@@ -360,7 +363,7 @@ int main(int argc, char** argv) {
   sphere0 = new SolidSphere(1, 50, 50);
 
   sphere0->setAmbient(0.8, 0.4, 0.2);
-  sphere0->setDiffuse(0.75, 0.75, 0.5);
+  sphere0->setDiffuse(1, 1, 1);
   sphere0->setSpecular(0.8, 0.8, 0.8);
 
   // // Object for Task 2.
@@ -376,12 +379,14 @@ int main(int argc, char** argv) {
   light->setAmbient(1.0, 1.0, 1.0);
   light->setDiffuse(1.0, 1.0, 1.0);
   light->setSpecular(1.0, 1.0, 1.0);
-  light->setPosition(200, 210, 200, 1.0);
+  light->setPosition(200, 210, 200, 0);
 
   // Robot arm for Task 4 (Bonus)
   // robotarm = new RobotArm();
 
   glutPostRedisplay();
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
   glEnable(GL_DEPTH_TEST);
   glutTimerFunc(1, renderTick, 1);
   glutMainLoop();

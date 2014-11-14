@@ -98,8 +98,15 @@ public:
     Matrix4f inv;
     float det = determinant(m1);
     if(det == 0) {
+      printf("Determinant was zero.\n");
       return m1;
     } else {
+      // printf("Before inverse:\n");
+      // printf("%f %f %f %f\n", m1.vm[0].x, m1.vm[0].y, m1.vm[0].z, m1.vm[0].w);
+      // printf("%f %f %f %f\n", m1.vm[1].x, m1.vm[1].y, m1.vm[1].z, m1.vm[1].w);
+      // printf("%f %f %f %f\n", m1.vm[2].x, m1.vm[2].y, m1.vm[2].z, m1.vm[2].w);
+      // printf("%f %f %f %f\n", m1.vm[3].x, m1.vm[3].y, m1.vm[3].z, m1.vm[3].w);
+
       float b11 = ((m1.vm[1].y * m1.vm[2].z * m1.vm[3].w) +
       (m1.vm[1].z * m1.vm[2].w * m1.vm[3].y) +
       (m1.vm[1].w * m1.vm[2].y * m1.vm[3].z) -
@@ -217,7 +224,15 @@ public:
       inv.vm[3].z = b43;
       inv.vm[3].w = b44;
 
-      return (inv*(1.0 / det));
+      inv = inv * (1.0 / det);
+
+      // printf("Result:\n");
+      // printf("%f %f %f %f\n", inv.vm[0].x, inv.vm[0].y, inv.vm[0].z, inv.vm[0].w);
+      // printf("%f %f %f %f\n", inv.vm[1].x, inv.vm[1].y, inv.vm[1].z, inv.vm[1].w);
+      // printf("%f %f %f %f\n", inv.vm[2].x, inv.vm[2].y, inv.vm[2].z, inv.vm[2].w);
+      // printf("%f %f %f %f\n", inv.vm[3].x, inv.vm[3].y, inv.vm[3].z, inv.vm[3].w);
+
+      return inv;
     }
   }
 

@@ -293,7 +293,6 @@ struct Vector4f {
     return(Vector3f(u.y*v.z-v.y*u.z, -1*(u.x*v.z-v.x*u.z), u.x*v.y-v.x*u.y));
   }
 
-
   static float cross_value(const Vector4f& u,  const Vector4f& v) {
     return(u.y*v.z-v.y*u.z + -1*(u.x*v.z-v.x*u.z) + u.x*v.y-v.x*u.y);
   }
