@@ -355,7 +355,7 @@ int main(int argc, char** argv) {
   activeShaderProgram = gouraudShaderProg; // default gouraud shader
 
   // For Task 1.
-  sphere0 = new SolidSphere(1, 50, 50);
+  sphere0 = new SolidSphere(1, 20, 20);
 
   sphere0->setAmbient(0.8, 0.4, 0.2);
   sphere0->setDiffuse(0.75, 0.75, 0.5);

@@ -21,15 +21,12 @@ uniform vec4 lightDiff;
 uniform vec4 lightSpec;
 uniform vec4 lightPos;
 
-attribute vec4 vPosition;   // the vertex position (in the local space) from VBO
-attribute vec4 vNormal;   // the vertex normal (in the local space) from VBO
-
-// varying vec3 fragment_position;   // The fragment position output into the fragment shader
-// varying vec4 fragment_normal;   // The fragment normal output into the fragment shader
-varying vec4 vtx_normal;
-varying vec4 color;
-
+// Specular power (shininess factor)
 uniform float specPow;
+
+attribute vec4 vPosition; // the vertex position
+attribute vec4 vNormal;   // the vertex normal
+varying vec4 color; // color to be exported to the fragment shader
 
 void main() {
   float specPow = 10; // specular exponent = GL_SHININESS

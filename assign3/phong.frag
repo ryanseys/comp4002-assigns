@@ -3,34 +3,32 @@
  * Ryan Seys - 100817604
  */
 #version 120
-varying vec3 fragment_position;   // The fragment position interpolated from the vertex shader
-varying vec4 vtx_normal;
-varying vec4 color;
+// material color components
+uniform vec4 materialAmb;
+uniform vec4 materialDiff;
+uniform vec4 materialSpec;
 
-varying vec4 N;
-varying vec4 v;
+// light components
+uniform vec4 lightAmb;
+uniform vec4 lightDiff;
+uniform vec4 lightSpec;
+uniform vec4 lightPos;
 
-uniform mat4 modelViewProjMat;
-uniform mat4 normalMat;
+// Specular power (shininess factor)
+uniform float specPow;
 
-uniform vec4 ambientMat; // have to still pass these in
-uniform vec4 diffuseMat; // pass this in
-uniform vec4 specMat; // pass this in
-uniform float specPow; // pass this in
+varying vec4 v; // from vertex shader
+varying vec4 N; // from vertex shader
 
 void main (void) {
-  vec4 diffuse;
-  vec4 spec;
-  vec4 ambient;
-
-  vec4 L = normalize(vec4(100, 30, 0, 0) - v);
+  float specPow = 5;
+  vec4 L = normalize(lightPos - v);
   vec4 E = normalize(-v);
   vec4 R = normalize(reflect(-L, N));
 
-  ambient = ambientMat;
+  vec4 ambient = lightAmb * materialAmb;
+  vec4 diffuse = clamp( max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0 ) ;
+  vec4 specular = clamp (lightSpec * materialSpec * pow(max(dot(R, E), 0.0), specPow) , 0.0, 1.0 );
 
-  diffuse = clamp( diffuseMat * max(dot(N,L), 0.0)  , 0.0, 1.0 ) ;
-  spec = clamp( specMat * pow(max(dot(R,E),0.0),0.3*specPow) , 0.0, 1.0 );
-
-  gl_FragColor = ambient + diffuse + spec;
+  gl_FragColor = ambient + diffuse + specular;
 }
