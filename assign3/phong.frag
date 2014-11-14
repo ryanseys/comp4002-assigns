@@ -15,7 +15,7 @@ uniform vec4 lightSpec;
 uniform vec4 lightPos;
 
 // Specular power (shininess factor)
-uniform float specPow;
+uniform float shinyFactor;
 
 varying vec4 v; // from vertex shader
 varying vec4 N; // from vertex shader

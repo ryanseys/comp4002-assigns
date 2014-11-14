@@ -43,7 +43,7 @@ GLuint activeShaderProgram;
 GLint windowHeight, windowWidth;
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
-const GLfloat YAW_AMT = 1.0; // degrees right and left
+const GLfloat YAW_AMT = 5.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.2;
 
 Vector3f position (103, 13, 103);
@@ -52,7 +52,6 @@ Vector3f upVector(0, 1, 0);
 
 // initialize camera
 Camera * cam;
-
 Light * light;
 
 GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
@@ -61,38 +60,13 @@ GLdouble sphere1Rotate = 0.0;
 GLdouble sphere2Rotate = 0.0;
 GLint timerMs = 20;
 
-// Robot arm
-// RobotArm * robotarm;
-SolidSphere * sphere0;
-SolidSphere * sphere1;
-SolidSphere * sphere2;
-SolidCube * cube;
+SolidSphere * sphere;
 
 /**
  * When a regular (not special) key is pressed.
  */
 void keyboardFunc(unsigned char key, int x, int y) {
   switch (key) {
-    case '1': {
-      robotPartSelected = 1;
-      break;
-    }
-    case '2': {
-      robotPartSelected = 2;
-      break;
-    }
-    case '3': {
-      robotPartSelected = 3;
-      break;
-    }
-    case '4': {
-      robotPartSelected = 4;
-      break;
-    }
-    case '5': {
-      robotPartSelected = 5;
-      break;
-    }
     case 'a': {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
@@ -115,16 +89,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
     case 's': {
       // Move camera backward along lookAtVector
       cam->moveForward(-FORWARD_AMT);
-      break;
-    }
-    case 'z': {
-      // Rotate robot part +1 degree
-      // robotarm->rotatePart(robotPartSelected, ROBOT_ROTATE_DEG);
-      break;
-    }
-    case 'x': {
-      // Rotate robot part -1 degree
-      // robotarm->rotatePart(robotPartSelected, -ROBOT_ROTATE_DEG);
       break;
     }
     case '+': {
@@ -232,10 +196,8 @@ void display() {
   glClearColor(0, 0, 0.3, 1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+  // New origin at (100, 10, 100)
   Matrix4f initTranslateMat = Matrix4f::translation(100, 10, 100);
-
-  // setting up the transformaiton of the object from model coord. system to world coord.
-  // Matrix4f worldMat =initTranslateMat;
 
   glUseProgram(activeShaderProgram);
 
@@ -257,34 +219,8 @@ void display() {
   GLuint lightPosLoc = glGetUniformLocation(activeShaderProgram,  "lightPos");
   glUniform4fv(lightPosLoc, 1, (float *) &light->position);
 
-  // sphere0->applyTransformation(worldMat);
-  // Matrix4f objMat = Matrix4f::translation(objX, objY, objZ);
-
-  // sphere1->applyTransformation(worldMat);
-  // sphere1->translate(-0.7, 1.0, -1.25);
-  // sphere1->applyTransformation(objMat);
-  // sphere1->rotateY(sphere1Rotate);
-
-  // sphere2->applyTransformation(worldMat);
-  // sphere2->translate(0.7, 1.0, -1.25);
-  // sphere2->applyTransformation(objMat);
-  // sphere2->rotateY(sphere2Rotate);
-
-  // cube->applyTransformation(worldMat);
-  // cube->applyTransformation(objMat);
-  // cube->translate(-0.25, -0.25, -1.6);
-
-  // robotarm->applyTransformation(worldMat);
-  // robotarm->applyTransformation(Matrix4f::translation(-3, 0.0, 1.0));
-
-  // draw them spheres, applying all transformations
-
-  sphere0->translate(100, 10, 100);
-  sphere0->drawSphere(activeShaderProgram);
-  // sphere1->drawSphere(shaderProg);
-  // sphere2->drawSphere(shaderProg);
-  // cube->draw(shaderProg);
-  // robotarm->draw(shaderProg);
+  sphere->translate(100, 10, 100);
+  sphere->drawSphere(activeShaderProgram);
 
   glUseProgram(0);
   glFlush();
@@ -352,32 +288,24 @@ int main(int argc, char** argv) {
   s.createShaderProgram("gouraud.vert", "gouraud.frag", &gouraudShaderProg);
   s.createShaderProgram("phong.vert", "phong.frag", &phongShaderProg);
 
-  activeShaderProgram = gouraudShaderProg; // default gouraud shader
+  // Default: Gouraud shader
+  activeShaderProgram = gouraudShaderProg;
 
-  // For Task 1.
-  sphere0 = new SolidSphere(1, 20, 20);
+  // Set up sphere
+  sphere = new SolidSphere(1, 20, 20);
+  sphere->setAmbient(0.8, 0.4, 0.2); // material ambient color
+  sphere->setDiffuse(0.75, 0.75, 0.5); // material diffuse color
+  sphere->setSpecular(0.8, 0.8, 0.8); // material specular color
 
-  sphere0->setAmbient(0.8, 0.4, 0.2);
-  sphere0->setDiffuse(0.75, 0.75, 0.5);
-  sphere0->setSpecular(0.8, 0.8, 0.8);
-
-  // // Object for Task 2.
-  // cube = new SolidCube(1.0, 0.5, 0.5);
-  // sphere1 = new SolidSphere(0.75, 24, 24);
-  // sphere2 = new SolidSphere(0.75, 24, 24);
-
-  // For Task 3.
+  // Set up camera
   cam = new Camera(position, lookAtPoint, upVector);
 
+  // Set up light
   light = new Light();
-
   light->setAmbient(1.0, 1.0, 1.0);
   light->setDiffuse(1.0, 1.0, 1.0);
   light->setSpecular(1.0, 1.0, 1.0);
   light->setPosition(200, 210, 200, 0);
-
-  // Robot arm for Task 4 (Bonus)
-  // robotarm = new RobotArm();
 
   glutPostRedisplay();
   glEnable(GL_CULL_FACE);

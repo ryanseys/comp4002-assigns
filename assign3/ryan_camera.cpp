@@ -56,19 +56,12 @@ Camera::~Camera(void) {
  * @return          1 - if failed 0 - if successful
  */
 int Camera::roll(float angleDeg) {
-  // DO NOT DELETE -> use to create updateOrientation method + hints from PDF
-  // Vector3f rotVector(0.0,0.0,0.0);
-  // // Example code
-  // // get rotation axis
-  // rotVector = lookAtVector;
-  // updateOrientation(rotVector, angleDeg);
-
   GLfloat angle = DegreeToRadians(angleDeg);
-  // calculate the angle between upVector and rightVector for roll amount
-  this->upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
-  // update rightVector for new upVector
-  this->rightVector = Vector3f::cross(upVector, lookAtVector);
 
+  // calculate the angle between upVector and rightVector to get roll angle
+  this->upVector = (upVector * cos(angle) + rightVector * sin(angle)).normalize();
+  this->rightVector = Vector3f::cross(lookAtVector, upVector);
+  // this->lookAtVector = Vector3f::cross(rightVector, upVector);
   this->refresh();
 
   return 0;
@@ -84,11 +77,11 @@ int Camera::roll(float angleDeg) {
  */
 int Camera::pitch(float angleDeg) {
   GLfloat angle = DegreeToRadians(angleDeg);
-  // calculate the angle between lookAtVector and upVector
-  this->lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
-  // update upVector for the new lookAtVector
-  this->upVector = Vector3f::cross(rightVector, lookAtVector);
 
+  // calculate the angle between lookAtVector and upVector to get pitch angle
+  this->lookAtVector = (lookAtVector * cos(angle) + upVector * sin(angle)).normalize();
+  this->upVector = Vector3f::cross(rightVector, lookAtVector);
+  // this->rightVector = Vector3f::cross(upVector, lookAtVector);
   this->refresh();
 
   return 0;
@@ -104,8 +97,9 @@ int Camera::yaw(float angleDeg) {
   GLfloat angle = DegreeToRadians(angleDeg);
   // calculate angle between lookAtVector and rightVector to get yaw angle
   this->lookAtVector = (lookAtVector * cos(angle) + rightVector * sin(angle)).normalize();
-  // update right angle for new lookAtVector
   this->rightVector = Vector3f::cross(lookAtVector, upVector);
+  // need to upload up vector because rightVector is always interpreted from others.
+  this->upVector = Vector3f::cross(rightVector, lookAtVector);
 
   this->refresh();
 
@@ -155,39 +149,6 @@ int Camera::changePositionDelta(float dx, float dy, float dz) {
 }
 
 /**
- * Changes the camera's position relative to its current position.
- * @param  dv [description]
- * @return    0 - success
- */
-int Camera::changePositionDelta(Vector3f *dv) {
-  // TODO
-  return 0;
-}
-
-/**
- * Changes the camera's position to a new position.
- *
- * @param  x [description]
- * @param  y [description]
- * @param  z [description]
- * @return   0 - success.
- */
-int Camera::changeAbsPosition(float x, float y, float z) {
-  // TODO
-  return 0;
-}
-
-/**
- * Changes the camera's position to a new position.
- * @param  v [description]
- * @return   0 - success
- */
-int Camera::changeAbsPosition(Vector3f *v) {
-  // TODO
-  return 0;
-}
-
-/**
  * Changes the camera's position along the LootAt vector
  * Move the camera forward by the numUnits along the lookAtVector.
  *
@@ -200,29 +161,6 @@ Vector3f Camera::moveForward(float numUnits) {
   this->refresh();
 
   return position;
-}
-
-/**
- * Update the camera orientation.
- *
- * @param  rotVector [description]
- * @param  angleRad  [description]
- * @return           [description]
- */
-int Camera::updateOrientation(Vector3f rotVector, float angleRad) {
-
-  // TODO: Add Code
-
-  // Vector3f xaxis(0.0,0.0,0.0);
-
-  // upVector = CrossProduct(rightVector, lookAtVector);
-
-  // create rotation matrix around a vector
-  // rotate the camera (up vector and/or looAtVector)
-  // update the  look-at and the up vectors using the x-axis vector
-  // normalize the up  and look-at vectors
-
-  return 0;
 }
 
 /**
