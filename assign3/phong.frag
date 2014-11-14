@@ -3,25 +3,25 @@
  * Ryan Seys - 100817604
  */
 #version 120
-// material color components
+// Material color components
 uniform vec4 materialAmb;
 uniform vec4 materialDiff;
 uniform vec4 materialSpec;
 
-// light components
+// Light components
 uniform vec4 lightAmb;
 uniform vec4 lightDiff;
 uniform vec4 lightSpec;
 uniform vec4 lightPos;
 
-// spotlight components
-uniform vec4 spotPos; // position of spot light
+// Specular power (shininess factor)
+uniform float shininess;
+
+// Spotlight components
+uniform vec4 spotPos;
 uniform vec4 spotLookAtPnt;
 uniform float spotAngAtten;
 uniform float spotConeAngle;
-
-// Specular power (shininess factor)
-uniform float shininess;
 
 varying vec4 v; // from vertex shader
 varying vec4 N; // from vertex shader

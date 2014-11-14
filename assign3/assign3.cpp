@@ -361,7 +361,7 @@ int main(int argc, char** argv) {
   activeShaderProgram = phongShaderProg;
 
   // Set up sphere
-  sphere = new SolidSphere(1, 50, 50);
+  sphere = new SolidSphere(1, 25, 25);
   sphere->setAmbient(0.8, 0.4, 0.2); // material ambient color
   sphere->setDiffuse(0.75, 0.75, 0.5); // material diffuse color
   sphere->setSpecular(0.8, 0.8, 0.8); // material specular color
