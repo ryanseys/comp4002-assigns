@@ -45,6 +45,7 @@ Vector3f upVector(0, 1, 0);
 // initialize camera
 Camera * cam;
 Light * light;
+Light * spotlight;
 
 GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
 GLdouble sphere1Rotate = 0.0;
@@ -206,6 +207,22 @@ void keyboardFunc(unsigned char key, int x, int y) {
       activeShaderProgram = gouraudShaderProg;
       break;
     }
+    case '0': {
+      spotlight->coneAngle += 1;
+      if(spotlight->coneAngle > 120) {
+        spotlight->coneAngle = 120;
+      }
+      printf("0 pressed - Increase the cone opening angle to %f deg.\n", spotlight->coneAngle);
+      break;
+    }
+    case '9': {
+      spotlight->coneAngle -= 1;
+      if(spotlight->coneAngle < 1) {
+        spotlight->coneAngle = 1;
+      }
+      printf("9 pressed - Decrease the cone opening angle to %f deg.\n", spotlight->coneAngle);
+      break;
+    }
     default: return;
   }
   glutPostRedisplay();
@@ -244,6 +261,18 @@ void display() {
 
   GLuint shininessLoc = glGetUniformLocation(activeShaderProgram,  "shininess");
   glUniform1f(shininessLoc, shininess);
+
+  GLuint spotPosLoc = glGetUniformLocation(activeShaderProgram,  "spotPos");
+  glUniform4fv(spotPosLoc, 1, (float *) &spotlight->position);
+
+  GLuint spotLookAtLoc = glGetUniformLocation(activeShaderProgram,  "spotLookAtPnt");
+  glUniform4fv(spotLookAtLoc, 1, (float *) &spotlight->lookAtPoint);
+
+  GLuint spotAngAttenLoc = glGetUniformLocation(activeShaderProgram,  "spotAngAtten");
+  glUniform1f(spotAngAttenLoc, spotlight->angularAtten);
+
+  GLuint spotConeAngleLoc = glGetUniformLocation(activeShaderProgram,  "spotConeAngle");
+  glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
 
   sphere->translate(100, 10, 100);
   sphere->scale(sphereScaleX, sphereScaleY, sphereScaleZ);
@@ -332,7 +361,14 @@ int main(int argc, char** argv) {
   light->setAmbient(1.0, 1.0, 1.0);
   light->setDiffuse(1.0, 1.0, 1.0);
   light->setSpecular(1.0, 1.0, 1.0);
-  light->setPosition(200, 210, 200, 0);
+  light->setPosition(200, 210, 200);
+
+  spotlight = new Light();
+  spotlight->setAmbient(1.0, 1.0, 1.0);
+  spotlight->setDiffuse(1.0, 1.0, 1.0);
+  spotlight->setSpecular(1.0, 1.0, 1.0);
+  spotlight->setPosition(190, 200, 190);
+  spotlight->setLookAtPoint(100, 10, 100); // center of sphere
 
   glutPostRedisplay();
   glEnable(GL_CULL_FACE);
