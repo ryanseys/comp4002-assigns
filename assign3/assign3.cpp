@@ -1,10 +1,13 @@
 /**
  * COMP 4002 - Assignment 3
  *
- * Task 1 (40 marks): Create a Gouraud light model.
- * Task 2 (40 marks): Create a Phong Lighting model.
- * Task 3 (10 marks): Compare the lighting models. Which model is better? Why?
- * Task 4 (10 marks): Perform bilinear interpolation.
+ * The following is completed:
+ *
+ * Task 1 (40 marks): Create a Gouraud light model. [DONE]
+ * Task 2 (40 marks): Create a Phong Lighting model. [DONE]
+ * Task 3 (10 marks): Compare the lighting models. Which model is better? Why? [DONE - See PDF]
+ * Task 4 (10 marks): Perform bilinear interpolation. [DONE - See PDF]
+ * Task 5 (25 marks): Bonus: Create a spotlight. [DONE]
  *
  * Author: Ryan Seys - 100817604
  */
@@ -23,18 +26,16 @@
 #include "math.h"
 #include "Shader.h"
 #include "ryan_sphere.h"
-#include "ryan_cube.h"
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
-// #include "ryan_robotarm.h"
 #include "ryan_light.h"
 
 GLuint gouraudShaderProg, phongShaderProg;
 GLuint activeShaderProgram;
 GLint windowHeight, windowWidth;
 
-const GLfloat PITCH_AMT = 5.0; // degrees up and down
-const GLfloat YAW_AMT = 5.0; // degrees right and left
+const GLfloat PITCH_AMT = 1.0; // degrees up and down
+const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 1.0;
 
 // Camera defaults
@@ -47,9 +48,6 @@ Camera * cam;
 Light * light;
 Light * spotlight;
 
-GLdouble rotateDelta1 = 0.1; // Rotate first sphere 0.1 degrees per frame
-GLdouble sphere1Rotate = 0.0;
-GLint timerMs = 20;
 GLfloat shininess = 5.0; // min is zero
 GLfloat SHINY_FACTOR = 5.0;
 
@@ -306,16 +304,6 @@ void reshape(GLint w, GLint h) {
   cam->reshape(w, h);
 }
 
-/**
- * Every time the timer ticks
- */
-void renderTick(int value) {
-  // sphere1Rotate = fmod(sphere1Rotate + rotateDelta1, 360);
-  // sphere2Rotate = fmod(sphere2Rotate - rotateDelta2, 360);
-  glutPostRedisplay();
-  // glutTimerFunc(timerMs, renderTick, 1); // restart the timer
-}
-
 void pressSpecialKey(int key, int xx, int yy) {
   switch (key) {
     case GLUT_KEY_UP: {
@@ -371,12 +359,15 @@ int main(int argc, char** argv) {
 
   // Set up light
   light = new Light();
+  // white light
   light->setAmbient(1.0, 1.0, 1.0);
   light->setDiffuse(1.0, 1.0, 1.0);
   light->setSpecular(1.0, 1.0, 1.0);
   light->setPosition(200, 210, 200);
 
+  // Task 5: Create a spotlight
   spotlight = new Light();
+  // white spotlight by default
   spotlight->setAmbient(1.0, 1.0, 1.0);
   spotlight->setDiffuse(1.0, 1.0, 1.0);
   spotlight->setSpecular(1.0, 1.0, 1.0);
@@ -387,7 +378,6 @@ int main(int argc, char** argv) {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   glEnable(GL_DEPTH_TEST);
-  glutTimerFunc(1, renderTick, 1);
   glutMainLoop();
   return 0;
 }

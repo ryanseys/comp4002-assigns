@@ -43,7 +43,6 @@ public:
   void setCamera(Vector3f, Vector3f, Vector3f);
   void refresh(void);
   void reshape(GLfloat w, GLfloat h);
-
 };
 
 #endif
