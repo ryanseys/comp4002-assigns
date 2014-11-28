@@ -1,4 +1,4 @@
-#version 110
+#version 120
 
 attribute vec4 vertex_position;		// the vertex position (in the local space) from VBO
 attribute vec4 vertex_normal;		// the vertex normal (in the local space) from VBO
