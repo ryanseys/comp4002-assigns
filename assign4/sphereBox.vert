@@ -37,8 +37,8 @@ uniform vec3 camPos;
 void main()
 {
 
-	float inRefractFactor = 1.0;			// refracting ray factor of the in material
-	float outRefractFactor = 1.3;		// refracting ray factor of the out material
+	float inRefractFactor = 1.0;  // refracting ray factor of the in material
+	float outRefractFactor = 1.31; // refracting ray factor of the out material
 
 	vec4 vtx;
 	vec3 viewVec;
@@ -66,7 +66,4 @@ void main()
 	// compute the reflection and the refractding vectors
 	reflectionVector = reflect(viewVec, fragmentNormal);
 	refractVector = refract(viewVec,fragmentNormal,eta);
-
-
-
 }
