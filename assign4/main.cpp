@@ -379,7 +379,7 @@ void displayBoxFun(GLuint shaderProg) {
 	modelMat = Matrix4f::identity();
 	//modelMat = Matrix4f::translation(0,0,0);
 
-	modelMat = Matrix4f::translation(80, 0, 0) * Matrix4f::scale(50,50,50);
+	modelMat = Matrix4f::scale(50,50,50) * Matrix4f::translation(2, 0, 0);
 
 	// ROATE THE OBJECT AROUND THE CAMERA VECTOR
 	// CAN ADD ROTATIONS AROUND THE PRIMARY AXIS
