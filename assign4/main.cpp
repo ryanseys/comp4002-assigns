@@ -47,15 +47,16 @@ struct sphereVertex {
 	float texCoord2[2];
 	short numFaces;		   // number of faces shared by the vertex not used
 	long colora;		     // ambient colour	- change to a colour structure
-    long colord;       // diffuse color    - change to a colour structure
+  long colord;         // diffuse color    - change to a colour structure
 	long colors;		     // specular colour  - change to a colour structure
-
 };
 
 // GLOBALS SECTION
 
 GLuint vertex_handle;		// Vertex handle that contains interleaved positions and colors
 GLuint triangle_handle;		// Triangle handle that contains triangle indices
+GLuint vertex_handle2;		// Vertex handle that contains interleaved positions and colors
+GLuint triangle_handle2;		// Triangle handle that contains triangle indices
 GLuint tex;					// a general texture
 
 // the cube data
@@ -78,6 +79,12 @@ GLuint *ind = NULL;
 int numInd = 0;
 int numTriangles;  // number of triangles
 
+struct sphereVertex *vtx2 = NULL;		// array of vertices for a sphere, surface, etc.
+int numVtx2 = 0;
+GLuint *ind2 = NULL;
+int numInd2 = 0;
+int numTriangles2;  // number of triangles
+
 int scalex = 1,scaley=1, scalez=1;		// used to manipulate the model (should be moved to a class)
 float angle =0;
 
@@ -97,8 +104,10 @@ int checkError();
 void Init_Geometry(){
 
 	// create a shpere wiht 64 longitudes and 64 latitudes
-	createSphere(8,4, 1, &vtx, &numVtx, &ind, &numInd);
+	// createSphere(8,4, 1, &vtx, &numVtx, &ind, &numInd);
 	createSphere(64,32, 1, &vtx, &numVtx, &ind, &numInd);
+
+	createSphere(64,32, 1, &vtx2, &numVtx2, &ind2, &numInd2);
 	//createCylinder(64,100, 15, &vtx, &numVtx, &ind, &numInd);
 	//createSurface(50,50, 20, 20, &vtx, &numVtx, &ind, &numInd);
 	return;
@@ -136,8 +145,8 @@ void loadTextures() {
 		"TropicalSunnyDayUp2048.png",
 		"TropicalSunnyDayDown2048.png",
 		"TropicalSunnyDayFront2048.png",
-		"TropicalSunnyDayBack2048.png"};
-
+		"TropicalSunnyDayBack2048.png"
+	};
 
 	char *texFileName = "sample.png";
 	//  NOT USED IN THIS EXAMPLE.   LEFT HERE TO SHOW HOW TO LOAD A TEXTURE
@@ -158,19 +167,31 @@ void loadTextures() {
 void InitVBO()
 {
 	int rc = 0;
-    //Create the vertex handle and copy the data to the GPU memory
-    glGenBuffers(1, &vertex_handle);
+  //Create the vertex handle and copy the data to the GPU memory
+  glGenBuffers(1, &vertex_handle);
+  glGenBuffers(1, &vertex_handle2);
+
 	rc = glGetError();
 	if (rc != GL_NO_ERROR) {
 		printf("error in attach shaders \n");
 	}
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
 
-    //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
-    glGenBuffers(1, &triangle_handle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
+
+  // second sphere
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_handle2);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx2, vtx2, GL_STATIC_DRAW);
+
+  //Create the triangle handle, which is an array of indices, and copy the data to the GPU memory
+  glGenBuffers(1, &triangle_handle);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numInd, ind, GL_STATIC_DRAW);
+
+	// second sphere
+	glGenBuffers(1, &triangle_handle2);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle2);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numInd2, ind2, GL_STATIC_DRAW);
 }
 
 // LOAD THE SHADERS
@@ -202,80 +223,77 @@ int loadShaders(Shader s) {
 	return(rc);
 }
 
-// rendering function to draw an object using a texture
-// note that clearing the frame and depth buffers is done outside this function
-void displayFun() {
-	Matrix4f viewMat, projMat, modelMat, m;
+// // rendering function to draw an object using a texture
+// // note that clearing the frame and depth buffers is done outside this function
+// void displayFun() {
+// 	Matrix4f viewMat, projMat, modelMat, m;
 
-	// set up the mode to wireframe
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//set up the mode to fill
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+// 	// set up the mode to wireframe
+// 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+// 	//set up the mode to fill
+// 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	// setting up the transformaiton of the object from model coord. system to world coord.
-	modelMat = Matrix4f::identity();
-	//modelMat = Matrix4f::translation(0,0,0);
-	modelMat = Matrix4f::scale(7,7,7);
-
-
-	// setting up the viewpoint transformation
-	viewMat = cam.getViewMatrix(NULL);
-
-	// setting up the projection transformation
-	//projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(30, 1, .1, 500);
-	projMat= cam.getProjectionMatrix(NULL);
-
-	// putting it all together
-	m = projMat * viewMat * modelMat;
-
-	// load the program to the shader
-	glUseProgram(shaderProg);
-
-	// transfer the matrix to the shader
-	GLuint locMat= 0;
-	locMat=glGetUniformLocation(shaderProg,  "modelViewProjMat");
-	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
-
-	// NOTE THAT ONE MAY WANT TO TRANSFER THE OTHER MATRICES (E.G., modelView MATRIX)
-	// AND THE INVERSE MATRIX
-
-	// set the time
-	GLuint tLoc = glGetUniformLocation(shaderProg, "t");
-	glUniform1i(tLoc, t);
-
-		// bind the buffers to the shaders
-	GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
-	GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
-	GLuint texLoc = glGetAttribLocation(shaderProg, "texCoord");
-
-	glEnableVertexAttribArray(positionLoc);
-	glEnableVertexAttribArray(normalLoc);
-	glEnableVertexAttribArray(texLoc);
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
+// 	// setting up the transformaiton of the object from model coord. system to world coord.
+// 	modelMat = Matrix4f::identity();
+// 	//modelMat = Matrix4f::translation(0,0,0);
+// 	modelMat = Matrix4f::scale(7,7,7);
 
 
-	// Tell OpenGL how to walk through the two VBOs
-	struct sphereVertex v;
-	int relAddress = (char *) v.pos - (char *) &v;
-	glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
-	relAddress = (char *) v.normal - (char *) &v;
-	glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
-	relAddress = (char *) v.texCoord1 - (char *) &v;
-	glVertexAttribPointer(texLoc,2,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+// 	// setting up the viewpoint transformation
+// 	viewMat = cam.getViewMatrix(NULL);
 
-	// draw the triangles
-	glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+// 	// setting up the projection transformation
+// 	//projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(30, 1, .1, 500);
+// 	projMat= cam.getProjectionMatrix(NULL);
 
-	// NOTE SWAP BUFFERS IS CARRIED OUT OUTSIDE THIS FUNCION
-	return;
-}
+// 	// putting it all together
+// 	m = projMat * viewMat * modelMat;
+
+// 	// load the program to the shader
+// 	glUseProgram(shaderProg);
+
+// 	// transfer the matrix to the shader
+// 	GLuint locMat= 0;
+// 	locMat=glGetUniformLocation(shaderProg,  "modelViewProjMat");
+// 	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
+
+// 	// NOTE THAT ONE MAY WANT TO TRANSFER THE OTHER MATRICES (E.G., modelView MATRIX)
+// 	// AND THE INVERSE MATRIX
+
+// 	// set the time
+// 	GLuint tLoc = glGetUniformLocation(shaderProg, "t");
+// 	glUniform1i(tLoc, t);
+
+// 		// bind the buffers to the shaders
+// 	GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
+// 	GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
+// 	GLuint texLoc = glGetAttribLocation(shaderProg, "texCoord");
+
+// 	glEnableVertexAttribArray(positionLoc);
+// 	glEnableVertexAttribArray(normalLoc);
+// 	glEnableVertexAttribArray(texLoc);
+// 	glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
+// 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
+
+// 	// Tell OpenGL how to walk through the two VBOs
+// 	struct sphereVertex v;
+// 	int relAddress = (char *) v.pos - (char *) &v;
+// 	glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+// 	relAddress = (char *) v.normal - (char *) &v;
+// 	glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+// 	relAddress = (char *) v.texCoord1 - (char *) &v;
+// 	glVertexAttribPointer(texLoc,2,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+
+// 	// draw the triangles
+// 	glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+// 	glUseProgram(0);
+
+// 	// NOTE SWAP BUFFERS IS CARRIED OUT OUTSIDE THIS FUNCION
+// 	return;
+// }
 
 // RENDERS AN OBJECT USING A SKYBOX AS THE TEXTURE SOURCE
-void displayBoxFun(GLuint shaderProg)
-{
-
-
+void displayBoxFun(GLuint shaderProg) {
 	Matrix4f viewMat, projMat, modelMat, m;
 	// set up the mode to wireframe
 
@@ -289,7 +307,6 @@ void displayBoxFun(GLuint shaderProg)
 	// CAN ADD ROTATIONS AROUND THE PRIMARY AXIS
 	modelMat = modelMat * Matrix4f::rotateVector(cam.getLookAtVector(),angle,1);
 
-
 	// setting up the viewpoint transformation
 	viewMat = cam.getViewMatrix(NULL);
 
@@ -302,7 +319,6 @@ void displayBoxFun(GLuint shaderProg)
 	// tell openfl which shader program to use
 	glUseProgram(shaderProg);
 
-
 	// transfer the modelViewProjection  matrix to the shader
 	GLuint locMat= 0;
 	locMat=glGetUniformLocation(shaderProg,  "modelViewProjMat");
@@ -312,7 +328,6 @@ void displayBoxFun(GLuint shaderProg)
 	m = viewMat * modelMat;
 	locMat=glGetUniformLocation(shaderProg,  "modelViewMat");
 	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
-
 
 	// transfer the model matrix to the shader
 	m = modelMat;
@@ -324,20 +339,18 @@ void displayBoxFun(GLuint shaderProg)
 	Vector3f camPos = cam.getPosition();
 	glUniform3fv(locMat,1, (float *) &camPos);
 
-
 	// load the refract flag to the shader
 	locMat=glGetUniformLocation(shaderProg,  "refractFlag");
 	glUniform1i(locMat, refractFlag);
-
 
 	glActiveTexture(GL_TEXTURE3);
 	GLuint texCube = skybox.getTexHandle();
 	glBindTexture(GL_TEXTURE_CUBE_MAP, texCube);
 	GLuint samLoc = glGetUniformLocation(shaderProg, "texCube");
-    glUniform1i(samLoc, 3);
+  glUniform1i(samLoc, 3);
+
 	GLint ttt = 0;
 	glGetUniformiv(shaderProg, samLoc, &ttt);
-
 
 	// bind the buffers to the shaders
 	GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
@@ -349,7 +362,6 @@ void displayBoxFun(GLuint shaderProg)
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
 
-
 	// Tells OpenGL how to walk through the two VBOs
 	struct sphereVertex v;
 	int relAddress = (char *) v.pos - (char *) &v;
@@ -360,8 +372,62 @@ void displayBoxFun(GLuint shaderProg)
 	// draw the triangles
 	glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
 
-	return;
+	// glUseProgram(0);
 
+	// glUseProgram(shaderProg);
+
+	modelMat = Matrix4f::identity();
+	//modelMat = Matrix4f::translation(0,0,0);
+
+	modelMat = Matrix4f::translation(100, 0, 0) * Matrix4f::scale(50,50,50);
+
+	// ROATE THE OBJECT AROUND THE CAMERA VECTOR
+	// CAN ADD ROTATIONS AROUND THE PRIMARY AXIS
+	modelMat = modelMat * Matrix4f::rotateVector(cam.getLookAtVector(),angle,1);
+
+	// setting up the viewpoint transformation
+	viewMat = cam.getViewMatrix(NULL);
+
+	// setting up the projection transformation
+	projMat= cam.getProjectionMatrix(NULL);
+
+	// putting it all together
+	m = projMat * viewMat * modelMat;
+
+	locMat= 0;
+	locMat=glGetUniformLocation(shaderProg,  "modelViewProjMat");
+	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
+
+	// transfer the modelView matrix to the shader
+	m = viewMat * modelMat;
+	locMat=glGetUniformLocation(shaderProg,  "modelViewMat");
+	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
+
+	// transfer the model matrix to the shader
+	m = modelMat;
+	locMat=glGetUniformLocation(shaderProg,  "modelMat");
+	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
+
+	// load the camera position to the shader
+	locMat=glGetUniformLocation(shaderProg,  "camPos");
+	camPos = cam.getPosition();
+	glUniform3fv(locMat,1, (float *) &camPos);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertex_handle2);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle2);
+
+	// Tells OpenGL how to walk through the two VBOs
+	// struct sphereVertex v;
+	relAddress = (char *) v.pos - (char *) &v;
+	glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+	relAddress = (char *) v.normal - (char *) &v;
+	glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+
+	// draw the triangles
+	glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+
+
+	return;
 }
 
 // this is the redner function.  It contains flags to set up the differnt shaders and what
@@ -398,7 +464,6 @@ void renderFun() {
 	glClearColor(1.0,1.0,1.0,1);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-
 	if (drawSkybox) {
 		skybox.displaySkybox(cam);
 	}
@@ -406,15 +471,12 @@ void renderFun() {
 	if (drawTri) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		displayBoxFun(sphereBoxProg);
-
 	}
-
 
 	if (drawLines) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		displayBoxFun(sphereLinesBoxProg);
 	}
-
 
 	glutSwapBuffers();
 }
@@ -612,8 +674,6 @@ numInd 1 - the number of entries in the buffer.
 
 Return:
 the function returns 0 is successful.
-
-
 */
 int createCylinder(int numLong, float radius, float height, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1)
 
@@ -631,9 +691,6 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
 	float deltaBeta;
 	int numRows;
 	int numCols;
-
-
-
 
 	numRows = 1;  // number of horizonal slabs
 	numCols = numLong;	// number of vertical slabs
@@ -682,10 +739,7 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
 		}
 	}
 
-
-
 	// fill the index buffer of the walls
-
 	k = 0;
 	for(i = 0; i < numRows; i++) {
 		for(j = 0; j < numCols; j++)
@@ -704,7 +758,6 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
 		}
 	}
 
-
 	// fill the index buffer of the top plate
 	for (i = 0, j = numCols+2; i < numCols - 2; i++, j++) {
 			// fill indices of the top plate
@@ -713,7 +766,6 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
 			(*ind)[k+2] = j+1;
 			k +=3;
 	}
-
 
 	// fill the index buffer of the bottom plate
 	for (i = 0, j = 1; i < numCols - 2; i++, j++) {
@@ -724,11 +776,8 @@ int createCylinder(int numLong, float radius, float height, struct sphereVertex 
 			k +=3;
 	}
 
-
 	*numVtx1 = numVtx;
-
 	*numInd1 = numTriangles*3;
-
 
 	return(0);
 err:
@@ -832,11 +881,7 @@ int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float wi
 		}
 	}
 
-
-
-
 	// fill the index buffer
-
 	k = 0;
 	for(i = 0; i < numRows; i++) {
 		for(j = 0; j < numCols; j++)
@@ -848,10 +893,6 @@ int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float wi
 			k+=6;
 		}
 	}
-
-
-
-
 
 	*numVtx1 = numVtx;
 	*numInd1 = numTriangles*3;
