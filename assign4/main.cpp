@@ -26,13 +26,7 @@
 //
 // The code is provided as is without any warranty
 
-//=============================================================================
-
-
-
-/**************************************************************************/
 // INCLUDE Section
-
 #include <stdio.h>
 #define _USE_MATH_DEFINES // for C++. The define is used to load the constants
 
@@ -45,27 +39,18 @@
 #include "SkyBox.h"
 #include "call_back_functions.h"
 
-
-/***************************************************************************************/
-
 // DATA STRUCTURES SECTION
-
-
 struct sphereVertex {
 	float pos[4];
-	float normal[4];	// the average normal
+	float normal[4];	   // the average normal
 	float texCoord1[2];
 	float texCoord2[2];
-	short numFaces;		// number of faces shared by the vertex not used
-	long colora;		// ambient colour	- change to a colour structure
-    long colord;        // diffuse color    - change to a colour structure
-	long colors;		// specular colour  - change to a colour structure
+	short numFaces;		   // number of faces shared by the vertex not used
+	long colora;		     // ambient colour	- change to a colour structure
+    long colord;       // diffuse color    - change to a colour structure
+	long colors;		     // specular colour  - change to a colour structure
 
 };
-
-
-
-/***************************************************************************************/
 
 // GLOBALS SECTION
 
@@ -101,23 +86,15 @@ int t= 0;								// time
 
 int refractFlag = 0;		// a flag for rendering with reflection vector or refracting vectors
 
-// FUNCTION DECLARATION
-
+// FUNCTION DECLARATIONS
 int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) ;
 int createCylinder(int numLong, float radius, float height, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) ;
 void createQuad(GLuint *ind, int bottomLeft, int bottomRight, int topLeft, int topRight);
 int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float width, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1);
-
 int checkError();
 
-
-
-/**************************************************************************************/
 //  Define the geometry
-
-
-void Init_Geometry()
-{
+void Init_Geometry(){
 
 	// create a shpere wiht 64 longitudes and 64 latitudes
 	createSphere(8,4, 1, &vtx, &numVtx, &ind, &numInd);
@@ -128,42 +105,30 @@ void Init_Geometry()
 
 }
 
-
-/**************************************************************************************/
 //  loading a texture
-
-
-void loadTexture(GLuint *tex, GLuint target, char *imageFileName)
-{
-
+void loadTexture(GLuint *tex, GLuint target, char *imageFileName) {
 	int width, height;
-    unsigned char* image;
+  unsigned char* image;
 
 	// generate the texture
 	glGenTextures(1, tex);
 
+  image = SOIL_load_image(imageFileName, &width, &height, 0, SOIL_LOAD_RGB);
+  glTexImage2D(target, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+  SOIL_free_image_data(image);
 
-    image = SOIL_load_image(imageFileName, &width, &height, 0, SOIL_LOAD_RGB);
-    glTexImage2D(target, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    SOIL_free_image_data(image);
 
-
-    glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+  glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+  glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 }
 
-
-/**************************************************************************************/
 //  loading a texture
-
-
-void loadTextures()
-{
+void loadTextures() {
 
 	char *sbTextureNameSunnyDay[6] ={
 		"TropicalSunnyDayLeft2048.png",
@@ -189,10 +154,7 @@ void loadTextures()
 	skybox.loadSkybox(sbTextureNameSunnyDay);
 }
 
-
-/*************************************************************************************/
 // create VBO objects
-
 void InitVBO()
 {
 	int rc = 0;
@@ -211,14 +173,11 @@ void InitVBO()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numInd, ind, GL_STATIC_DRAW);
 }
 
-/************************************************************************************/
-
 // LOAD THE SHADERS
 // NOTE SHADERS CAN BE TRANSFERED TO THE OBJECT UNLESS THEY ARE SHARED
 
-	// initialize the shader
-int loadShaders(Shader s)
-{
+// initialize the shader
+int loadShaders(Shader s) {
 	int rc = 0;
 
 	rc = s.createShaderProgram("sphere.vert","sphere.frag", &shaderProg);
@@ -234,7 +193,6 @@ int loadShaders(Shader s)
 		rc = 2;
 	}
 
-
 	rc = s.createShaderProgram("sphereBox.vert","sphereBox.frag", &sphereBoxProg);
 	if (rc != 0) {
 		printf(" error after generating sphere skybox shaders \n");
@@ -244,19 +202,10 @@ int loadShaders(Shader s)
 	return(rc);
 }
 
-
-
-/**********************************************************************************************/
-
 // rendering function to draw an object using a texture
 // note that clearing the frame and depth buffers is done outside this function
-
-void displayFun()
-{
-
-
+void displayFun() {
 	Matrix4f viewMat, projMat, modelMat, m;
-
 
 	// set up the mode to wireframe
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -276,7 +225,6 @@ void displayFun()
 	//projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(30, 1, .1, 500);
 	projMat= cam.getProjectionMatrix(NULL);
 
-
 	// putting it all together
 	m = projMat * viewMat * modelMat;
 
@@ -289,8 +237,7 @@ void displayFun()
 	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
 
 	// NOTE THAT ONE MAY WANT TO TRANSFER THE OTHER MATRICES (E.G., modelView MATRIX)
-	//  AND THE INVERSE MATRIX
-
+	// AND THE INVERSE MATRIX
 
 	// set the time
 	GLuint tLoc = glGetUniformLocation(shaderProg, "t");
@@ -321,19 +268,10 @@ void displayFun()
 	glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
 
 	// NOTE SWAP BUFFERS IS CARRIED OUT OUTSIDE THIS FUNCION
-
 	return;
-
 }
 
-
-
-
-
-/**********************************************************************************************/
-
 // RENDERS AN OBJECT USING A SKYBOX AS THE TEXTURE SOURCE
-
 void displayBoxFun(GLuint shaderProg)
 {
 
@@ -426,14 +364,10 @@ void displayBoxFun(GLuint shaderProg)
 
 }
 
-
-/**********************************************************************************************/
-
-// this is the redner functdion.  It contains flags to set up the differnt shaders and what
+// this is the redner function.  It contains flags to set up the differnt shaders and what
 // to draw.  One can remove most of is not all of theem
 
-void renderFun()
-{
+void renderFun() {
 	// DEBUGGING FLAGS
 	static int drawTri = 1;
 	static int drawSkybox = 1;
@@ -458,7 +392,6 @@ void renderFun()
 		cam.zoomIn(zoom);
 		camZoom = 0;
 	}
-
 
 	// setting opengl - clearing the buffers
 	glEnable(GL_DEPTH_TEST);    // need depth test to correctly draw 3D objects
@@ -486,23 +419,13 @@ void renderFun()
 	glutSwapBuffers();
 }
 
-
-
-
-/************************************************************************************/
-
-void idleFun()
-{
+void idleFun() {
 	t++;
 	// Sleep(10);
 	glutPostRedisplay();
 }
-/**************************************************************************************/
-// main
 
-
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 	int rc;
 	Shader s;
 
@@ -540,8 +463,6 @@ int main(int argc, char** argv)
 	glutMainLoop();
 }
 
-
-/**************************************************************************************/
 /* this function creates a sphere.  The sphere is genreated using two arrays.  The vertex data array which
 contains the vertex data (geometry) and an index array which contains the topology of the triangles.  The trainagles
 are stored in the index array as a triangle list.
@@ -569,13 +490,8 @@ numInd 1 - the number of entries in the buffer.
 
 Return:
 the function returns 0 is successful.
-
-
 */
-
-int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1)
-
-{
+int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) {
 	int rc = 0;
 	int i,j,k;
 	float alpha = 0.0;	// angle of latitude starting from the "south pole" at angle -90
@@ -588,9 +504,6 @@ int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vt
 	int numCols;
 
 	//int numTriangles;
-
-
-
 	numRows = numLat*2;  // number of horizonal slabs
 	numCols = numLong;	// number of vertical slabs
 
@@ -645,34 +558,7 @@ int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vt
 		}
 	}
 
-#if 0
-
-	k = 0;
-	for(i = 0; i <= numRows; i++) {
-		for(j = 0; j <= numCols; j++) {
-			printf("vtx[%d,%d]=(%f,%f,%f,%3.1f) (%f,%f,%f,%3.1f) \n",i,j,
-				(*vtx)[k].pos[0],
-				(*vtx)[k].pos[1],
-				(*vtx)[k].pos[2],
-				(*vtx)[k].pos[3],
-				(*vtx)[k].normal[0],
-				(*vtx)[k].normal[1],
-				(*vtx)[k].normal[2],
-				(*vtx)[k].normal[3]);
-			k++;
-		}
-	}
-
-#endif
-
-
-
-
-
-
-
 	// fill the index buffer
-
 	k = 0;
 	for(i = 0; i < numRows; i++) {
 		for(j = 0; j < numCols; j++)
@@ -692,39 +578,14 @@ int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vt
 		}
 	}
 
-
-
-#if 0
-
-	k = 0;
-	for(i = 0; i <= numRows; i++) {
-		for(j = 0; j <= numCols; j++) {
-			printf("k= %d tri[%d]=(%d,%d,%d) \n",k, k/3,
-				(*ind)[k],
-				(*ind)[k+1],
-				(*ind)[k+2]);
-			k+=3;
-		}
-	}
-
-#endif
-
-
-
-
-
 	*numVtx1 = numVtx;
 	*numInd1 = numTriangles*3;
-
 
 	return(0);
 err:
 	return(rc);
 }
 
-
-
-/**************************************************************************************/
 /* this function creates a cylinder.  The cylinder is genreated using two arrays.  The vertex data array which
 contains the vertex data (geometry) and an index array which contains the topology of the triangles.  The trainagles
 are stored in the index array as a triangle list.
@@ -874,7 +735,6 @@ err:
 	return(rc);
 }
 
-/**************************************************************************************/
 /* this function creates a surface.  The sureface is genreated using two arrays.  The vertex data array which
 contains the vertex data (geometry) and an index array which contains the topology of the triangles.  The trainagles
 are stored in the index array as a triangle list.
@@ -900,13 +760,8 @@ numInd 1 - the number of entries in the buffer.
 
 Return:
 the function returns 0 is successful.
-
-
 */
-
-int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float width, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1)
-
-{
+int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float width, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) {
 	int rc = 0;
 	int i,j,k;
 	float dh = 0.0;	// angle of latitude starting from the "south pole" at angle -90
@@ -1007,8 +862,6 @@ err:
 	return(rc);
 }
 
-
-/**************************************************************************************/
 /* this function creates a cube aound (0,0,0).
 
 Ouptut:
@@ -1016,13 +869,8 @@ vboCube - the vertex buffer offer of the cube
 iboCube - the index buffer offer of the cube
 Return:
 the function returns 0 is successful.
-
-
 */
-
-int createCube(GLuint *vboCube, GLuint *iboCube)
-
-{
+int createCube(GLuint *vboCube, GLuint *iboCube) {
 
 	float vtx1[8][4] = {
 			{-1.0,  1.0,  1.0, 1.0},
@@ -1074,15 +922,8 @@ int createCube(GLuint *vboCube, GLuint *iboCube)
 	return(0);
 }
 
-
-
-
-/***************************************************************************************************/
-
-// update hte indices of a quad
-
-void createQuad(GLuint *ind, int bottomLeft, int bottomRight, int topLeft, int topRight)
-{
+// update the indices of a quad
+void createQuad(GLuint *ind, int bottomLeft, int bottomRight, int topLeft, int topRight) {
 	int k = 0;
 
 		ind[k] = bottomLeft;
@@ -1098,11 +939,7 @@ void createQuad(GLuint *ind, int bottomLeft, int bottomRight, int topLeft, int t
 		ind[k] = bottomLeft;
 }
 
-
-
-
-int checkError()
-{
+int checkError() {
 	int rc = glGetError();
 	switch (rc) {
 	case GL_NO_ERROR:
