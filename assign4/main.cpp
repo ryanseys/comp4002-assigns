@@ -379,7 +379,7 @@ void displayBoxFun(GLuint shaderProg) {
 	modelMat = Matrix4f::identity();
 	//modelMat = Matrix4f::translation(0,0,0);
 
-	modelMat = Matrix4f::translation(100, 0, 0) * Matrix4f::scale(50,50,50);
+	modelMat = Matrix4f::translation(80, 0, 0) * Matrix4f::scale(50,50,50);
 
 	// ROATE THE OBJECT AROUND THE CAMERA VECTOR
 	// CAN ADD ROTATIONS AROUND THE PRIMARY AXIS
@@ -409,9 +409,9 @@ void displayBoxFun(GLuint shaderProg) {
 	glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
 
 	// load the camera position to the shader
-	locMat=glGetUniformLocation(shaderProg,  "camPos");
-	camPos = cam.getPosition();
-	glUniform3fv(locMat,1, (float *) &camPos);
+	// locMat=glGetUniformLocation(shaderProg,  "camPos");
+	// camPos = cam.getPosition();
+	// glUniform3fv(locMat,1, (float *) &camPos);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_handle2);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle2);

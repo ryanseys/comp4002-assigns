@@ -7,14 +7,14 @@
 /**************************************************************/
 // DEFINE
 
-#define NORMAL_SPEED 0.5
-#define MAX_SPEED 2.0
+#define NORMAL_SPEED 3
+#define MAX_SPEED 5
 
 extern camera cam;
 extern float angle;
 extern int refractFlag;
 
-// Any time the window is resized, this function gets called.  It's setup to the 
+// Any time the window is resized, this function gets called.  It's setup to the
 // "glutReshapeFunc" in main.
 void changeViewport(int w, int h)
 {
@@ -24,7 +24,7 @@ void changeViewport(int w, int h)
 
 // This one is the keyboard func (clearly) which moves the camera using WASD
 // Note: 033 is an "octal" number and is the same thing as Escape, so you could call "exit" on that
-void keyboardFun(unsigned char key, int x, int y) 
+void keyboardFun(unsigned char key, int x, int y)
 {
 	switch (key) {
 		case 033:
@@ -32,49 +32,49 @@ void keyboardFun(unsigned char key, int x, int y)
 		case 'q':
 			exit(1);
 			break;
-		case 'w': 
-			cam.moveForward(NORMAL_SPEED); 
+		case 'w':
+			cam.moveForward(NORMAL_SPEED);
 			break;
-		case 'W': 
-			cam.moveForward(MAX_SPEED); 
+		case 'W':
+			cam.moveForward(MAX_SPEED);
 			break;
 		case 's':
-			cam.moveForward(-NORMAL_SPEED); 
+			cam.moveForward(-NORMAL_SPEED);
 			break;
 		case 'S':
-			cam.moveForward(-MAX_SPEED); 
+			cam.moveForward(-MAX_SPEED);
 			break;
-		case 'a': 
-			cam.yaw((float) .2);
+		case 'a':
+			cam.yaw((float) 2);
 			break;
-		case 'A': 
+		case 'A':
 			cam.yaw(1);
 			break;
 		case 'D':
 			cam.yaw(-1);
 			break;
-		case 'd': 
-			cam.yaw((float) -.2);
+		case 'd':
+			cam.yaw((float) -2);
 			break;
-		case 'z': 
+		case 'z':
 			cam.zoomIn();
 			break;
-		case 'Z': 
+		case 'Z':
 			cam.zoomOut();
 			break;
-		case 'r': 
-			angle += 1.0;
+		case 'r':
+			angle += 2.0;
 			break;
-		case 'R': 
-			angle -= 1.0;
+		case 'R':
+			angle -= 2.0;
 			break;
-		case 't': 
+		case 't':
 			refractFlag = (refractFlag == 0) ? 1 : 0;
 			break;
 	}
 }
 
-void specialKeyboardFun(int key, int x, int y) 
+void specialKeyboardFun(int key, int x, int y)
 {
 	switch (key) {
 		case 033:
