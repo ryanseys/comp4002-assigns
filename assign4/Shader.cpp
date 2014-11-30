@@ -26,44 +26,34 @@
 //
 // The code is provided as is without any warranty
 
-//=============================================================================
-
-
-
 #include <stdio.h>
 #include "stdlib.h"
 #include "Shader.h"
 #include <string.h>
 
 
-Shader::Shader(void): shaderProgramid(0), vertShaderid(0), fragShaderid(0)
-{
+Shader::Shader(void): shaderProgramid(0), vertShaderid(0), fragShaderid(0) {
 
 }
 
-
-Shader::~Shader(void)
-{
-
+Shader::~Shader(void) {
 	// add a destrutor of the shader
 }
 
 
-char * Shader::readCode(char * fileName)
-{
+char * Shader::readCode(char * fileName) {
 	char * shaderCode = NULL;
 	int codeLength = 0;
 	FILE *fp = NULL;
+  // check for error in file name
 
-    // check for error in file name
+  fp = fopen(fileName, "r");	// open file and check for errors
+  if ( fp == NULL ) { return NULL; }
 
-    fp = fopen(fileName, "r");	// open file and check for errors
-    if ( fp == NULL ) { return NULL; }
-
-     // fine the length of code
-    fseek(fp, 0L, SEEK_END);
-    codeLength = ftell(fp);
-    rewind(fp);		// could use fseek(fp, 0L, SEEK_SET)
+   // fine the length of code
+  fseek(fp, 0L, SEEK_END);
+  codeLength = ftell(fp);
+  rewind(fp);		// could use fseek(fp, 0L, SEEK_SET)
 
 	if (codeLength > 0) {
 		// allocated space for code and check for errors
@@ -75,12 +65,9 @@ char * Shader::readCode(char * fileName)
 	}
 
 	if (fp != NULL) fclose(fp);
-
 	return shaderCode;
 }
 
-
-/******************************************************************************/
 /* create the shaders
 
  input:
@@ -93,14 +80,9 @@ shaderType - can either be vertex shader or fragment shader.  The type
 Output:
 shaderid - a handle to the shader.
 
-return:
-0 - if successfull
--1 if error
-
+return: 0 - if successfull -1 if error
 */
-
-int Shader::createShaderObj(char* fileName , int shaderType, GLuint *shaderid)
-{
+int Shader::createShaderObj(char* fileName , int shaderType, GLuint *shaderid) {
 	char *code = NULL;
 	int rc = 0;
 
@@ -143,10 +125,8 @@ int Shader::createShaderObj(char* fileName , int shaderType, GLuint *shaderid)
 
 }
 
-
-/***************************************************************************************************************/
-
-/* functions creates a shader program.  The two shader programs (vertex and fragment) were already compiled.
+/* functions creates a shader program.  The two shader programs (vertex and
+fragment) were already compiled.
  input:
 vertShaderid - a handle to the vertex shader
 
@@ -159,7 +139,6 @@ return:
 0 - if successfull
 -1 if error
 */
-
 GLint Shader::ceateShaderProgram(GLint vertShaderid, GLint fragShaderid, GLuint *shaderProgId)
 {
 
@@ -217,8 +196,6 @@ err:
 	return (rc);
 }
 
-/***************************************************************************************************************/
-
 /* creates a shader program from files vsFileName and fsFileName
 
 input:
@@ -236,10 +213,7 @@ return:
 
 */
 
-
-int Shader::createShaderProgram(char * vsFileName, char * fsFileName, GLuint *shaderProgramid)
-{
-
+int Shader::createShaderProgram(char * vsFileName, char * fsFileName, GLuint *shaderProgramid) {
 	int rc = 0;
 
 	rc = createShaderObj(vsFileName, GL_VERTEX_SHADER, &vertShaderid);
@@ -253,10 +227,6 @@ int Shader::createShaderProgram(char * vsFileName, char * fsFileName, GLuint *sh
 	return(rc);
 }
 
-
-
-
-/*********************************************************************/
 // print the status and some information about the linked shader program
 
 int Shader::shaderStatus(void)

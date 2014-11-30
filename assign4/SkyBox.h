@@ -30,8 +30,6 @@
 
 //=============================================================================
 
-
-
 // setting the different callback functions of OpenGL
 #ifdef __APPLE_CC__
 #include <GLUT/glut.h>
@@ -42,19 +40,13 @@
 #include "camera.h"
 #include "Shader.h"
 
-
-
-class SkyBox
-
-{
+class SkyBox {
 public:
 	SkyBox(void);
 	~SkyBox(void);
 	int loadSkybox(char ** texFileName);
 	void displaySkybox(camera cam);
 	GLuint getTexHandle(void);
-
-
 
 private:
 	GLuint texHandle;  // this is the texture handle
@@ -70,4 +62,3 @@ public:
 	int init(void);
 	int loadColourTexture(void);
 };
-

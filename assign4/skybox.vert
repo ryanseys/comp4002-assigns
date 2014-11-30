@@ -17,7 +17,6 @@
 //
 // The code is provided as is without any warranty
 
-
 uniform vec4 cameraPosition;
 attribute vec4 vertex_position;		// the vertex position (in the local space) from VBO
 attribute vec4 vertex_normal;		// the vertex normal (in the local space) from VBO
@@ -30,10 +29,7 @@ varying float time;
 uniform mat4 modelViewProjMat;
 uniform mat4 modelViewMat;
 
-
-void main()
-{
-
+void main() {
 	rVector = normalize(vertex_position.xyz);
   gl_Position = modelViewProjMat * vertex_position;
 
