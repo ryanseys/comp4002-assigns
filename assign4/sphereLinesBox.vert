@@ -12,14 +12,6 @@ uniform mat4 modelViewMat;
 uniform mat4 modelMat;
 uniform vec4 camPos;
 
-
-
-void main()
-{
-
-
+void main() {
 	gl_Position = modelViewProjMat * vertex_position;
-
-
-
 }

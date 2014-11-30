@@ -70,7 +70,7 @@ GLuint sphereLinesBoxProg;	// shader program for the sphere to draw lines.  It c
 							// set by a flag but was created for debuggin purposes.
 
 SkyBox skybox;				// the skybox
-
+SkyBox skybox2;				// the second skybox
 
 // structures for creating an object: verteices, indices, etc.  (should be moved to an object class)
 struct sphereVertex *vtx = NULL;		// array of vertices for a sphere, surface, etc.
@@ -148,6 +148,15 @@ void loadTextures() {
 		"TropicalSunnyDayBack2048.png"
 	};
 
+	char *sbTextureGC[6] ={
+		"right.jpg",
+		"left.jpg",
+		"top.jpg",
+		"bottom.jpg",
+		"front.jpg",
+		"back.jpg"
+	};
+
 	char *texFileName = "sample.png";
 	//  NOT USED IN THIS EXAMPLE.   LEFT HERE TO SHOW HOW TO LOAD A TEXTURE
 	// loadTexture(&tex, GL_TEXTURE_2D, texFileName);
@@ -160,7 +169,7 @@ void loadTextures() {
 	// top (posY) is blue)
 	// bottom (negY) is cyan
 	//skybox.loadColourTexture();
-	skybox.loadSkybox(sbTextureNameSunnyDay);
+	skybox.loadSkybox(sbTextureGC);
 }
 
 // create VBO objects
@@ -515,7 +524,6 @@ int main(int argc, char** argv) {
 	Init_Geometry();
 	InitVBO();
 
-
 	rc = loadShaders(s);
 	if (rc != 0) {
 		printf("error after createing shaders rc = %d \n", rc);
@@ -532,22 +540,17 @@ are stored in the index array as a triangle list.
 Input
 numLong - number of longitudes lines.  For example if numLong == 10 than the sphere is divided into 10
 of 36 degrees each
-
 numLat - number latitudes in the northern hemispher.  The function calculates the required numbe for the
 souhthern hemisphere.  For example if numLat = 5 then there will be 5 sections in the northern hemishpere
 and 5 sections in the southern hemisphere.
-
 Radius - the radius of the sphere.  Note, that this is superfluous since it can be achieved by scaling the
 sphere.
 
 Ouptut:
 vtx - a buffer with all the vertex information.  Currently the function computes the position information
 and the normal of each vertex.  Note, the array is allocted by the function.
-
 numVtx1 - returns the number of vertices there were genrated.
-
 ind - a buffer which contains the topology of the triangles.
-
 numInd 1 - the number of entries in the buffer.
 
 Return:
@@ -655,21 +658,15 @@ are stored in the index array as a triangle list.
 Input
 numLong - number of longitudes lines.  For example if numLong == 10 than the sphere is divided into 10
 of 36 degrees each
-
-
 Radius - the radius of the sphere.  Note, that this is superfluous since it can be achieved by scaling the
 sphere.
-
 height - the height of the cylinder - Note that this is superfluous since it can be achieved by scaling.
 
 Ouptut:
 vtx - a buffer with all the vertex information.  Currently the function computes the position information
 and the normal of each vertex.  Note, the array is allocted by the function.
-
 numVtx1 - returns the number of vertices there were genrated.
-
 ind - a buffer which contains the topology of the triangles.
-
 numInd 1 - the number of entries in the buffer.
 
 Return:
@@ -790,25 +787,19 @@ are stored in the index array as a triangle list.
 
 Input
 numCols - number of columns.  For example if numLong == 10 than the surface will have 10 columns
-
 numRows - number rows.
-
 height - the height of the surface.  Can beachieved by scaling the surface.
-
 width - the width of the surface.  Can beachieved by scaling the surface.
 
-Ouptut:
+Output:
 vtx - a buffer with all the vertex information.  Currently the function computes the position information
 and the normal of each vertex.  Note, the array is allocted by the function.
 
 numVtx1 - returns the number of vertices there were genrated.
-
 ind - a buffer which contains the topology of the triangles.
-
 numInd 1 - the number of entries in the buffer.
 
-Return:
-the function returns 0 is successful.
+Return: the function returns 0 is successful.
 */
 int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float width, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) {
 	int rc = 0;
@@ -822,8 +813,6 @@ int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float wi
 	float dTexX, dTexY;	// delta for setting up the texture coordinates
 
 	//int numTriangles;
-
-
 
 	numRows = numSurfaceRows;  // number of horizonal slabs
 	numCols = numSurfaceCols;	// number of vertical slabs

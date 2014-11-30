@@ -17,8 +17,6 @@
 //
 // The code is provided as is without any warranty
 
-
-
 attribute vec4 vertex_position;		// the vertex position (in the local space) from VBO
 attribute vec4 vertex_normal;		// the vertex normal (in the local space) from VBO
 
@@ -32,11 +30,7 @@ uniform mat4 modelViewMat;
 uniform mat4 modelMat;
 uniform vec3 camPos;
 
-
-
-void main()
-{
-
+void main() {
 	float inRefractFactor = 1.0;  // refracting ray factor of the in material
 	float outRefractFactor = 1.31; // refracting ray factor of the out material
 
@@ -54,7 +48,6 @@ void main()
 	vtx   = modelMat * vertex_normal;
 	fragmentNormal   = vtx.xyz;
 	fragmentNormal = normalize(fragmentNormal);
-
 
 	// position of fragment with projection matrix
 	gl_Position = modelViewProjMat * vertex_position;

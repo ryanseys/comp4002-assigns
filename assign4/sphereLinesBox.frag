@@ -17,18 +17,12 @@
 //
 // The code is provided as is without any warranty
 
-
-
 varying vec3 fragmentPosition;		// The fragment position interpolated from the vertex shader
 varying vec3 reflectionVector;
-
 varying float time;
 
 uniform samplerCube texCube;
 
-void main()
-{
-
-	gl_FragColor = vec4(0,0,0,1);
-
- }
+void main() {
+	gl_FragColor = vec4(0, 0, 0, 1);
+}
