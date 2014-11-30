@@ -148,7 +148,7 @@ void loadTextures() {
 		"TropicalSunnyDayBack2048.png"
 	};
 
-	char *sbTextureGC[6] ={
+	char *sbTextureNight[6] ={
 		"right.jpg",
 		"left.jpg",
 		"top.jpg",
@@ -169,7 +169,8 @@ void loadTextures() {
 	// top (posY) is blue)
 	// bottom (negY) is cyan
 	//skybox.loadColourTexture();
-	skybox.loadSkybox(sbTextureGC);
+	skybox.loadSkybox(sbTextureNameSunnyDay);
+	skybox2.loadSkybox(sbTextureNight);
 }
 
 // create VBO objects
@@ -382,8 +383,9 @@ void displayBoxFun(GLuint shaderProg) {
 	glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
 
 	// glUseProgram(0);
-
 	// glUseProgram(shaderProg);
+
+	// draw the second sphere
 
 	modelMat = Matrix4f::identity();
 	//modelMat = Matrix4f::translation(0,0,0);
@@ -421,6 +423,15 @@ void displayBoxFun(GLuint shaderProg) {
 	// locMat=glGetUniformLocation(shaderProg,  "camPos");
 	// camPos = cam.getPosition();
 	// glUniform3fv(locMat,1, (float *) &camPos);
+
+	glActiveTexture(GL_TEXTURE3);
+	GLuint texCube2 = skybox2.getTexHandle();
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texCube2);
+	GLuint samLoc2 = glGetUniformLocation(shaderProg, "texCube");
+  glUniform1i(samLoc2, 3);
+
+	GLint ttt2 = 0;
+	glGetUniformiv(shaderProg, samLoc, &ttt2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_handle2);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle2);
@@ -475,6 +486,7 @@ void renderFun() {
 
 	if (drawSkybox) {
 		skybox.displaySkybox(cam);
+		// skybox2.displaySkybox(cam); // do not draw skybox, only texture object
 	}
 
 	if (drawTri) {
@@ -520,6 +532,7 @@ int main(int argc, char** argv) {
 
 	loadTextures();
 	skybox.init();
+	skybox2.init();
 
 	Init_Geometry();
 	InitVBO();
