@@ -95,9 +95,9 @@ int refractFlag = 0;    // a flag for rendering with reflection vector or refrac
 
 // FUNCTION DECLARATIONS
 int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) ;
-int createCylinder(int numLong, float radius, float height, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) ;
-void createQuad(GLuint *ind, int bottomLeft, int bottomRight, int topLeft, int topRight);
-int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float width, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1);
+// int createCylinder(int numLong, float radius, float height, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) ;
+// void createQuad(GLuint *ind, int bottomLeft, int bottomRight, int topLeft, int topRight);
+// int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float width, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1);
 int checkError();
 
 //  Define the geometry
@@ -211,18 +211,18 @@ void InitVBO()
 int loadShaders(Shader s) {
   int rc = 0;
 
-  rc = s.createShaderProgram("sphere.vert","sphere.frag", &shaderProg);
-  if (rc != 0) {
-    printf(" error after generating the spere shader \n");
-    rc = 1;
-  }
+  // rc = s.createShaderProgram("sphere.vert","sphere.frag", &shaderProg);
+  // if (rc != 0) {
+  //   printf(" error after generating the spere shader \n");
+  //   rc = 1;
+  // }
 
   // initialize the sphere line shader
-  rc = s.createShaderProgram("sphereLinesBox.vert","sphereLinesBox.frag", &sphereLinesBoxProg);
-  if (rc != 0) {
-    printf(" error after generating sphere line shader \n");
-    rc = 2;
-  }
+  // rc = s.createShaderProgram("sphereLinesBox.vert","sphereLinesBox.frag", &sphereLinesBoxProg);
+  // if (rc != 0) {
+  //   printf(" error after generating sphere line shader \n");
+  //   rc = 2;
+  // }
 
   rc = s.createShaderProgram("sphereBox.vert","sphereBox.frag", &sphereBoxProg);
   if (rc != 0) {
@@ -441,7 +441,6 @@ void displayBoxFun(GLuint shaderProg) {
   // draw the triangles
   glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
 
-
   return;
 }
 
@@ -480,7 +479,6 @@ void renderFun() {
 
   if (drawSkybox) {
     skybox.displaySkybox(cam);
-    // skybox2.displaySkybox(cam); // do not draw skybox, only texture object
   }
 
   if (drawTri) {
@@ -488,10 +486,10 @@ void renderFun() {
     displayBoxFun(sphereBoxProg);
   }
 
-  if (drawLines) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    displayBoxFun(sphereLinesBoxProg);
-  }
+  // if (drawLines) {
+  //   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  //   displayBoxFun(sphereLinesBoxProg);
+  // }
 
   glutSwapBuffers();
 }
@@ -518,7 +516,7 @@ int main(int argc, char** argv) {
   glutCreateWindow("skybox");
   glutDisplayFunc(renderFun);
   glutIdleFunc(idleFun);
-  setCallbackFun();
+  // setCallbackFun();
 
   // initialize GLEW
   // GLenum err = glewInit();
@@ -526,7 +524,7 @@ int main(int argc, char** argv) {
 
   loadTextures();
   skybox.init();
-  skybox2.init();
+  // skybox2.init();
 
   Init_Geometry();
   InitVBO();
@@ -656,324 +654,6 @@ int createSphere(int numLong, int numLat, float radius, struct sphereVertex **vt
   return(0);
 err:
   return(rc);
-}
-
-/* this function creates a cylinder.  The cylinder is genreated using two arrays.  The vertex data array which
-contains the vertex data (geometry) and an index array which contains the topology of the triangles.  The trainagles
-are stored in the index array as a triangle list.
-
-Input
-numLong - number of longitudes lines.  For example if numLong == 10 than the sphere is divided into 10
-of 36 degrees each
-Radius - the radius of the sphere.  Note, that this is superfluous since it can be achieved by scaling the
-sphere.
-height - the height of the cylinder - Note that this is superfluous since it can be achieved by scaling.
-
-Ouptut:
-vtx - a buffer with all the vertex information.  Currently the function computes the position information
-and the normal of each vertex.  Note, the array is allocted by the function.
-numVtx1 - returns the number of vertices there were genrated.
-ind - a buffer which contains the topology of the triangles.
-numInd 1 - the number of entries in the buffer.
-
-Return:
-the function returns 0 is successful.
-*/
-int createCylinder(int numLong, float radius, float height, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1)
-
-{
-  int rc = 0;
-  int i,j,k;
-  //float rowPos[4] = {0.0,1.0,0.0,1.0};
-  //float colPos[4] = {0.0,1.0,0.0,1.0};
-  //float u[4],v[4],w[4]; // used to cmpute the normals - w is the normal
-  //float rangeMax = 10;
-  //float rangeMin = 0;
-  float alpha = 0.0;  // angle of latitude starting from the "south pole" at angle -90
-  float beta = 0.0;   // angle of longtitude in the rage of 0-360
-  float deltaAlpha;
-  float deltaBeta;
-  int numRows;
-  int numCols;
-
-  numRows = 1;  // number of horizonal slabs
-  numCols = numLong;  // number of vertical slabs
-
-  int numVtx = (numRows+1) * (numCols+1);   // define only the north hemisphere
-
-  int numQuads = numRows * numCols;
-  numTriangles = numQuads * 2 + 2*(numCols-2);   // number of triangles on the wall + number of triangles top and bottom
-
-  // allocate memory
-  *vtx = (struct sphereVertex *) malloc(sizeof(struct sphereVertex) * numVtx);
-  if (vtx == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  *ind = (GLuint *) malloc(sizeof(GLuint) * numTriangles * 3);
-  if (ind == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  // Fill the vertex buffer with positions
-  k = 0;
-  alpha = 0.0;  // angle of latitude starting from the "south pole"
-  deltaAlpha = 90;  // increment of alpha
-  beta = 0;   // angle of the longtidute
-    deltaBeta = (float)360.0/(numLong); // increment of beta
-
-  for(i = 0, alpha = -45; i <= numRows; i++ ,alpha += deltaAlpha) {
-    for(j = 0, beta = 0; j <= numCols; j++, beta += deltaBeta) {
-      (*vtx)[k].normal[2] = sin(DegreeToRadians(alpha));  // z coordinate
-      (*vtx)[k].normal[0] = cos(DegreeToRadians(alpha))*cos(DegreeToRadians(beta));   // x coordinate
-      (*vtx)[k].normal[1] = cos(DegreeToRadians(alpha))*sin(DegreeToRadians(beta)); // y coordinate
-      (*vtx)[k].normal[3] = 0.0;
-
-      // position in space
-      (*vtx)[k].pos[0]  = (*vtx)[k].normal[0] * radius;
-      (*vtx)[k].pos[1]  = (*vtx)[k].normal[1] * radius;
-      (*vtx)[k].pos[2]  = (*vtx)[k].normal[2] * radius;
-      (*vtx)[k].pos[3]  = (float) ((alpha < 0) ? -height/2.0 : height/.2);
-
-      k++;
-    }
-  }
-
-  // fill the index buffer of the walls
-  k = 0;
-  for(i = 0; i < numRows; i++) {
-    for(j = 0; j < numCols; j++)
-    {
-      // fill indices for the quad
-      (*ind)[k] = i * (numCols+1) + j;
-      (*ind)[k+1] = i * (numCols+1) + j + 1;
-      (*ind)[k+2] = (i+1) * (numCols+1) + j + 1;
-
-      k +=3;
-      (*ind)[k] = i * (numCols+1) + j;
-      (*ind)[k+1] = (i+1) * (numCols+1) + j + 1;
-      (*ind)[k+2] = (i+1) * (numCols+1) + j;
-
-      k+=3;
-    }
-  }
-
-  // fill the index buffer of the top plate
-  for (i = 0, j = numCols+2; i < numCols - 2; i++, j++) {
-      // fill indices of the top plate
-      (*ind)[k] = numCols+1;
-      (*ind)[k+1] = j;
-      (*ind)[k+2] = j+1;
-      k +=3;
-  }
-
-  // fill the index buffer of the bottom plate
-  for (i = 0, j = 1; i < numCols - 2; i++, j++) {
-      // fill indices of the top plate
-      (*ind)[k] = 0;
-      (*ind)[k+1] = j+1;
-      (*ind)[k+2] = j;
-      k +=3;
-  }
-
-  *numVtx1 = numVtx;
-  *numInd1 = numTriangles*3;
-
-  return(0);
-err:
-  return(rc);
-}
-
-/* this function creates a surface.  The sureface is genreated using two arrays.  The vertex data array which
-contains the vertex data (geometry) and an index array which contains the topology of the triangles.  The trainagles
-are stored in the index array as a triangle list.
-
-Input
-numCols - number of columns.  For example if numLong == 10 than the surface will have 10 columns
-numRows - number rows.
-height - the height of the surface.  Can beachieved by scaling the surface.
-width - the width of the surface.  Can beachieved by scaling the surface.
-
-Output:
-vtx - a buffer with all the vertex information.  Currently the function computes the position information
-and the normal of each vertex.  Note, the array is allocted by the function.
-
-numVtx1 - returns the number of vertices there were genrated.
-ind - a buffer which contains the topology of the triangles.
-numInd 1 - the number of entries in the buffer.
-
-Return: the function returns 0 is successful.
-*/
-int createSurface(int numSurfaceRows, int numSurfaceCols, float height, float width, struct sphereVertex **vtx, int *numVtx1, GLuint **ind, int *numInd1) {
-  int rc = 0;
-  int i,j,k;
-  float dh = 0.0; // angle of latitude starting from the "south pole" at angle -90
-  float dw = 0.0;   // angle of longtitude in the rage of 0-360
-  float deltaHeight;  // the increment of the surface along the rows
-  float deltaWidth; // the increment of the surface along the columns
-  int numRows;
-  int numCols;
-  float dTexX, dTexY; // delta for setting up the texture coordinates
-
-  //int numTriangles;
-
-  numRows = numSurfaceRows;  // number of horizonal slabs
-  numCols = numSurfaceCols; // number of vertical slabs
-
-  int numVtx = (numRows+1) * (numCols+1);   // define the number of required vertices
-
-  int numQuads = numRows * numCols;
-  numTriangles = numQuads * 2;
-
-  // allocate memory
-  *vtx = (struct sphereVertex *) malloc(sizeof(struct sphereVertex) * numVtx);
-  if (vtx == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  *ind = (GLuint *) malloc(sizeof(GLuint) * numTriangles * 3);
-  if (ind == NULL) {
-    // error
-    rc = 1;
-    goto err;
-  }
-
-  // Fill the vertex buffer with positions
-  k = 0;
-  dw = dh = 0.0;
-  dTexX = (float) 1.0/numCols;
-  dTexY = (float) 1.0/numRows;
-  deltaHeight = (float)height / numRows; // increment of height
-  deltaWidth = (float)width / numCols; // increment of width
-
-  for(i = 0, dh = -height/2.0; i <= numRows; i++ ,dh += deltaHeight) {
-    for(j = 0, dw = -width/2.0; j <= numCols; j++, dw += deltaWidth) {
-      (*vtx)[k].normal[0]=0;
-      (*vtx)[k].normal[1]=1;
-      (*vtx)[k].normal[2]=0;
-      (*vtx)[k].normal[3]=0;
-
-      // position in space
-      (*vtx)[k].pos[0]  = dw;
-      (*vtx)[k].pos[1]  = 0;
-      (*vtx)[k].pos[2]  = dh;
-      (*vtx)[k].pos[3]  = 1;
-
-      (*vtx)[k].texCoord1[0]  = j*dTexX;
-      (*vtx)[k].texCoord1[1]  = i*dTexY;
-
-
-
-      struct sphereVertex v;
-      v = (*vtx)[k];
-
-      k++;
-    }
-  }
-
-  // fill the index buffer
-  k = 0;
-  for(i = 0; i < numRows; i++) {
-    for(j = 0; j < numCols; j++)
-    {
-      // fill indices for the quad
-      // change by making a quad function
-      createQuad(&(*ind)[k], i * (numCols+1) + j, i * (numCols+1) + j + 1, (i+1) * (numCols+1) + j, (i+1) * (numCols+1) + j + 1);
-
-      k+=6;
-    }
-  }
-
-  *numVtx1 = numVtx;
-  *numInd1 = numTriangles*3;
-
-
-  return(0);
-err:
-  return(rc);
-}
-
-/* this function creates a cube aound (0,0,0).
-
-Ouptut:
-vboCube - the vertex buffer offer of the cube
-iboCube - the index buffer offer of the cube
-Return:
-the function returns 0 is successful.
-*/
-int createCube(GLuint *vboCube, GLuint *iboCube) {
-
-  float vtx1[8][4] = {
-      {-1.0,  1.0,  1.0, 1.0},
-      {-1.0, -1.0,  1.0, 1.0},
-      {1.0, -1.0,  1.0, 1.0},
-      {1.0,  1.0,  1.0, 1.0},
-      {-1.0,  1.0, -1.0, 1.0},
-      {-1.0, -1.0, -1.0, 1.0},
-      {1.0, -1.0, -1.0, 1.0},
-      {1.0,  1.0, -1.0, 1.0}};
-
-  float vtx[8][4] = {
-      {-10.0,  10.0,  10.0, 1.0},
-      {-10.0, -10.0,  10.0, 1.0},
-      {10.0, -10.0,  10.0, 1.0},
-      {10.0,  10.0,  10.0, 1.0},
-      {-10.0,  10.0, -10.0, 1.0},
-      {-10.0, -10.0, -10.0, 1.0},
-      {10.0, -10.0, -10.0, 1.0},
-      {10.0,  10.0, -10.0, 1.0}};
-
-  glGenBuffers(1, vboCube);
-  printf("sizeof vtx=%d \n",sizeof(vtx));
-  glBindBuffer(GL_ARRAY_BUFFER, *vboCube);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vtx), vtx, GL_STATIC_DRAW);
-  //glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  GLuint ind[12][3] = {
-    {0, 1, 2},
-    {2, 3, 0},
-    {3, 2, 6},
-    {6, 7, 3},
-    {7, 6, 5},
-    {5, 4, 7},
-    {4, 5, 1},
-    {1, 0, 4},
-    {0, 3, 7},
-    {7, 4, 0},
-    {1, 2, 6},
-    {6, 5, 1},
-  };
-
-  printf("sizeof ind=%d size of gluint*36=%d \n",sizeof(ind), sizeof(GLuint)*36);
-  glGenBuffers(1, iboCube);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *iboCube);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ind), ind, GL_STATIC_DRAW);
-
-
-  return(0);
-}
-
-// update the indices of a quad
-void createQuad(GLuint *ind, int bottomLeft, int bottomRight, int topLeft, int topRight) {
-  int k = 0;
-
-    ind[k] = bottomLeft;
-    k++;
-    ind[k] = bottomRight;
-    k++;
-    ind[k] = topRight;
-    k++;
-    ind[k] = topRight;
-    k++;
-    ind[k] = topLeft;
-    k++;
-    ind[k] = bottomLeft;
 }
 
 int checkError() {
